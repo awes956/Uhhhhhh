@@ -348,7 +348,7 @@ AddModule(function()
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
 		local newdodgestate = false
-		if t - dodgetick < 0.8 then
+		if t - dodgetick < 1.2 then
 			newdodgestate = true
 			animator:Step(1.3 + (t - dodgetick))
 		else
