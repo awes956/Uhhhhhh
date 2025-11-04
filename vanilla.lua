@@ -468,10 +468,8 @@ AddModule(function()
 	end
 
 	local animator = nil
-	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideMusic(AssetGetContentId("Assumptions.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
-		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Assumptions.anim"))
@@ -479,7 +477,6 @@ AddModule(function()
 		animator.map = {{15.22, 76.19}, {0, 78.944}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
 		animator:Step(GetOverrideMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
@@ -499,18 +496,145 @@ AddModule(function()
 	end
 
 	local animator = nil
-	local start = 0
 	m.Init = function(figure: Model)
 		SetOverrideMusic(AssetGetContentId("Mesmerizer.mp3"), "Blue and Red Miku - Mesmerizer", 1, NumberRange.new(2.56, 67.435))
-		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("RatDance.anim"))
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Mesmerizer.anim"))
 		animator.looped = true
-		animator.map = {{15.22, 76.19}, {0, 78.944}}
+		animator.map = {{44.113, 54.456}, {0, 10.367}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = tick()
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Caramelldansen"
+	m.Description = "Oh wa oh wa ah!\ndance on my balls\nkoopa in a handbag\nyours only yours\nim on a single dance band\nits no lie\nlisa in the crowd said\n\"Look! Harry had a-\""
+	m.Assets = {"Caramelldansen.anim", "Caramelldansen.mp3"}
+
+	local lyricsdelay = 1.4569375 / 8
+	local lyrics = {
+		"Oh wah oh wah ah!",
+		nil, nil, nil, nil, nil, nil, nil,
+		"Dansa med oss",
+		nil, nil, nil, nil, nil, nil,
+		"Klappa era hander",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Gor som vi gor",
+		nil, nil, nil, nil, nil, nil,
+		"Ta nagra steg at vanster",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Lyssna och lar",
+		nil, nil, nil, nil, nil, nil,
+		"Missa inte chansen",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Nu ar vi har med",
+		nil, nil, nil, nil, nil, nil,
+		"Caramelldansen",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Oo oo oowah oowah",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Oo oo oowah oowah ah",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Oo oo oowah oowah",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Oo oo oowah oowah ah",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Det blir en sensation overallt forstas",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Pa fester kommer alla att slappa loss",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Kom igen",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Nu tar vi stegen om igen",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
+		"Oh wah oh wah oh",
+		nil, nil, nil, nil, nil,
+		"Sa ror pa era fotter",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Wa ah ah!",
+		nil, nil, nil, nil, nil, nil,
+		"Och vicka era hofter",
+		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Oo la la la!",
+		nil, nil, nil, nil, nil, nil,
+		"Gor som vi",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Till denna melodi",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
+	}
+	local lastlyricsindex = 0
+	m.Lyrics = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Lyrics", m.Lyrics).Changed:Connect(function(val)
+			m.Lyrics = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Lyrics = not not save.Lyrics
+	end
+	m.SaveConfig = function()
+		return {
+			Lyrics = m.Lyrics
+		}
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Caramelldansen.mp3"), "Caramell - Caramella Girls", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Caramelldansen.anim"))
+		animator.looped = true
+		animator.map = {{0, 46.622}, {0, 89.6}}
+		lastlyricsindex = 0
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = GetOverrideMusicTime()
+		animator:Step(t)
+		local curlyricsindex = (t // lyricsdelay) + 1
+		if lastlyricsindex ~= curlyricsindex then
+			lastlyricsindex = curlyricsindex
+			local lyric = lyrics[curlyricsindex]
+			if lyric and m.Lyrics then
+				ProtectedChat(lyric)
+			end
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Hakari's Dance"
+	m.Description = "jujutsu shenanigans"
+	m.Assets = {"Hakari.anim", "Hakari.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Hakari.mp3"), "TUCA DONKA", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hakari.anim"))
+		animator.looped = true
+		animator.map = {{0, 75.6}, {0, 73.845}}
+	end
+	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
