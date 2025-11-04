@@ -580,7 +580,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Caramelldansen.anim"))
 		animator.looped = true
-		animator.map = {{0, 46.622}, {0, 44.8}}
+		animator.map = {{0, 46.683}, {0, 44.8}}
 		lastlyricsindex = 0
 	end
 	m.Update = function(dt: number, figure: Model)
