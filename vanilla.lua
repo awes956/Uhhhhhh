@@ -524,18 +524,12 @@ AddModule(function()
 	local lyrics = {
 		"Oh wah oh wah ah!",
 		nil, nil, nil, nil, nil, nil, nil,
-		"Dansa med oss",
-		nil, nil, nil, nil, nil, nil,
-		"Klappa era hander",
-		nil, nil, nil, nil, nil, nil, nil, nil,
-		"Gor som vi gor",
-		nil, nil, nil, nil, nil, nil,
-		"Ta nagra steg at vanster",
-		nil, nil, nil, nil, nil, nil, nil, nil,
-		"Lyssna och lar",
-		nil, nil, nil, nil, nil, nil,
-		"Missa inte chansen",
-		nil, nil, nil, nil, nil, nil, nil, nil,
+		"Dansa med oss, klappa era hander",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Gor som vi gor, ta nagra steg at vanster",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Lyssna och lar, missa inte chansen",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
 		"Nu ar vi har med",
 		nil, nil, nil, nil, nil, nil,
 		"Caramelldansen",
@@ -552,24 +546,16 @@ AddModule(function()
 		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
 		"Pa fester kommer alla att slappa loss",
 		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		"Kom igen",
-		nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		"Nu tar vi stegen om igen",
-		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
+		"Kom igen, Nu tar vi stegen om igen",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
 		"Oh wah oh wah oh",
 		nil, nil, nil, nil, nil,
-		"Sa ror pa era fotter",
-		nil, nil, nil, nil, nil, nil, nil, nil,
-		"Wa ah ah!",
-		nil, nil, nil, nil, nil, nil,
-		"Och vicka era hofter",
-		nil, nil, nil, nil, nil, nil, nil, nil,
-		"Oo la la la!",
-		nil, nil, nil, nil, nil, nil,
-		"Gor som vi",
-		nil, nil, nil, nil, nil, nil, nil, nil, nil,
-		"Till denna melodi",
-		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
+		"Sa ror pa era fotter, wa ah ah!",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Och vicka era hofter, oo la la la!",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+		"Gor som vi, till denna melodi",
+		nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 
 	}
 	local lastlyricsindex = 0
 	m.Lyrics = false
@@ -594,7 +580,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Caramelldansen.anim"))
 		animator.looped = true
-		animator.map = {{0, 46.622}, {0, 89.6}}
+		animator.map = {{0, 46.622}, {0, 44.8}}
 		lastlyricsindex = 0
 	end
 	m.Update = function(dt: number, figure: Model)
@@ -632,7 +618,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hakari.anim"))
 		animator.looped = true
-		animator.map = {{0, 75.6}, {0, 73.845}}
+		animator.map = {{0, 73.845}, {0, 75.6}}
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
