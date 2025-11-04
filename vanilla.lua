@@ -676,4 +676,53 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "科目三 (Subject Three)"
+	m.Description = ""
+	m.Assets = {"SubjectThree.anim", "SubjectThree.mp3", "SubjectThreeDubmood.mp3"}
+
+	m.Alternative = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Forsaken", m.Lyrics).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		if m.Alternative then
+			animator.speed = 0.9867189
+			SetOverrideMusic(AssetGetContentId("SubjectThreeDubmood.mp3"), "Dubmood - The Scene Is Dead 2024", 1)
+		else
+			start += 3.71
+			animator.speed = 1.01034703
+			SetOverrideMusic(AssetGetContentId("SubjectThree.mp3"), "Subject Three - Wen Ren Ting Shu", 1, NumberRange.new(3.71, 77.611))
+		end
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubjectThree.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
