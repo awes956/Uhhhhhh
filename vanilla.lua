@@ -743,6 +743,7 @@ AddModule(function()
 			SmokeLight.RotSpeed = NumberRange.new(-20, 20)
 			SmokeLight.Speed = NumberRange.new(0)
 			SmokeLight.Enabled = true
+			SmokeLight.LockedToPart = true
 			local SmokeThick = Instance.new("ParticleEmitter")
 			SmokeThick.Parent = root
 			SmokeThick.LightInfluence = 0
@@ -768,6 +769,7 @@ AddModule(function()
 			SmokeThick.RotSpeed = NumberRange.new(0)
 			SmokeThick.Speed = NumberRange.new(0)
 			SmokeThick.Enabled = true
+			SmokeThick.LockedToPart = true
 			instances = {SmokeLight, SmokeThick}
 		end
 	end
@@ -918,6 +920,34 @@ AddModule(function()
 		animator2 = nil
 	end
 	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Static"
+	m.Description = "new obsession found\nomg"
+	m.Assets = {"StaticV1.anim", "Static.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Static.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Assumptions.anim"))
+		animator.looped = true
+		animator.map = {{15.22, 76.19}, {0, 78.944}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	--return m
 end)
 
 return modules
