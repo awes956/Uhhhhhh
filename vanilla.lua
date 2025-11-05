@@ -934,7 +934,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Static.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
+		SetOverrideMusic(AssetGetContentId("Static.mp3"), "Sam Gellaitry - Assumptions", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StaticV1.anim"))
