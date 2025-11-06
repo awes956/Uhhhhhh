@@ -21,6 +21,11 @@ AddModule(function()
 		end)
 	end
 
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.RespectCanCollide = true
+	rcp.IgnoreWater = true
+
 	local hstatechange, hrun = nil
 
 	local lastpose = ""
@@ -118,6 +123,9 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
+
+		rcp.FilterDescendantsInstances = {figure}
+
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
 		local root = figure:FindFirstChild("HumanoidRootPart")
@@ -158,6 +166,7 @@ AddModule(function()
 		end
 
 		local jumping = pose == "Jumping" or pose == "Freefall"
+		local climbing = pose == "Climbing" or workspace:Blockcast(root.CFrame * CFrame.new(0, -0.5, 0), Vector3.new(2, 4.95, 0.5), root.CFrame.LookVector * 0.3, rcp) ~= nil
 
 		if jumping or hum.HipHeight < -0.01 then
 			if not jumping then
@@ -190,17 +199,17 @@ AddModule(function()
 			local frequency = 9
 			local climbFudge = 0
 
-			if pose == "Running" then
-				rs.V = 0.15
-				ls.V = 0.15
-				rh.V = 0.15
-				lh.V = 0.15
-			elseif pose == "Climbing" then
+			if climbing then
 				rs.V = 0.5
 				ls.V = 0.5
 				rh.V = 0.5
 				lh.V = 0.5
 				climbFudge = 3.14
+			elseif pose == "Running" then
+				rs.V = 0.15
+				ls.V = 0.15
+				rh.V = 0.15
+				lh.V = 0.15
 			else
 				amplitude = 0.1
 				frequency = 1
