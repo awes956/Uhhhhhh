@@ -1056,4 +1056,35 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Gangnam Style"
+	m.Description = "oppa gangnam style\nuhngh..~"
+	m.Assets = {"Gangnam.anim", "Gangnam.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick() + 1.505
+		SetOverrideMusic(AssetGetContentId("Gangnam.mp3"), "PSY - Gangnam Style", 1, NumberRange.new(1.505, 30.583))
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Gangnam.anim"))
+		animator.looped = true
+		animator.speed = 1.01795171
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick()
+		animator:Step(t - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
