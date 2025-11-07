@@ -1125,7 +1125,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1, NumberRange.new(0, 1.833))
+		SetOverrideMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
