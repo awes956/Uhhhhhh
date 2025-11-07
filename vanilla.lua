@@ -1128,7 +1128,7 @@ AddModule(function()
 		SetOverrideMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.looped = false
+		animator.looped = true
 		if m.VeryOriginal then
 			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("IgakuSutibu.anim"))
 			animator.map = {{0, 22.572}, {0, 19.2}}
