@@ -1029,7 +1029,7 @@ AddModule(function()
 		SetOverrideMusic(AssetGetContentId("Distraction.mp3"), "Dance Mr. Funnybones", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
-		animator.looped = false
+		animator.looped = true
 		if m.Alternative then
 			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("DistractionFlipped.anim"))
 		else
@@ -1037,7 +1037,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetOverrideMusicTime() + 0.67)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1062,7 +1062,7 @@ AddModule(function()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ClassC14.anim"))
 		animator.looped = false
-		animator.map = {{0.492, 29.169}, {0, 21.95}}
+		animator.map = {{0.492, 29.169}, {0, 28.63}}
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(GetOverrideMusicTime())
