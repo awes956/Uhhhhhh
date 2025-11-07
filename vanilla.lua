@@ -1002,4 +1002,102 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Distraction"
+	m.Description = "best choice in the whole game\nI... Wh... I just... Whaat."
+	m.Assets = {"Distraction.anim", "DistractionFlipped.anim", "Distraction.mp3"}
+
+	m.Alternative = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Flipped", m.Alternative).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("Distraction.mp3"), "Dance Mr. Funnybones", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		if m.Alternative then
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("DistractionFlipped.anim"))
+		else
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Distraction.anim"))
+		end
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "3年C組14番窪園チヨコの入閣"
+	m.Description = "Game Over!\n\"自分が3年C組14番だった事に気づいたので聞きに来ました-\""
+	m.Assets = {"ClassC14.anim", "ClassC14.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("ClassC14.mp3"), "3rd Year Class C-14", 1, NumberRange.new(0.492, 29.169))
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ClassC14.anim"))
+		animator.looped = false
+		animator.map = {{0.492, 29.169}, {0, 21.95}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "It Burns! Burns! Burns!"
+	m.Description = "my racha food is very good\nbut the indian cook misunderstood\nit burns burns burns\nindian curry is so hot\nit burns burns burns\nburns like fire oh my god"
+	m.Assets = {"ItBurns.anim", "ItBurns.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideMusic(AssetGetContentId("ItBurns.mp3"), "Loco Loco - It Burns! Burns! Burns!", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ItBurns.anim"))
+		animator.looped = false
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
