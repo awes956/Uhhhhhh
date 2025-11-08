@@ -79,7 +79,7 @@ AddModule(function()
 			local originOnTorso = Vector3.new(0, -lowLadderSearch + distFromBottom, 0)
 			local casterOrigin = torsoCoord.Position + originOnTorso
 			local casterDirection = torsoLook * ladderSearchDist
-			local hitPrim, hitLoc = nil, nil
+			local hitPrim, hitLoc = nil, casterOrigin + casterDirection
 			local hit = workspace:Raycast(casterOrigin, casterDirection, rcp)
 			if hit then
 				hitPrim, hitLoc = hit.Instance, hit.Position
