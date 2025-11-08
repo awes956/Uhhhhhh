@@ -79,8 +79,11 @@ AddModule(function()
 			local originOnTorso = Vector3.new(0, -lowLadderSearch + distFromBottom, 0)
 			local casterOrigin = torsoCoord.Position + originOnTorso
 			local casterDirection = torsoLook * ladderSearchDist
-			local ray = Ray.new(casterOrigin, casterDirection)
-			local hitPrim, hitLoc = workspace:FindPartOnRay(ray, figure)
+			local hitPrim, hitLoc = nil, nil
+			local hit = workspace:Raycast(casterOrigin, casterDirection, rcp)
+			if hit then
+				hitPrim, hitLoc = hit.Instance, hit.Position
+			end
 			-- make trusses climbable.
 			if hitPrim and hitPrim:IsA("TrussPart") then
 				return true
@@ -106,6 +109,7 @@ AddModule(function()
 	local pose = "Standing"
 	local toolAnim = "None"
 	local toolAnimTime = 0
+	local canClimb = false
 
 	local rng = Random.new(math.random(-65536, 65536))
 	
@@ -120,6 +124,7 @@ AddModule(function()
 		hum.WalkSpeed = 16
 		hum.JumpPower = 50
 		hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+		hum:ChangeState(Enum.HumanoidStateType.Freefall)
 		sndpoint = Instance.new("Attachment")
 		sndpoint.Name = "oldrobloxsound"
 		sndpoint.Parent = hum.Torso
@@ -152,14 +157,17 @@ AddModule(function()
 			local state = new.Name
 			if state == "Jumping" then
 				pose = "Jumping"
+				canClimb = true
 				hum.AutoRotate = false
 				hum.HipHeight = -1
 			elseif state == "Freefall" then
 				pose = "Freefall"
+				canClimb = true
 				hum.AutoRotate = false
 				hum.HipHeight = -1
 			elseif state == "Landed" then
 				pose = "Freefall"
+				canClimb = true
 				local vel = hum.Torso.Velocity
 				local power = -vel.Y / 2
 				if power > 30 then
@@ -176,22 +184,29 @@ AddModule(function()
 				f:Play()
 			elseif state == "Seated" then
 				pose = "Seated"
+				canClimb = false
 			elseif state == "Swimming" then
 				pose = "Running"
+				canClimb = false
 			elseif state == "Running" then
-				-- handled by run connection
+				canClimb = true
 			elseif state == "PlatformStand" then
 				pose = "Standing"
+				canClimb = false
 			elseif state == "GettingUp" then
 				pose = "GettingUp"
+				canClimb = false
 				hum.AutoRotate = false
 				hum.HipHeight = -1
 			elseif state == "Ragdoll" then
 				pose = "Running"
+				canClimb = false
 			elseif state == "FallingDown" then
 				pose = "FallingDown"
+				canClimb = false
 			else
 				pose = "Standing"
+				canClimb = false
 			end
 		end)
 		climbforce = Instance.new("BodyVelocity")
@@ -243,7 +258,7 @@ AddModule(function()
 		end
 
 		local jumping = pose == "Jumping" or pose == "Freefall"
-		local climbing = findLadder(figure, root, hum)
+		local climbing = canClimb and findLadder(figure, root, hum)
 
 		if climbing then
 			local climbspeed = hum.WalkSpeed * 0.7
