@@ -1166,4 +1166,58 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Smug Dance"
+	m.Description = "Portal music seems to fit"
+	m.Assets = {"Smug.anim", "Smug.mp3", "Smug2.mp3"}
+
+	m.Deltarolled = true
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Dark mode", m.Deltarolled).Changed:Connect(function(val)
+			m.Deltarolled = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Deltarolled = not not save.Deltarolled
+	end
+	m.SaveConfig = function()
+		return {
+			Deltarolled = m.Deltarolled
+		}
+	end
+
+	local animator = nil
+	local lasttime = 0
+	local function setmusic()
+		if math.random(1, 5) == 1 or m.Deltarolled then
+			SetOverrideMusic(AssetGetContentId("Smug2.mp3"), "Portal Radio", 1)
+		else
+			SetOverrideMusic(AssetGetContentId("Smug.mp3"), "Portal Radio", 1)
+		end
+	end
+	m.Init = function(figure: Model)
+		setmusic()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Smug.anim"))
+		animator.map = {{0, 22.572}, {0, 22.4}}
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = GetOverrideMusicTime()
+		if lasttime > t then
+			setmusic()
+			SetOverrideMusicTime(t)
+		end
+		lasttime = t
+		animator:Step(t)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	--return m
+end)
+
 return modules
