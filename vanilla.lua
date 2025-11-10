@@ -143,7 +143,7 @@ AddModule(function()
 		makesound("FallingDown", "rbxasset://sounds/splat.wav")
 		local j = makesound("Jumping", "rbxasset://sounds/button.wav")
 		j.Played:Connect(function()
-			wait(0.1 + (math.random() / 10))
+			task.wait(0.12 + math.random() * 0.08)
 			j:Stop()
 		end)
 		hrun = hum.Running:Connect(function(speed)
@@ -174,7 +174,7 @@ AddModule(function()
 					hum.Torso.Velocity = Vector3.new(vel.X, power, vel.Z)
 					hum.Torso.RotVelocity = rng:NextUnitVector() * power * 0.5
 					if power > 100 then
-						hum:ChangeState(Enum.HumanoidStateType.FallingDown)
+						hum:ChangeState(Enum.HumanoidStateType.Ragdoll)
 					else
 						hum:ChangeState(Enum.HumanoidStateType.Freefall)
 					end
