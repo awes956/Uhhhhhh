@@ -697,7 +697,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Hakari's Dance"
-	m.Description = "jujutsu shenanigans"
+	m.Description = "jujutsu shenanigans\nlets go gambling\naw dang it\naw dang it\naw dang it\naw dang it\naw dang it"
 	m.Assets = {"Hakari.anim", "Hakari.mp3"}
 
 	m.Effects = false
@@ -803,7 +803,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "California Girls"
-	m.Description = "this was everywhere back in my day (2021)"
+	m.Description = "this was everywhere back in my day (2021)\nanimation sourced from gmod"
 	m.Assets = {"CaliforniaGirls.anim", "CaliforniaGirls.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -1070,7 +1070,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "3年C組14番窪園チヨコの入閣"
-	m.Description = "Game Over!\n\"自分が3年C組14番だった事に気づいたので聞きに来ました-\""
+	m.Description = "Game Over!\n\"自分が3年C組14番だった事に気づいたので聞きに来ました-\"\n(I noticed I'm in 3rd year Class C-14 so I came to ask-)\nWords for Seeker: C14, Year 3"
 	m.Assets = {"ClassC14.anim", "ClassC14.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
