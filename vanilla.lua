@@ -1125,7 +1125,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Kasane Teto - Igaku"
-	m.Description = "red miku is pear"
+	m.Description = "red miku is pear\nand dancing teto blob"
 	m.Assets = {"Igaku.anim", "IgakuSutibu.anim", "Igaku.mp3"}
 
 	m.VeryOriginal = true
