@@ -250,8 +250,6 @@ AddModule(function()
 	m.Init = function(figure: Model)
 		local hum = figure:FindFirstChild("Humanoid")
 		hum.AutoRotate = true
-		hum.WalkSpeed = 16
-		hum.JumpPower = 50
 		hum:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
 		hum:ChangeState(Enum.HumanoidStateType.Freefall)
 		sndpoint = Instance.new("Attachment")
