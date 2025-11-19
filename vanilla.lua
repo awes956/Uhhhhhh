@@ -751,6 +751,9 @@ AddModule(function()
 			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
 		end
 		local altnecksnap = hum.MoveDirection.Magnitude > 0
+		if not altnecksnap then
+			nt = CFrame.Angles(math.rad(20), math.rad(10 * math.sin(timingsine / 50)), 0)
+		end
 		local attackdur = t - attack
 		if attackdur < 0.5 then
 			altnecksnap = true
@@ -782,7 +785,6 @@ AddModule(function()
 					math.rad(math.random(-20, 20))
 				)
 			end
-			nt = CFrame.Angles(math.rad(20), math.rad(10 * math.sin(timingsine / 50)), 0)
 		end
 		local snaptime = 1
 		if m.FixNeckSnapReplicate then
