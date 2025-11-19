@@ -602,6 +602,143 @@ end)
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
+	m.Name = "Immortality Lord"
+	m.Description = "il but he chill\nF - Toggle flight\n(CURRENTLY TESTING)"
+	m.Assets = {"ImmortalityLordTheme.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local flight = false
+	local start = 0
+	local necksnap = 0
+	local necksnapcf = CFrame.identity
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+	}
+	local leftwing = {}
+	local rightwing = {}
+	local flyforce = nil
+	m.Init = function(figure: Model)
+		start = tick()
+		flight = false
+		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1, NumberRange.new(2.13, 87.3))
+		leftwing = {
+			MeshId = "17269814619", TextureId = "",
+			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
+		}
+		rightwing = {
+			MeshId = "17269824947", TextureId = "",
+			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+		}
+		table.insert(HatReanimator.HatCFrameOverride, leftwing)
+		table.insert(HatReanimator.HatCFrameOverride, rightwing)
+		flyforce = Instance.new("BodyVelocity")
+		flyforce.Name = "FlyForce"
+		flyforce.Parent = nil
+		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				flight = not flight
+			end
+		end, true, Enum.KeyCode.F)
+		ContextActionService:SetTitle("Uhhhhhh_ILFlight", "F")
+		ContextActionService:SetPosition("Uhhhhhh_ILFlight", UDim2.new(1, -130, 1, -130))
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = tick() - start
+		
+		-- get vii
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		
+		local timingsine = t * 60 -- timing from patchma's il
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		rt = CFrame.new(0, 0, -2.5 - sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
+		lst = CFrame.Angles(math.rad(-10-10*cos(TimingSine/25)))
+		--rht = CFrame.Angles(rad(-20),rad(80),rad(10+10*cos(TimingSine/25)))
+		--lht = CFrame.Angles(rad(-10),rad(-80),rad(-10-10*cos(TimingSine/25)))
+		if hum.MoveDirection.Magnitude > 0 then
+			if math.random(15) == 1 then
+				necksnap = timingsine
+				necksnapcf = CFrame.Angles(
+					math.rad(math.random(-20, 20)),
+					math.rad(math.random(-20, 20)),
+					math.rad(math.random(-20, 20))
+				)
+			end
+		else
+			if math.random(15) == 1 then
+				necksnap = timingsine
+				necksnapcf = CFrame.Angles(
+					math.rad(20 + math.random(-20, 20)),
+					math.rad((10 * sin(timingsine / 50)) + math.random(-20, 20)),
+					math.rad(math.random(-20, 20))
+				)
+			end
+		end
+		
+		-- apply scaling
+		local scale = figure:GetScale() - 1
+		rt += rt.Position * scale
+		nt += nt.Position * scale
+		rst += rst.Position * scale
+		lst += lst.Position * scale
+		rht += rht.Position * scale
+		lht += lht.Position * scale
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-17.25 * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		
+		rj.Transform = joints.r
+		rsj.Transform = joints.rs
+		lsj.Transform = joints.ls
+		rhj.Transform = joints.rh
+		lhj.Transform = joints.lh
+		if timingsine - necksnap < 1 then
+			nj.Transform = necksnapcf
+		else
+			nj.Transform = joints.n
+		end
+		
+		-- wings
+		leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
+		rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+	end
+	m.Destroy = function(figure: Model?)
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
 	m.Name = "Ragdoll"
 	m.Description = "ow\nR - toggle ragdoll"
 	m.Assets = {}
@@ -654,7 +791,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("RatDance.mp3"), "Chess Type Beat Slowed", 1, NumberRange.new(2.13, 87.3))
+		SetOverrideDanceMusic(AssetGetContentId("RatDance.mp3"), "Chess Type Beat Slowed", 1, NumberRange.new(2.13, 87.3))
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -688,7 +825,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Assumptions.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
+		SetOverrideDanceMusic(AssetGetContentId("Assumptions.mp3"), "Sam Gellaitry - Assumptions", 1, NumberRange.new(15.22, 76.19))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Assumptions.anim"))
@@ -696,7 +833,7 @@ AddModule(function()
 		animator.map = {{15.22, 76.19}, {0, 78.944}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -716,7 +853,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Mesmerizer.mp3"), "Blue and Red Miku - Mesmerizer", 1, NumberRange.new(2.56, 67.435))
+		SetOverrideDanceMusic(AssetGetContentId("Mesmerizer.mp3"), "Blue and Red Miku - Mesmerizer", 1, NumberRange.new(2.56, 67.435))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Mesmerizer.anim"))
@@ -724,7 +861,7 @@ AddModule(function()
 		animator.map = {{44.113, 54.456}, {0, 10.367}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -794,7 +931,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Caramelldansen.mp3"), "Caramell - Caramella Girls", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Caramelldansen.mp3"), "Caramell - Caramella Girls", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Caramelldansen.anim"))
@@ -803,7 +940,7 @@ AddModule(function()
 		lastlyricsindex = 0
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetOverrideMusicTime()
+		local t = GetDanceMusicTime()
 		animator:Step(t)
 		local curlyricsindex = (t // lyricsdelay) + 1
 		if lastlyricsindex ~= curlyricsindex then
@@ -845,7 +982,7 @@ AddModule(function()
 	local animator = nil
 	local instances = {}
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Hakari.mp3"), "TUCA DONKA", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Hakari.mp3"), "TUCA DONKA", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Hakari.anim"))
@@ -916,7 +1053,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -939,7 +1076,7 @@ AddModule(function()
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("CaliforniaGirls.mp3"), "Katy Perry - California Girls", 1)
+		SetOverrideDanceMusic(AssetGetContentId("CaliforniaGirls.mp3"), "Katy Perry - California Girls", 1)
 		start = tick()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -988,11 +1125,11 @@ AddModule(function()
 		animator.looped = true
 		if m.Alternative then
 			animator.speed = 0.9867189
-			SetOverrideMusic(AssetGetContentId("SubjectThreeDubmood.mp3"), "Dubmood - The Scene Is Dead 2024", 1)
+			SetOverrideDanceMusic(AssetGetContentId("SubjectThreeDubmood.mp3"), "Dubmood - The Scene Is Dead 2024", 1)
 		else
 			start += 3.71
 			animator.speed = 1.01034703
-			SetOverrideMusic(AssetGetContentId("SubjectThree.mp3"), "Subject Three - Wen Ren Ting Shu", 1, NumberRange.new(3.71, 77.611))
+			SetOverrideDanceMusic(AssetGetContentId("SubjectThree.mp3"), "Subject Three - Wen Ren Ting Shu", 1, NumberRange.new(3.71, 77.611))
 		end
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubjectThree.anim"))
 	end
@@ -1031,7 +1168,7 @@ AddModule(function()
 	local animator1 = nil
 	local animator2 = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("MioHonda.mp3"), "Mio Honda - Step!", 1, NumberRange.new(45.311, 196.964))
+		SetOverrideDanceMusic(AssetGetContentId("MioHonda.mp3"), "Mio Honda - Step!", 1, NumberRange.new(45.311, 196.964))
 		animator1 = AnimLib.Animator.new()
 		animator1.rig = figure
 		animator1.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("MioHonda.anim"))
@@ -1044,7 +1181,7 @@ AddModule(function()
 		animator2.map = {{0, 196.964}, {0, 197.142}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetOverrideMusicTime()
+		local t = GetDanceMusicTime()
 		local t2 = t
 		if t2 >= 151.702 then
 			t2 -= 151.702
@@ -1076,14 +1213,14 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Static.mp3"), "FLAVOR FOLEY - Static", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Static.mp3"), "FLAVOR FOLEY - Static", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StaticV1.anim"))
 		animator.looped = false
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1103,7 +1240,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Lagtrain.mp3"), "inabakumori - Lag Train", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Lagtrain.mp3"), "inabakumori - Lag Train", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Lagtrain.anim"))
@@ -1111,7 +1248,7 @@ AddModule(function()
 		animator.map = {{0, 26.117}, {0, 25.53}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1133,7 +1270,7 @@ AddModule(function()
 	local start = 0
 	m.Init = function(figure: Model)
 		start = tick() + 1.505
-		SetOverrideMusic(AssetGetContentId("Gangnam.mp3"), "PSY - Gangnam Style", 1, NumberRange.new(1.505, 30.583))
+		SetOverrideDanceMusic(AssetGetContentId("Gangnam.mp3"), "PSY - Gangnam Style", 1, NumberRange.new(1.505, 30.583))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Gangnam.anim"))
@@ -1174,7 +1311,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Distraction.mp3"), "Dance Mr. Funnybones", 1, NumberRange.new(0, 1.833))
+		SetOverrideDanceMusic(AssetGetContentId("Distraction.mp3"), "Dance Mr. Funnybones", 1, NumberRange.new(0, 1.833))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1185,7 +1322,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime() + 0.67)
+		animator:Step(GetDanceMusicTime() + 0.67)
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1205,7 +1342,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("ClassC14.mp3"), "3rd Year Class C-14", 1, NumberRange.new(0.492, 29.169))
+		SetOverrideDanceMusic(AssetGetContentId("ClassC14.mp3"), "3rd Year Class C-14", 1, NumberRange.new(0.492, 29.169))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ClassC14.anim"))
@@ -1213,7 +1350,7 @@ AddModule(function()
 		animator.map = {{0.492, 29.169}, {0, 28.63}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1233,14 +1370,14 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("ItBurns.mp3"), "Loco Loco - It Burns! Burns! Burns!", 1)
+		SetOverrideDanceMusic(AssetGetContentId("ItBurns.mp3"), "Loco Loco - It Burns! Burns! Burns!", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("ItBurns.anim"))
 		animator.looped = false
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1272,7 +1409,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Igaku.mp3"), "Kasane Teto - Igaku", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
@@ -1285,7 +1422,7 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideMusicTime())
+		animator:Step(GetDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
@@ -1319,9 +1456,9 @@ AddModule(function()
 	local lasttime = 0
 	local function setmusic()
 		if math.random(1, 5) == 1 or m.Deltarolled then
-			SetOverrideMusic(AssetGetContentId("Smug2.mp3"), "Portal Radio", 1)
+			SetOverrideDanceMusic(AssetGetContentId("Smug2.mp3"), "Portal Radio", 1)
 		else
-			SetOverrideMusic(AssetGetContentId("Smug.mp3"), "Portal Radio", 1)
+			SetOverrideDanceMusic(AssetGetContentId("Smug.mp3"), "Portal Radio", 1)
 		end
 	end
 	m.Init = function(figure: Model)
@@ -1333,10 +1470,10 @@ AddModule(function()
 		animator.map = {{0, 22.572}, {0, 22.4}}
 	end
 	m.Update = function(dt: number, figure: Model)
-		local t = GetOverrideMusicTime()
+		local t = GetDanceMusicTime()
 		if lasttime > t then
 			setmusic()
-			SetOverrideMusicTime(t)
+			SetOverrideDanceMusicTime(t)
 		end
 		lasttime = t
 		animator:Step(t)
