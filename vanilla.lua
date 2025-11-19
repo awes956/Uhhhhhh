@@ -603,12 +603,13 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Immortality Lord"
-	m.Description = "il but he chill\nF - Toggle flight\nZ - \"Attack\"\nC - \"Destroy\""
+	m.Description = "il but he chill\nF - Toggle flight\nZ - \"Attack\""
 	m.Assets = {"ImmortalityLordTheme.mp3"}
 
 	m.Bee = false
 	m.NeckSnap = true
 	m.FixNeckSnapReplicate = true
+	m.Notifications = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -618,6 +619,9 @@ AddModule(function()
 		end)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
 			m.Bee = val
+		end)
+		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
@@ -633,6 +637,45 @@ AddModule(function()
 		}
 	end
 
+	local function notify(message)
+		local prefix = "[Immortality Lord]: "
+		local text = Instance.new("TextLabel")
+		text.Name = RandomString()
+		text.Position = UDim2.new(0, 0, 0.95, 0)
+		text.Size = UDim2.new(1, 0, 0.05, 0)
+		text.BackgroundTransparency = 1
+		text.Text = prefix
+		text.Font = Enum.Font.SpecialElite
+		text.TextScaled = true
+		text.TextColor3 = Color3.new(1,1,1)
+		text.TextStrokeTransparency = 0
+		text.TextXAlignment = Enum.TextXAlignment.Left
+		text.Parent = HiddenGui
+		task.spawn(function()
+			local cps = 30
+			local t = tick()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((tick() - t) * cps)
+				if l > ll then
+					ll = l
+					local snd = Instance.new("Sound")
+					snd.Volume = 10
+					snd.SoundId = "rbxassetid://4681278859"
+					snd.TimePosition = 0.07
+					snd.Playing = true
+					snd.Parent = text
+				end
+				text.Text = prefix .. string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = prefix .. message
+			task.wait(1)
+			game:GetService("TweenService"):Create(text, TweenInfo.new(1, Enum.EasingStyle.Linear),{TextTransparency = 1, TextStrokeTransparency = 1}):Play()
+			task.wait(1)
+			text:Destroy()
+		end)
+	end
 	local flight = false
 	local start = 0
 	local necksnap = 0
@@ -654,6 +697,7 @@ AddModule(function()
 	local sword2 = {}
 	local sword2off = CFrame.new(-0.00237464905, -1.31204176, -3.18902349, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
 	local flyv, flyg = nil, nil
+	local chatconn = nil
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
@@ -701,7 +745,16 @@ AddModule(function()
 			end
 		end, true, Enum.KeyCode.Z)
 		ContextActionService:SetTitle("Uhhhhhh_ILAttack", "Z")
-		ContextActionService:SetPosition("Uhhhhhh_ILAttack", UDim2.new(1, -155, 1, -130))
+		ContextActionService:SetPosition("Uhhhhhh_ILAttack", UDim2.new(1, -180, 1, -130))
+		notify("im bored")
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == game.Players.LocalPlayer then
+				notify(msg)
+			end
+		end)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick() - start
@@ -741,8 +794,8 @@ AddModule(function()
 		
 		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
-		rht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
-		lht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
+		rht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
+		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
 		if onground and not flight then
 			rst = CFrame.Angles(0, 0, math.rad(-10))
 			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 - 5.65 * math.sin(timingsine / 25)), 0, 0)
@@ -759,12 +812,12 @@ AddModule(function()
 			altnecksnap = true
 			if attackdur < 0.25 then
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
-				rst = CFrame.Angles(math.rad(50), 0, math.rad(80))
-				swordoff = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+				rst = CFrame.Angles(0, math.rad(50), math.rad(80))
+				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			else
 				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
-				rst = CFrame.Angles(math.rad(-50), 0, math.rad(80))
-				swordoff = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+				rst = CFrame.Angles(0, math.rad(-50), math.rad(80))
+				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
 		end
 		if altnecksnap then
@@ -794,7 +847,7 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			sword1.Limb = "Torso"
 			sword2.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(75)) * CFrame.new(0, -6.3, 0)
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, math.rad(90), math.rad(75)) * CFrame.new(0, -3.15, 0)
 		else
 			sword1.Limb = "Right Arm"
 			sword2.Limb = "Right Arm"
@@ -859,7 +912,12 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
-		flyforce:Destroy()
+		flyv:Destroy()
+		flyg:Destroy()
+		if chatconn then
+			chatconn:Disconnect()
+			chatconn = nil
+		end
 	end
 	return m
 end)
