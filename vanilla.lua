@@ -668,8 +668,13 @@ AddModule(function()
 		
 		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
-		--rht = CFrame.Angles(rad(-20),rad(80),rad(10+10*cos(TimingSine/25)))
-		--lht = CFrame.Angles(rad(-10),rad(-80),rad(-10-10*cos(TimingSine/25)))
+		rht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(20))
+		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(10))
+		if onground and not flight then
+			rst = CFrame.Angles(0, 0, math.rad(-10))
+		else
+			rst = CFrame.Angles(math.rad(45), 0, math.rad(-80 - 5 * math.cos(timingsine / 25)))
+		end
 		if hum.MoveDirection.Magnitude > 0 then
 			if math.random(15) == 1 then
 				necksnap = timingsine
@@ -732,6 +737,9 @@ AddModule(function()
 		rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
 	end
 	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
+		table.clear(HatReanimator.HatCFrameOverride)
+		flyforce:Destroy()
 	end
 	return m
 end)
