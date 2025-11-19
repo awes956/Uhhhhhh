@@ -637,6 +637,7 @@ AddModule(function()
 	local start = 0
 	local necksnap = 0
 	local necksnapcf = CFrame.identity
+	local attack = -999
 	local joints = {
 		r = CFrame.identity,
 		n = CFrame.identity,
@@ -679,11 +680,13 @@ AddModule(function()
 		table.insert(HatReanimator.HatCFrameOverride, sword2)
 		flyv = Instance.new("BodyVelocity")
 		flyv.Name = "FlightBodyMover"
-		flyv.P = 9e4
+		flyv.P = 90000
 		flyv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 		flyv.Parent = nil
 		flyg = Instance.new("BodyGyro")
 		flyg.Name = "FlightBodyMover"
+		flyg.P = 3000
+		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		flyg.Parent = nil
 		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
@@ -692,6 +695,13 @@ AddModule(function()
 		end, true, Enum.KeyCode.F)
 		ContextActionService:SetTitle("Uhhhhhh_ILFlight", "F")
 		ContextActionService:SetPosition("Uhhhhhh_ILFlight", UDim2.new(1, -130, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_ILAttack", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				attack = tick() - start
+			end
+		end, true, Enum.KeyCode.Z)
+		ContextActionService:SetTitle("Uhhhhhh_ILAttack", "Z")
+		ContextActionService:SetPosition("Uhhhhhh_ILAttack", UDim2.new(1, -155, 1, -130))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick() - start
@@ -714,7 +724,7 @@ AddModule(function()
 			end
 			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
-			flyv.Velocity = camcf:VectorToWorldSpace(movedir)
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir) * hum.WalkSpeed
 			flyg.CFrame = camcf.Rotation
 		else
 			hum.PlatformStand = false
@@ -740,7 +750,21 @@ AddModule(function()
 			rst = CFrame.Angles(math.rad(45), 0, math.rad(80 - 5 * math.cos(timingsine / 25)))
 			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
 		end
-		if hum.MoveDirection.Magnitude > 0 then
+		local altnecksnap = hum.MoveDirection.Magnitude > 0
+		local attackdur = t - attack
+		if attackdur < 0.5 then
+			altnecksnap = true
+			if attackdur < 0.25 then
+				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
+				rst = CFrame.Angles(math.rad(50), 0, math.rad(80))
+				swordoff = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+			else
+				rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(20))
+				rst = CFrame.Angles(math.rad(-50), 0, math.rad(80))
+				swordoff = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
+			end
+		end
+		if altnecksnap then
 			if math.random(15) == 1 then
 				necksnap = timingsine
 				necksnapcf = CFrame.Angles(
@@ -768,7 +792,7 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			sword1.Limb = "Torso"
 			sword2.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(7))
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(75)) * CFrame.new(0, -6.3, 0)
 		else
 			sword1.Limb = "Right Arm"
 			sword2.Limb = "Right Arm"
