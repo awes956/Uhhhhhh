@@ -644,6 +644,7 @@ AddModule(function()
 		ls = CFrame.identity,
 		rh = CFrame.identity,
 		lh = CFrame.identity,
+		sw = CFrame.identity,
 	}
 	local leftwing = {}
 	local rightwing = {}
@@ -711,7 +712,7 @@ AddModule(function()
 			if workspace.CurrentCamera then
 				camcf = workspace.CurrentCamera.CFrame
 			end
-			local _,angle,_ = camcf:ToEulerAngles("YXZ")
+			local _,angle,_ = camcf:ToEulerAngles(Enum.RotationOrder.YXZ)
 			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
 			flyv.Velocity = camcf:VectorToWorldSpace(movedir)
 			flyg.CFrame = camcf.Rotation
@@ -790,6 +791,7 @@ AddModule(function()
 		joints.ls = lst:Lerp(joints.ls, alpha)
 		joints.rh = rht:Lerp(joints.rh, alpha)
 		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = swordoff:Lerp(joints.sw, alpha)
 		
 		rj.Transform = joints.r
 		rsj.Transform = joints.rs
@@ -817,8 +819,8 @@ AddModule(function()
 		end
 		
 		-- sword
-		sword1.Offset = swordoff * CFrame.new(0, 6.3, 0) * sword1off
-		sword2.Offset = swordoff * CFrame.new(0, 6.3, 0) * sword2off
+		sword1.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword1off:Inverse()
+		sword2.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword2off:Inverse()
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
