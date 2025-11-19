@@ -603,10 +603,34 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Immortality Lord"
-	m.Description = "il but he chill\nF - Toggle flight\n(CURRENTLY TESTING)"
+	m.Description = "il but he chill\nF - Toggle flight\nZ - \"Attack\"\nC - \"Destroy\""
 	m.Assets = {"ImmortalityLordTheme.mp3"}
 
+	m.Bee = false
+	m.NeckSnap = true
+	m.FixNeckSnapReplicate = true
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
+			m.NeckSnap = val
+		end)
+		Util_CreateSwitch(parent, "Neck Snap Replication Fix", m.FixNeckSnapReplicate).Changed:Connect(function(val)
+			m.FixNeckSnapReplicate = val
+		end)
+		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
+			m.Bee = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Bee = not not save.Bee
+		m.NeckSnap = not save.NoNeckSnap
+		m.FixNeckSnapReplicate = not save.DontFixNeckSnapReplicate
+	end
+	m.SaveConfig = function()
+		return {
+			Bee = m.Bee,
+			NoNeckSnap = not m.NeckSnap,
+			DontFixNeckSnapReplicate = not m.FixNeckSnapReplicate
+		}
 	end
 
 	local flight = false
@@ -623,7 +647,11 @@ AddModule(function()
 	}
 	local leftwing = {}
 	local rightwing = {}
-	local flyforce = nil
+	local sword1 = {}
+	local sword1off = CFrame.new(-0.0023765564, 2.14191723, 3.825109, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
+	local sword2 = {}
+	local sword2off = CFrame.new(-0.00237464905, -1.31204176, -3.18902349, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
+	local flyv, flyg = nil, nil
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
@@ -636,11 +664,26 @@ AddModule(function()
 			MeshId = "17269824947", TextureId = "",
 			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
 		}
+		sword1 = {
+			MeshId = "17326555172", TextureId = "",
+			Limb = "Right Arm", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+		}
+		sword2 = {
+			MeshId = "17326476901", TextureId = "",
+			Limb = "Right Arm", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
-		flyforce = Instance.new("BodyVelocity")
-		flyforce.Name = "FlyForce"
-		flyforce.Parent = nil
+		table.insert(HatReanimator.HatCFrameOverride, sword1)
+		table.insert(HatReanimator.HatCFrameOverride, sword2)
+		flyv = Instance.new("BodyVelocity")
+		flyv.Name = "FlightBodyMover"
+		flyv.P = 9e4
+		flyv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+		flyv.Parent = nil
+		flyg = Instance.new("BodyGyro")
+		flyg.Name = "FlightBodyMover"
+		flyg.Parent = nil
 		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
@@ -660,20 +703,41 @@ AddModule(function()
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
 		
+		if flight then
+			hum.PlatformStand = true
+			flyv.Parent = root
+			flyg.Parent = root
+			local camcf = CFrame.identity
+			if workspace.CurrentCamera then
+				camcf = workspace.CurrentCamera.CFrame
+			end
+			local _,angle,_ = camcf:ToEulerAngles("YXZ")
+			local movedir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(hum.MoveDirection)
+			flyv.Velocity = camcf:VectorToWorldSpace(movedir)
+			flyg.CFrame = camcf.Rotation
+		else
+			hum.PlatformStand = false
+			flyv.Parent = nil
+			flyg.Parent = nil
+		end
+		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local swordoff = CFrame.identity
 		
 		local timingsine = t * 60 -- timing from patchma's il
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
-		rht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(20))
+		rht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
 		lht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
 		if onground and not flight then
 			rst = CFrame.Angles(0, 0, math.rad(-10))
+			swordoff = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(154.35 - 5.65 * math.sin(timingsine / 25)), 0, 0)
 		else
-			rst = CFrame.Angles(math.rad(45), 0, math.rad(-80 - 5 * math.cos(timingsine / 25)))
+			rst = CFrame.Angles(math.rad(45), 0, math.rad(80 - 5 * math.cos(timingsine / 25)))
+			swordoff = CFrame.new(0, 0, -0.5) * CFrame.Angles(0, math.rad(170), math.rad(-10))
 		end
 		if hum.MoveDirection.Magnitude > 0 then
 			if math.random(15) == 1 then
@@ -693,6 +757,11 @@ AddModule(function()
 					math.rad(math.random(-20, 20))
 				)
 			end
+			nt = CFrame.Angles(math.rad(20), math.rad(10 * math.sin(timingsine / 50)), 0)
+		end
+		local snaptime = 1
+		if m.FixNeckSnapReplicate then
+			snaptime = 7
 		end
 		
 		-- apply scaling
@@ -703,6 +772,7 @@ AddModule(function()
 		lst += lst.Position * scale
 		rht += rht.Position * scale
 		lht += lht.Position * scale
+		swordoff += swordoff.Position * scale
 		
 		-- joints
 		local rj = root:FindFirstChild("RootJoint")
@@ -726,15 +796,29 @@ AddModule(function()
 		lsj.Transform = joints.ls
 		rhj.Transform = joints.rh
 		lhj.Transform = joints.lh
-		if timingsine - necksnap < 1 then
+		if m.NeckSnap and timingsine - necksnap < snaptime then
 			nj.Transform = necksnapcf
 		else
 			nj.Transform = joints.n
 		end
 		
 		-- wings
-		leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
-		rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+		if figure:GetAttribute("IsDancing") then
+			leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105), 0) * CFrame.new(2.2, -2, 1.5)
+			rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.new(2.2, -2, -1.5)
+		else
+			if m.Bee then
+				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, 1.5)
+				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, -1.5)
+			else
+				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
+				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+			end
+		end
+		
+		-- sword
+		sword1.Offset = swordoff * CFrame.new(0, 6.3, 0) * sword1off
+		sword2.Offset = swordoff * CFrame.new(0, 6.3, 0) * sword2off
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
