@@ -627,7 +627,7 @@ AddModule(function()
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
-		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1, NumberRange.new(2.13, 87.3))
+		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
 		leftwing = {
 			MeshId = "17269814619", TextureId = "",
 			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
@@ -669,7 +669,7 @@ AddModule(function()
 		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
 		rht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(20))
-		lht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(10))
+		lht = CFrame.Angles(math.rad(10 + 10 * math.cos(timingsine / 25)), math.rad(10), math.rad(-10))
 		if onground and not flight then
 			rst = CFrame.Angles(0, 0, math.rad(-10))
 		else
@@ -738,7 +738,6 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
-		table.clear(HatReanimator.HatCFrameOverride)
 		flyforce:Destroy()
 	end
 	return m
