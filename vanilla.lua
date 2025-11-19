@@ -385,7 +385,7 @@ AddModule(function()
 		end
 
 		local climbing = canClimb and findLadder(figure, root, hum)
-		local jumping = not climbing and (pose == "Jumping" or pose == "Freefall")
+		local jumping = pose == "Jumping" or pose == "Freefall"
 
 		local climbforced = false
 		local climbspeed = hum.WalkSpeed * 0.7
@@ -405,7 +405,7 @@ AddModule(function()
 			climbforce.Parent = nil
 		end
 
-		if jumping or hum.HipHeight < -0.01 then
+		if not climbing and (jumping or hum.HipHeight < -0.01) then
 			if not jumping then
 				hum.HipHeight *= math.exp(-16 * dt)
 			end
