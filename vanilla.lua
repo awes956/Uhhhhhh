@@ -666,8 +666,8 @@ AddModule(function()
 		local timingsine = t * 60 -- timing from patchma's il
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
-		rt = CFrame.new(0, 0, -2.5 - sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
-		lst = CFrame.Angles(math.rad(-10-10*cos(TimingSine/25)))
+		rt = CFrame.new(0, 0, -2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
+		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)))
 		--rht = CFrame.Angles(rad(-20),rad(80),rad(10+10*cos(TimingSine/25)))
 		--lht = CFrame.Angles(rad(-10),rad(-80),rad(-10-10*cos(TimingSine/25)))
 		if hum.MoveDirection.Magnitude > 0 then
@@ -684,7 +684,7 @@ AddModule(function()
 				necksnap = timingsine
 				necksnapcf = CFrame.Angles(
 					math.rad(20 + math.random(-20, 20)),
-					math.rad((10 * sin(timingsine / 50)) + math.random(-20, 20)),
+					math.rad((10 * math.sin(timingsine / 50)) + math.random(-20, 20)),
 					math.rad(math.random(-20, 20))
 				)
 			end
