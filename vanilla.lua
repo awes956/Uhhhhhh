@@ -766,7 +766,12 @@ AddModule(function()
 		end
 		
 		if figure:GetAttribute("IsDancing") then
+			sword1.Limb = "Torso"
+			sword2.Limb = "Torso"
 			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(7))
+		else
+			sword1.Limb = "Right Arm"
+			sword2.Limb = "Right Arm"
 		end
 		
 		-- apply scaling
