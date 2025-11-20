@@ -905,7 +905,7 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			sword1.Limb = "Torso"
 			sword2.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, math.rad(90), math.rad(75)) * CFrame.new(0, -3.15, 0)
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.new(0, 0, math.rad(25)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3.15, 0)
 		else
 			sword1.Limb = "Right Arm"
 			sword2.Limb = "Right Arm"
