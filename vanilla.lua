@@ -770,7 +770,7 @@ AddModule(function()
 					end
 				end
 				attack = t
-				if flying then
+				if flight then
 					attackdegrees = 80
 				else
 					local camcf = CFrame.identity
@@ -790,6 +790,11 @@ AddModule(function()
 				notify("i'd rather WALK.")
 			end
 		end, false, Enum.KeyCode.X)
+		ContextActionService:BindAction("Uhhhhhh_ILDestroy", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				notify("i'd rather WALK.")
+			end
+		end, false, Enum.KeyCode.C)
 		task.delay(0, notify, "im BORED!!")
 		local lines = {
 			"theres NOTHING really FUN for me to do since 2022",
@@ -967,6 +972,7 @@ AddModule(function()
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
 		ContextActionService:UnbindAction("Uhhhhhh_ILAttack")
 		ContextActionService:UnbindAction("Uhhhhhh_ILTeleport")
+		ContextActionService:UnbindAction("Uhhhhhh_ILDestroy")
 		flyv:Destroy()
 		flyg:Destroy()
 		if chatconn then
@@ -979,32 +985,80 @@ end)
 
 AddModule(function()
 	local m = {}
-	m.ModuleType = "MOVESET"
+	m.ModuleType = "DANCE"
 	m.Name = "Ragdoll"
-	m.Description = "ow\nR - toggle ragdoll"
+	m.Description = "die\nThis is very procedural."
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
 	end
 
-	local ragdoll = false
+	local motors = {}
+	local joints = {}
 	m.Init = function(figure: Model)
-		ragdoll = false
-		ContextActionService:BindAction("Uhhhhhh_Ragdoll", function(actName, state, input)
-			if state == Enum.UserInputState.Begin then
-				ragdoll = not ragdoll
-			end
-		end, true, Enum.KeyCode.Q)
-		ContextActionService:SetTitle("Uhhhhhh_Ragdoll", "Ragdoll")
-		ContextActionService:SetPosition("Uhhhhhh_Ragdoll", UDim2.new(1, -130, 1, -130))
+		table.clear(motors)
+		table.clear(joints)
+		
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+		
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		local function createJoint(motor)
+			motor.Enabled = false
+			local att0 = Instance.new("Attachment")
+			att0.CFrame = motor.C0
+			att0.Parent = motor.Part0
+			local att1 = Instance.new("Attachment")
+			att1.CFrame = motor.C1
+			att1.Parent = motor.Part1
+			local joint = Instance.new("BallSocketConstraint")
+			joint.Attachment0, joint.Attachment1 = att0, att1
+			joint.Parent = motor.Parent
+			joint.LimitsEnabled = true
+			joint.TwistLimitsEnabled = true
+			table.insert(motors, motor)
+			table.insert(joints, att0)
+			table.insert(joints, att1)
+			table.insert(joints, joint)
+		end
+		rj.Enabled = false
+		table.insert(motors, rj)
+		local weld = Instance.new("Weld")
+		weld.C0 = motor.C0
+		weld.Part0 = motor.Part0
+		weld.C1 = motor.C1
+		weld.Part1 = motor.Part1
+		weld.Parent = rj.Parent
+		table.insert(joints, weld)
+		createJoint(nj)
+		createJoint(rsj)
+		createJoint(lsj)
+		createJoint(rhj)
+		createJoint(lhj)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.PlatformStand = true
 	end
 	m.Destroy = function(figure: Model?)
-		ContextActionService:UnbindAction("Uhhhhhh_Ragdoll")
+		for _,v in motors do
+			v.Enabled = true
+		end
+		for _,v in joints do
+			v:Destroy()
+		end
 	end
-	--return m
+	return m
 end)
 
 AddModule(function()
