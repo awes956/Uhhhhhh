@@ -1852,7 +1852,7 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 	end
-	--return m
+	return m
 end)
 
 AddModule(function()
