@@ -1024,7 +1024,7 @@ AddModule(function()
 			joint.Attachment0, joint.Attachment1 = att0, att1
 			joint.Parent = motor.Parent
 			local nocoll = Instance.new("NoCollisionConstraint")
-			nocoll.Part0, joint.Part1 = motot.Part0, motor.Part1
+			nocoll.Part0, nocoll.Part1 = motor.Part0, motor.Part1
 			nocoll.Parent = motor.Parent
 			table.insert(motors, motor)
 			table.insert(joints, att0)
