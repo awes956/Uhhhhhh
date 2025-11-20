@@ -1032,10 +1032,10 @@ AddModule(function()
 		rj.Enabled = false
 		table.insert(motors, rj)
 		local weld = Instance.new("Weld")
-		weld.C0 = motor.C0
-		weld.Part0 = motor.Part0
-		weld.C1 = motor.C1
-		weld.Part1 = motor.Part1
+		weld.C0 = rj.C0
+		weld.Part0 = rj.Part0
+		weld.C1 = rj.C1
+		weld.Part1 = rj.Part1
 		weld.Parent = rj.Parent
 		table.insert(joints, weld)
 		createJoint(nj)
