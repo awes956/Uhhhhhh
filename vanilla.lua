@@ -740,7 +740,7 @@ AddModule(function()
 		ContextActionService:BindAction("Uhhhhhh_ILFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
-				if math.random(60) == 1 then
+				if math.random(30) == 1 then
 					if flight then
 						notify("im a bird")
 						task.delay(3, notify, "GOVERNMENT DRONE")
@@ -758,16 +758,21 @@ AddModule(function()
 				local t = tick() - start
 				if t - attack >= 0.75 then
 					attackcount = 0
-					if math.random(60) == 1 then
+					if math.random(30) == 1 then
 						notify("my blade CUTS through AIR")
-					elseif math.random(60) == 1 then
+					elseif math.random(29) == 1 then
 						notify("RAAHH im MINING this part")
 					end
 				end
-				if attackcount == 15 then
-					if math.random(15) == 1 then
+				if attackcount == 10 then
+					if math.random(10) == 1 then
 						notify("im FAST as FRICK, boii")
+					elseif math.random(9) == 1 then
+						notify("i play Minecraft BEDROCK edition")
 					end
+				end
+				if attackcount == 50 then
+					notify("STOP RIGHT THIS INSTANT " .. game.Players.LocalPlayer.Name:upper())
 				end
 				attack = t
 				if flight then
@@ -792,7 +797,7 @@ AddModule(function()
 		end, false, Enum.KeyCode.X)
 		ContextActionService:BindAction("Uhhhhhh_ILDestroy", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				notify("i'd rather WALK.")
+				notify("magic is BORING.")
 			end
 		end, false, Enum.KeyCode.C)
 		task.delay(0, notify, "im BORED!!")
@@ -803,6 +808,10 @@ AddModule(function()
 			"the wiki says i cant SPEAK. NOT FUN.",
 			"PLEASE turn ME into a moveset",
 			"MORE BORED than viewport Immortality Lord",
+			string.reverse("so bored, i would talk in reverse"),
+			"im POWERFUL, how is that FUN?",
+			"you know what they say, OVERPOWERED is ABSOLUTELY LAME",
+			"NOT because im no longer IMMORTAL for real",
 		}
 		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
@@ -877,6 +886,7 @@ AddModule(function()
 				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
+			ReanimateShowHitboxes()
 		end
 		if altnecksnap then
 			if math.random(15) == 1 then
