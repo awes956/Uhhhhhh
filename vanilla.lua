@@ -987,7 +987,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "Ragdoll"
-	m.Description = "die\nThis is very procedural."
+	m.Description = "faint, or die\nAnimation-less, physics based, real and istic ragdoll."
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
@@ -1055,11 +1055,11 @@ AddModule(function()
 		weld.Part1 = rj.Part1
 		weld.Parent = rj.Parent
 		table.insert(joints, weld)
-		createJoint(nj, CFrame.new(0, 1, 0) * CFrame.Angles(-1.57, 0, 0), CFrame.new(0, -0.5, 0) * CFrame.Angles(-1.57, 0, 0))
-		createJoint(rsj, CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, 1.57, 0), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 1.57, 0))
-		createJoint(lsj, CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, -1.57, 0), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, -1.57, 0))
-		createJoint(rhj, CFrame.new(0.5, -1, 0) * CFrame.Angles(1.57, 0, 0), CFrame.new(0, 1, 0) * CFrame.Angles(1.57, 0, 0))
-		createJoint(lhj, CFrame.new(-0.5, -1, 0) * CFrame.Angles(1.57, 0, 0), CFrame.new(0, 1, 0) * CFrame.Angles(1.57, 0, 0))
+		createJoint(nj, CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, 0), CFrame.new(0, -0.5, 0) * CFrame.Angles(0, 0, 0))
+		createJoint(rsj, CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, 0, 1.57), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, 1.57))
+		createJoint(lsj, CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, 0, -1.57), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, -1.57))
+		createJoint(rhj, CFrame.new(0.5, -1, 0) * CFrame.Angles(0, 0, 3.14), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, 3.14))
+		createJoint(lhj, CFrame.new(-0.5, -1, 0) * CFrame.Angles(0, 0, 3.14), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, 3.14))
 		createNoCollide(rsj.Part1, nj.Part1)
 		createNoCollide(lsj.Part1, nj.Part1)
 		createNoCollide(rsj.Part1, rhj.Part1)
