@@ -1084,6 +1084,10 @@ AddModule(function()
 		for _,v in joints do
 			v:Destroy()
 		end
+		if not figure then return end
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.PlatformStand = false
 	end
 	return m
 end)
