@@ -1035,6 +1035,9 @@ AddModule(function()
 			joint.Parent = motor.Parent
 			joint.LimitsEnabled = true
 			joint.TwistLimitsEnabled = true
+			joint.UpperAngle = 90
+			joint.TwistLowerAngle = -170
+			joint.TwistUpperAngle = 170
 			createNoCollide(motor.Part0, motor.Part1)
 			table.insert(motors, motor)
 			table.insert(joints, att0)
