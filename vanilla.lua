@@ -1908,7 +1908,7 @@ AddModule(function()
 			if beat >= 15 then
 				local a = math.sin((beat - 15) * math.pi)
 				local b = 1 - a
-				rj.Transform = rj.Transform:Lerp(CFrame.new(0, 5, 5) * CFrame.Angles(math.rad(-10), math.rad(-5), 0), a)
+				rj.Transform = rj.Transform:Lerp(CFrame.new(0, -5, 5) * CFrame.Angles(math.rad(-10), math.rad(-5), 0), a)
 				rsj.Transform = CFrame.Angles(arms * b, 0, 1.57 * a)
 				lsj.Transform = CFrame.Angles(arms * b, 0, 1 * a)
 				rhj.Transform = CFrame.Angles(legs * b, 0, 1 * a)
