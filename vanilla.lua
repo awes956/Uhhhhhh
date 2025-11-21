@@ -1056,10 +1056,24 @@ AddModule(function()
 			end
 			if name == "KEMUSAN" then
 				dancereact.Kemusan = dancereact.Kemusan or 0
-				if t - dancereact.Kemusan > 60 then
+				if t - dancereact.Kemusan > 15 then
 					task.delay(2, notify, "how many SOCIAL CREDITS do i get?")
 				end
 				dancereact.Kemusan = t
+			end
+			if name == "ClassC14" then
+				dancereact.ClassC14 = dancereact.ClassC14 or 0
+				if t - dancereact.ClassC14 > 15 then
+					task.delay(2, notify, "this song is INTERESTING...")
+				end
+				dancereact.ClassC14 = t
+			end
+			if name == "SpeedAndKaiCenat" then
+				if not dancereact.AlightMotion then
+					task.delay(1, notify, "i have an idea " .. game.Players.LocalPlayer.Name:lower())
+					task.delay(4, notify, "what if lightning cannon is the other guy")
+				end
+				dancereact.AlightMotion = true
 			end
 		end
 	end
@@ -1760,6 +1774,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "3年C組14番窪園チヨコの入閣"
 	m.Description = "Game Over!\n\"自分が3年C組14番だった事に気づいたので聞きに来ました-\"\n(I noticed I'm in 3rd year Class C-14 so I came to ask-)\nWords for Seeker: C14, Year 3"
+	m.InternalName = "ClassC14"
 	m.Assets = {"ClassC14.anim", "ClassC14.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
@@ -1860,6 +1875,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Kai Cenat and Speed jumping"
 	m.Description = "adventures of luigi and mario\nW SPEED\n\nthis uses no keyframes"
+	m.InternalName = "SpeedAndKaiCenat"
 	m.Assets = {"SpeedJumping.mp3"}
 
 	m.Intro = true
