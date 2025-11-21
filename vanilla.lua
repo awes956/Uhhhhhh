@@ -1880,6 +1880,8 @@ AddModule(function()
 
 	m.Intro = true
 	m.DifferentTiming = false
+	m.LegFix = false
+	m.CorrectFlipping = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Intro", m.Intro).Changed:Connect(function(val)
 			m.Intro = val
@@ -1887,15 +1889,25 @@ AddModule(function()
 		Util_CreateDropdown(parent, "Variant", {"Speed", "Kai Cenat"}, m.DifferentTiming and 2 or 1).Changed:Connect(function(val)
 			m.DifferentTiming = val == 2
 		end)
+		Util_CreateSwitch(parent, "Legs Outward on Land", m.LegFix).Changed:Connect(function(val)
+			m.LegFix = val
+		end)
+		Util_CreateSwitch(parent, "Correct Flipping", m.LegFix).Changed:Connect(function(val)
+			m.CorrectFlipping = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Intro = not not save.Intro
 		m.DifferentTiming = not save.Speed
+		m.LegFix = not not save.LegFix
+		m.CorrectFlipping = not not save.CorrectFlipping
 	end
 	m.SaveConfig = function()
 		return {
 			Intro = m.Intro,
-			Speed = not m.DifferentTiming
+			Speed = not m.DifferentTiming,
+			LegFix = m.LegFix,
+			CorrectFlipping = m.CorrectFlipping
 		}
 	end
 
@@ -1948,18 +1960,32 @@ AddModule(function()
 			local beat2 = beat
 			local xaxis = animt * 4
 			if m.DifferentTiming then
-				beat2 -= 0.5
+				beat2 -= 0.2
 				xaxis += 0.67
 			end
 			local height = 1 - math.pow(1 - math.abs(math.sin(beat2 * math.pi)), 2)
 			local yspint, zspint = beat2 % 8, (beat2 + 4) % 8
+			if m.CorrectFlipping then
+				if m.DifferentTiming then
+					yspint, zspint = (beat2 + 1) % 4, 0
+				else
+					yspint, zspint = 0, beat2 % 4
+				end
+			end
 			local yspin, zspin = math.pow(1 - math.min(yspint, 1), 2) * math.pi * 2, math.pow(1 - math.min(zspint, 1), 4) * math.pi * 2
-			if beat >= 8 then
+			if m.CorrectFlipping then
+				if not m.DifferentTiming then
+					zspin = -zspin
+				end
+			elseif beat >= 8 then
 				yspin, zspin = -yspin, -zspin
 			end
 			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat2 % 1, 3) * math.pi)), 2)
 			local arms = math.rad(-75 * armssine)
 			local legs = math.rad(-30 * math.abs(math.sin(beat2 * math.pi)))
+			if m.LegFix then
+				legs = math.rad(-30 * math.abs(math.cos(beat2 * math.pi)))
+			end
 			rj.Transform = CFrame.new(math.sin(xaxis * math.pi) * 6.7 * scale, 0, height * 4.1 * scale) * CFrame.Angles(0, zspin, yspin)
 			nj.Transform = CFrame.identity
 			rsj.Transform = CFrame.Angles(arms, 0, 0)
@@ -1970,13 +1996,13 @@ AddModule(function()
 				local a = math.sin((beat - 15) * math.pi)
 				local b = 1 - a
 				if m.DifferentTiming then
-					rj.Transform = rj.Transform:Lerp(CFrame.new(-2.25 * scale, -3 * scale, 3 * scale) * CFrame.Angles(math.rad(-10), math.rad(-10), 0), a)
+					rj.Transform = rj.Transform:Lerp(CFrame.new(0, -3 * scale, 3 * scale) * CFrame.Angles(math.rad(-10), math.rad(-10), 0), a)
 					rsj.Transform = CFrame.Angles(arms * b, 0, 3.14 * a)
 					lsj.Transform = CFrame.Angles(arms * b, 0, -3.14 * a)
 					rhj.Transform = CFrame.Angles(legs * b, 0, 0)
 					lhj.Transform = CFrame.Angles(legs * b, 0, 0)
 				else
-					rj.Transform = rj.Transform:Lerp(CFrame.new(2.25 * scale, -5 * scale, 2 * scale) * CFrame.Angles(math.rad(-10), math.rad(10), 0), a)
+					rj.Transform = rj.Transform:Lerp(CFrame.new(0, -5 * scale, 2 * scale) * CFrame.Angles(math.rad(-10), math.rad(10), 0), a)
 					rsj.Transform = CFrame.Angles(arms * b, 0, 1.57 * a)
 					lsj.Transform = CFrame.Angles(arms * b, 0, 1 * a)
 					rhj.Transform = CFrame.Angles(legs * b, 0, 1 * a)
