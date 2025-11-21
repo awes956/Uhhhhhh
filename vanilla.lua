@@ -973,12 +973,10 @@ AddModule(function()
 		
 		-- store the sword when dancing
 		if figure:GetAttribute("IsDancing") then
-			sword1.Limb = "Torso"
-			sword2.Limb = "Torso"
+			sword.Limb = "Torso"
 			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3, 0)
 		else
-			sword1.Limb = "Right Arm"
-			sword2.Limb = "Right Arm"
+			sword.Limb = "Right Arm"
 		end
 		
 		-- apply scaling
