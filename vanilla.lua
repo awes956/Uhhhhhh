@@ -1882,6 +1882,7 @@ AddModule(function()
 	m.DifferentTiming = false
 	m.LegFix = false
 	m.CorrectFlipping = false
+	m.PoseToTheFans = true
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Intro", m.Intro).Changed:Connect(function(val)
 			m.Intro = val
@@ -1892,22 +1893,27 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Legs Outward on Land", m.LegFix).Changed:Connect(function(val)
 			m.LegFix = val
 		end)
-		Util_CreateSwitch(parent, "Correct Flipping", m.LegFix).Changed:Connect(function(val)
+		Util_CreateSwitch(parent, "Correct Flipping", m.CorrectFlipping).Changed:Connect(function(val)
 			m.CorrectFlipping = val
+		end)
+		Util_CreateSwitch(parent, "Pose for the fans", m.PoseToTheFans).Changed:Connect(function(val)
+			m.PoseToTheFans = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Intro = not not save.Intro
-		m.DifferentTiming = not save.Speed
+		m.DifferentTiming = not not save.KaiCenat
 		m.LegFix = not not save.LegFix
 		m.CorrectFlipping = not not save.CorrectFlipping
+		m.PoseToTheFans = not save.DontPose
 	end
 	m.SaveConfig = function()
 		return {
 			Intro = m.Intro,
-			Speed = not m.DifferentTiming,
+			KaiCenat = m.DifferentTiming,
 			LegFix = m.LegFix,
-			CorrectFlipping = m.CorrectFlipping
+			CorrectFlipping = m.CorrectFlipping,
+			DontPose = not m.PoseToTheFans
 		}
 	end
 
