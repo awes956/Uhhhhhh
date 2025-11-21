@@ -43,6 +43,11 @@ table.insert(modules, function() -- put into modules table
 	-- description of module
 	m.Description = "too lazy to even animate"
 	
+	-- internal name, used for movesets and dances to interact with each other
+	-- best usage example of this is Immortality Lord + ragdoll
+	-- this can be omitted
+	m.InternalName = "DANCE_LAZY"
+	
 	-- table of assets to download, either in "filename" or "filename@url_to_source"
 	m.Assets = {"Lazy.mp3@https://raw.githubusercontent.com/user/repo/main/69.mp3"}
 	
@@ -147,6 +152,7 @@ AddModule(function()
 	m.ModuleType = "MOVESET"
 	m.Name = "2007 Roblox"
 	m.Description = "old roblox is retroslop.\nVery accurate recreation of the old Roblox physics!\nReject Motor6Ds, and return to Motors!"
+	m.InternalName = "RETROSLOP"
 	m.Assets = {}
 
 	m.FPS30 = true
@@ -545,6 +551,7 @@ AddModule(function()
 	m.ModuleType = "MOVESET"
 	m.Name = "Sans Undertale"
 	m.Description = "do u wanna have a bad TOM\ntom and jerry\nQ - dodge"
+	m.InternalName = "NESS"
 	m.Assets = {"SansMoveset1.anim"}
 
 	m.RootPartOverride = true
@@ -604,6 +611,7 @@ AddModule(function()
 	m.ModuleType = "MOVESET"
 	m.Name = "Immortality Lord"
 	m.Description = "il but he chill\nF - Toggle flight\nZ - \"Attack\""
+	m.InternalName = "ImmortalityBored"
 	m.Assets = {"ImmortalityLordTheme.mp3"}
 
 	m.Bee = false
@@ -703,6 +711,7 @@ AddModule(function()
 	local sword2off = CFrame.new(-0.00237464905, -1.31204176, -3.18902349, -1, 0, 0, 0, -0.519688249, -0.85435611, 0, -0.854355931, 0.519688308)
 	local flyv, flyg = nil, nil
 	local chatconn = nil
+	local dancereact = {}
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
@@ -741,11 +750,20 @@ AddModule(function()
 			if state == Enum.UserInputState.Begin then
 				flight = not flight
 				if math.random(30) == 1 then
-					if flight then
-						notify("im a bird")
-						task.delay(3, notify, "GOVERNMENT DRONE")
+					if figure:GetAttribute("IsDancing") then
+						if flight then
+							notify("im a bird")
+							task.delay(3, notify, "GOVERNMENT DRONE")
+						else
+							notify("dancing is BETTER on the GROUND")
+						end
 					else
-						notify("this does NOT mean im TIRED of flying")
+						if flight then
+							notify("im a bird")
+							task.delay(3, notify, "GOVERNMENT DRONE")
+						else
+							notify("this does NOT mean im TIRED of flying")
+						end
 					end
 				end
 			end
@@ -859,6 +877,7 @@ AddModule(function()
 		local timingsine = t * 60 -- timing from patchma's il
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
+		-- animations
 		rt = CFrame.new(0, 0, 2.5 - math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(20), 0, 0)
 		lst = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), 0, math.rad(-20))
 		rht = CFrame.Angles(math.rad(-10 - 10 * math.cos(timingsine / 25)), math.rad(-10), math.rad(-20))
@@ -907,11 +926,14 @@ AddModule(function()
 				)
 			end
 		end
+		
+		-- fix neck snap replicate
 		local snaptime = 1
 		if m.FixNeckSnapReplicate then
 			snaptime = 7
 		end
 		
+		-- store the sword when dancing
 		if figure:GetAttribute("IsDancing") then
 			sword1.Limb = "Torso"
 			sword2.Limb = "Torso"
@@ -949,6 +971,7 @@ AddModule(function()
 		joints.lh = lht:Lerp(joints.lh, alpha)
 		joints.sw = swordoff:Lerp(joints.sw, alpha)
 		
+		-- apply transforms
 		rj.Transform = joints.r
 		rsj.Transform = joints.rs
 		lsj.Transform = joints.ls
@@ -977,6 +1000,35 @@ AddModule(function()
 		-- sword
 		sword1.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword1off:Inverse()
 		sword2.Offset = joints.sw * CFrame.new(0, 6.3, 0) * sword2off:Inverse()
+		
+		-- dance reactions
+		if figure:GetAttribute("IsDancing") then
+			local name = figure:GetAttribute("DanceInternalName")
+			if name == "RAGDOLL" then
+				dancereact.Ragdoll = dancereact.Ragdoll or 0
+				if t - dancereact.Ragdoll > 15 then
+					if math.random(5) == 1 then
+						notify("OW OW OW OW OW OW")
+					elseif math.random(4) == 1 then
+						notify("OH GOD NOT THE RAGDOLL NOT THE RAGDOLL")
+					elseif math.random(3) == 1 then
+						notify("NO NO NOT AGAIN NOT AGAIN NOT AGAIN")
+					elseif math.random(2) == 1 then
+						notify("OH NO NO NO NO WAIT WAIT WAIT WAIT WAIT")
+					else
+						notify("NO THIS IS NOT CANON I AM IMMORTAL")
+					end
+				end
+				dancereact.Ragdoll = t
+			end
+			if name == "KEMUSAN" then
+				dancereact.Kemusan = dancereact.Kemusan or 0
+				if t - dancereact.Kemusan > 60 then
+					notify("how many SOCIAL CREDITS do i get?")
+				end
+				dancereact.Kemusan = t
+			end
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
@@ -998,6 +1050,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Ragdoll"
 	m.Description = "faint, or die\nAnimation-less, physics based, real and istic ragdoll."
+	m.InternalName = "RAGDOLL"
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
@@ -1437,6 +1490,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "科目三 (Subject Three)"
 	m.Description = "剑起江湖恩怨 拂袖罩明月\n西風葉落花謝 枕刀劍難眠\n汝为山河过客 却总长叹伤离别\n鬓如霜一杯浓烈"
+	m.InternalName = "KEMUSAN"
 	m.Assets = {"SubjectThree.anim", "SubjectThree.mp3", "SubjectThreeDubmood.mp3"}
 
 	m.Alternative = false
@@ -1827,7 +1881,7 @@ AddModule(function()
 				dur = 0.05
 			end
 			local sine = math.sin((t / dur) * math.pi * 2)
-			rj.Transform = CFrame.new(0, 0, -2 * scale) * CFrame.Angles(math.rad(90), 0, math.rad(sine * 10))
+			rj.Transform = CFrame.new(0, 0, -2.5 * scale) * CFrame.Angles(math.rad(-90), 0, math.rad(sine * 10))
 			nj.Transform = CFrame.identity
 			rsj.Transform = CFrame.Angles(0, 0, sine)
 			lsj.Transform = CFrame.Angles(0, 0, sine)
@@ -1839,6 +1893,9 @@ AddModule(function()
 			local height = 1 - math.pow(1 - math.abs(math.sin(beat * math.pi)), 2)
 			local yspint, zspint = beat % 8, (beat + 4) % 8
 			local yspin, zspin = math.pow(1 - math.min(yspint, 1), 2) * math.pi * 2, math.pow(1 - math.min(zspint, 1), 4) * math.pi * 2
+			if beat >= 8 then
+				yspin, zspin = -yspin, -zspin
+			end
 			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat % 1, 3) * math.pi)), 2)
 			local arms = math.rad(-75 * armssine)
 			local legs = math.rad(-30 * math.abs(math.sin(beat * math.pi)))
@@ -1848,6 +1905,15 @@ AddModule(function()
 			lsj.Transform = CFrame.Angles(arms, 0, 0)
 			rhj.Transform = CFrame.Angles(legs, 0, 0)
 			lhj.Transform = CFrame.Angles(legs, 0, 0)
+			if beat >= 15 then
+				local a = math.sin((beat - 15) * math.pi)
+				local b = 1 - a
+				rj.Transform = rj.Transform:Lerp(CFrame.new(0, 5, 5) * CFrame.Angles(math.rad(-10), math.rad(-5), 0), a)
+				rsj.Transform = CFrame.Angles(arms * b, 0, 1.57 * a)
+				lsj.Transform = CFrame.Angles(arms * b, 0, 1 * a)
+				rhj.Transform = CFrame.Angles(legs * b, 0, 1 * a)
+				lhj.Transform = CFrame.Angles(legs * b, 0, 1.57 * a)
+			end
 		end
 	end
 	m.Destroy = function(figure: Model?)
