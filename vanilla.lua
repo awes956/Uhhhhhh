@@ -1899,7 +1899,7 @@ AddModule(function()
 			local armssine = 1 - math.pow(1 - math.abs(math.sin(math.pow(beat % 1, 3) * math.pi)), 2)
 			local arms = math.rad(-75 * armssine)
 			local legs = math.rad(-30 * math.abs(math.sin(beat * math.pi)))
-			rj.Transform = CFrame.new(math.sin(animt * math.pi * 4) * 5 * scale, 0, height * 6.7 * scale) * CFrame.Angles(0, zspin, yspin)
+			rj.Transform = CFrame.new(math.sin(animt * math.pi * 4) * 6.7 * scale, 0, height * 4.1 * scale) * CFrame.Angles(0, zspin, yspin)
 			nj.Transform = CFrame.identity
 			rsj.Transform = CFrame.Angles(arms, 0, 0)
 			lsj.Transform = CFrame.Angles(arms, 0, 0)
@@ -1908,7 +1908,7 @@ AddModule(function()
 			if beat >= 15 then
 				local a = math.sin((beat - 15) * math.pi)
 				local b = 1 - a
-				rj.Transform = rj.Transform:Lerp(CFrame.new(0, -5, 5) * CFrame.Angles(math.rad(-10), math.rad(-5), 0), a)
+				rj.Transform = rj.Transform:Lerp(CFrame.new(0, -5, 2) * CFrame.Angles(math.rad(-10), math.rad(-5), 0), a)
 				rsj.Transform = CFrame.Angles(arms * b, 0, 1.57 * a)
 				lsj.Transform = CFrame.Angles(arms * b, 0, 1 * a)
 				rhj.Transform = CFrame.Angles(legs * b, 0, 1 * a)
