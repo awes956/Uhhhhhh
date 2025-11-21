@@ -51,6 +51,8 @@ table.insert(modules, function() -- put into modules table
 	-- table of assets to download, either in "filename" or "filename@url_to_source"
 	m.Assets = {"Lazy.mp3@https://raw.githubusercontent.com/user/repo/main/69.mp3"}
 	
+	-- functions below should NOT yield
+	
 	-- configuration GUI function, recommended to use these:
 	-- Util_CreateText(parent, text, fontsize, alignment)
 	-- Util_CreateButton(parent, text, fontsize)
@@ -75,18 +77,19 @@ table.insert(modules, function() -- put into modules table
 		return {} -- AND KEEP YOUR TABLES SERIALIZABLE
 	end
 	
-	-- called upon initialization, should NOT yield
+	-- called upon initialization
 	m.Init = function(figure: Model)
 		-- access upvalues, initialize animator
 	end
 	
-	-- called upon update loop, should NOT yield
+	-- called upon update loop
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
 		-- step the animator, emit particles
 	end
 	
-	-- called upon destruction, should NOT yield
+	-- called upon destruction
+	-- this is not called when figure is refreshed so reference ur created and modified instances
 	m.Destroy = function(figure: Model?)
 		-- destroy created instances, dereference animator
 	end
@@ -1058,14 +1061,14 @@ AddModule(function()
 			end
 			if name == "KEMUSAN" then
 				dancereact.Kemusan = dancereact.Kemusan or 0
-				if t - dancereact.Kemusan > 15 then
+				if t - dancereact.Kemusan > 60 then
 					task.delay(2, notify, "how many SOCIAL CREDITS do i get?")
 				end
 				dancereact.Kemusan = t
 			end
 			if name == "ClassC14" then
 				dancereact.ClassC14 = dancereact.ClassC14 or 0
-				if t - dancereact.ClassC14 > 15 then
+				if t - dancereact.ClassC14 > 60 then
 					task.delay(2, notify, "this song is INTERESTING...")
 				end
 				dancereact.ClassC14 = t
@@ -1107,9 +1110,11 @@ AddModule(function()
 
 	local motors = {}
 	local joints = {}
+	local teleporthack = nil
 	m.Init = function(figure: Model)
 		table.clear(motors)
 		table.clear(joints)
+		if teleporthack then teleporthack:Disconnect() end
 		
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
@@ -1182,6 +1187,14 @@ AddModule(function()
 		createNoCollide(root, lsj.Part1)
 		createNoCollide(root, rhj.Part1)
 		createNoCollide(root, lhj.Part1)
+		teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
+			local cf = root.CFrame
+			nj.Part1.CFrame = cf
+			rsj.Part1.CFrame = cf
+			lsj.Part1.CFrame = cf
+			rhj.Part1.CFrame = cf
+			lhj.Part1.CFrame = cf
+		end)
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -1198,6 +1211,7 @@ AddModule(function()
 		for _,v in joints do
 			v:Destroy()
 		end
+		if teleporthack then teleporthack:Disconnect() teleporthack = nil end
 		if not figure then return end
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
@@ -1402,6 +1416,7 @@ AddModule(function()
 	m.ModuleType = "DANCE"
 	m.Name = "Hakari's Dance"
 	m.Description = "jujutsu shenanigans\nlets go gambling\naw dang it\naw dang it\naw dang it\naw dang it\naw dang it"
+	m.InternalName = "TUKATUKADONKDONK"
 	m.Assets = {"Hakari.anim", "Hakari.mp3"}
 
 	m.Effects = false
@@ -1430,6 +1445,7 @@ AddModule(function()
 		animator.map = {{0, 73.845}, {0, 75.6}}
 		instances = {}
 		if m.Effects then
+			local scale = figure:GetScale()
 			local root = figure:FindFirstChild("HumanoidRootPart")
 			local SmokeLight = Instance.new("ParticleEmitter")
 			SmokeLight.Parent = root
@@ -1439,7 +1455,7 @@ AddModule(function()
 			SmokeLight.ZOffset = -2
 			SmokeLight.Color = ColorSequence.new(Color3.fromRGB(67, 255, 167))
 			SmokeLight.Orientation = Enum.ParticleOrientation.FacingCamera
-			SmokeLight.Size = NumberSequence.new(0.625, 8.5)
+			SmokeLight.Size = NumberSequence.new(0.625 * scale, 8.5 * scale)
 			SmokeLight.Squash = NumberSequence.new(0)
 			SmokeLight.Transparency = NumberSequence.new({
 				NumberSequenceKeypoint.new(0, 1),
@@ -1472,9 +1488,9 @@ AddModule(function()
 			SmokeThick.Color = ColorSequence.new(Color3.fromRGB(67, 255, 167))
 			SmokeThick.Orientation = Enum.ParticleOrientation.FacingCamera
 			SmokeThick.Size = NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.0625, 0),
-				NumberSequenceKeypoint.new(0.36, 0.437, 0.437),
-				NumberSequenceKeypoint.new(1, 8.65, 0.0625),
+				NumberSequenceKeypoint.new(0, 0.0625 * scale, 0),
+				NumberSequenceKeypoint.new(0.36, 0.437 * scale, 0.437 * scale),
+				NumberSequenceKeypoint.new(1, 8.65 * scale, 0.0625 * scale),
 			})
 			SmokeThick.Squash = NumberSequence.new(0)
 			SmokeThick.Transparency = NumberSequence.new(0)
@@ -1493,7 +1509,12 @@ AddModule(function()
 		end
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(GetOverrideDanceMusicTime())
+		local t = GetOverrideDanceMusicTime()
+		animator:Step(t)
+		local t2 = t / 0.461
+		for _,v in instances do
+			v.TimeScale = 0.5 + 0.5 * math.cos(t2 * math.pi * 2)
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
