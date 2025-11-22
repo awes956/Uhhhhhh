@@ -780,7 +780,7 @@ AddModule(function()
 				end
 			elseif hitboxhits >= 8 then
 				if math.random(2) == 1 then
-					notify("this is a KILLHOUSE")
+					notify("THEY ALL MET THEIR FATE.")
 				else
 					notify("YES!! KILL SPREE KILL SPREE")
 				end
