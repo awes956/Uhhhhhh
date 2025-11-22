@@ -698,6 +698,27 @@ AddModule(function()
 			text:Destroy()
 		end)
 	end
+	local function Attack(position, radius)
+		local hitvis = Instance.new("Part")
+		hitvis.Name = RandomString() -- built into Uhhhhhh
+		hitvis.CastShadow = false
+		hitvis.Material = Enum.Material.ForceField
+		hitvis.Anchored = true
+		hitvis.CanCollide = false
+		hitvis.Shape = Enum.PartType.Ball
+		hitvis.Color = Color3.new(0, 0, 0)
+		hitvis.Size = Vector3.one * radius
+		hitvis.CFrame = CFrame.new(position)
+		hitvis.Parent = workspace
+		game.Debris:AddItem(hitvis, 1)
+		local parts = workspace:GetPartBoundsInRadius(position, radius)
+		for _,part in parts do
+			if part.Parent and part.Parent:FindFirstChildOfClass("Humanoid") then
+				ReanimateFling(part.Parent)
+			end
+		end
+	end
+
 	local flight = false
 	local start = 0
 	local necksnap = 0
@@ -705,6 +726,7 @@ AddModule(function()
 	local attack = -999
 	local attackcount = 0
 	local attackdegrees = 90
+	local lastattackside = false
 	local joints = {
 		r = CFrame.identity,
 		n = CFrame.identity,
@@ -803,6 +825,7 @@ AddModule(function()
 					local t = tick() - start
 					if t - attack >= 0.75 then
 						attackcount = 0
+						lastattackside = true
 						if math.random(30) == 1 then
 							notify("my blade CUTS through AIR")
 						elseif math.random(29) == 1 then
@@ -871,6 +894,7 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick() - start
+		local scale = figure:GetScale()
 		
 		-- get vii
 		local hum = figure:FindFirstChild("Humanoid")
@@ -937,7 +961,12 @@ AddModule(function()
 		local attackdur = t - attack
 		if attackdur < 0.5 then
 			altnecksnap = true
-			if (attackdur < 0.25) == (attackcount % 2 == 0) then
+			local attackside = (attackdur < 0.25) == (attackcount % 2 == 0)
+			if lastattackside ~= attackside then
+				Attack((root.CFrame * CFrame.new(0, -math.cos(math.rad(attackdegrees + 10)) * 4.5 * scale, -4.5 * scale)).Position, 9 * scale)
+			end
+			lastattackside = attackside
+			if attackside then
 				rt = CFrame.new(0, 0, math.sin(timingsine / 25) * 0.5) * CFrame.Angles(math.rad(5), 0, math.rad(-20))
 				rst = CFrame.Angles(0, math.rad(-50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
@@ -946,7 +975,6 @@ AddModule(function()
 				rst = CFrame.Angles(0, math.rad(50), math.rad(attackdegrees))
 				swordoff = CFrame.new(-0.5, -0.5, 0) * CFrame.Angles(math.rad(180), math.rad(-90), 0)
 			end
-			ReanimateShowHitboxes()
 		end
 		if altnecksnap then
 			if math.random(15) == 1 then
@@ -983,14 +1011,13 @@ AddModule(function()
 		end
 		
 		-- apply scaling
-		local scale = figure:GetScale() - 1
+		scale = scale - 1
 		rt += rt.Position * scale
 		nt += nt.Position * scale
 		rst += rst.Position * scale
 		lst += lst.Position * scale
 		rht += rht.Position * scale
 		lht += lht.Position * scale
-		swordoff += swordoff.Position * scale
 		
 		-- joints
 		local rj = root:FindFirstChild("RootJoint")
