@@ -977,7 +977,7 @@ AddModule(function()
 		-- store the sword when dancing
 		if figure:GetAttribute("IsDancing") then
 			sword.Limb = "Torso"
-			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -3, 0)
+			swordoff = CFrame.new(0, 0, 0.6) * CFrame.Angles(0, 0, math.rad(115)) * CFrame.Angles(0, math.rad(90), 0) * CFrame.new(0, -1.5, 0)
 		else
 			sword.Limb = "Right Arm"
 		end
