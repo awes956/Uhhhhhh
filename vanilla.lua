@@ -623,6 +623,7 @@ AddModule(function()
 	m.Notifications = true
 	m.FlySpeed = 2
 	m.HitboxScale = 1
+	m.HitboxDebug = true
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -646,6 +647,9 @@ AddModule(function()
 		}, m.HitboxScale).Changed:Connect(function(val)
 			m.HitboxScale = val
 		end)
+		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
+			m.HitboxDebug = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -654,6 +658,7 @@ AddModule(function()
 		m.Notifications = not save.NoTextType
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 		m.HitboxScale = save.HitboxScale or m.HitboxScale
+		m.HitboxDebug = not save.NoHitbox
 	end
 	m.SaveConfig = function()
 		return {
@@ -663,6 +668,7 @@ AddModule(function()
 			NoTextType = not m.Notifications,
 			FlySpeed = m.FlySpeed,
 			HitboxScale = m.HitboxScale,
+			HitboxDebug = not save.NoHitbox,
 		}
 	end
 
@@ -677,7 +683,7 @@ AddModule(function()
 		text.Text = prefix
 		text.Font = Enum.Font.SpecialElite
 		text.TextScaled = true
-		text.TextColor3 = Color3.new(1,1,1)
+		text.TextColor3 = Color3.new(1, 1, 1)
 		text.TextStrokeTransparency = 0
 		text.TextXAlignment = Enum.TextXAlignment.Left
 		text.Parent = HiddenGui
@@ -733,18 +739,20 @@ AddModule(function()
 	local hitboxhits = 0
 	local lasthitreact = -99999
 	local function Attack(position, radius)
-		local hitvis = Instance.new("Part")
-		hitvis.Name = RandomString() -- built into Uhhhhhh
-		hitvis.CastShadow = false
-		hitvis.Material = Enum.Material.ForceField
-		hitvis.Anchored = true
-		hitvis.CanCollide = false
-		hitvis.Shape = Enum.PartType.Ball
-		hitvis.Color = Color3.new(0, 0, 0)
-		hitvis.Size = Vector3.one * radius * 2
-		hitvis.CFrame = CFrame.new(position)
-		hitvis.Parent = workspace
-		game.Debris:AddItem(hitvis, 1)
+		if m.HitboxDebug then
+			local hitvis = Instance.new("Part")
+			hitvis.Name = RandomString() -- built into Uhhhhhh
+			hitvis.CastShadow = false
+			hitvis.Material = Enum.Material.ForceField
+			hitvis.Anchored = true
+			hitvis.CanCollide = false
+			hitvis.Shape = Enum.PartType.Ball
+			hitvis.Color = Color3.new(0, 0, 0)
+			hitvis.Size = Vector3.one * radius * 2
+			hitvis.CFrame = CFrame.new(position)
+			hitvis.Parent = workspace
+			game.Debris:AddItem(hitvis, 1)
+		end
 		local hitamount = 0
 		local parts = workspace:GetPartBoundsInRadius(position, radius)
 		for _,part in parts do
@@ -764,7 +772,15 @@ AddModule(function()
 		local t = tick()
 		if t > lasthitreact then
 			lasthitreact = t + 20
-			if not HatReanimator.HatCollide then
+			if not HatReanimator.Running then
+				if hitamount >= 1 then
+					if math.random(2) == 1 then
+						task.delay(1, notify, "HMMM...")
+					else
+						task.delay(1, notify, "okay what else")
+					end
+				end
+			elseif not HatReanimator.HatCollide then
 				if math.random(2) == 1 then
 					notify("all it takes to KILL ONE is to RESPAWN")
 					task.delay(4, notify, "(why didnt you turn on 'hat collide')")
@@ -1378,7 +1394,7 @@ AddModule(function()
 			effect.Anchored = true
 			effect.Color = color
 			effect.Name = RandomString()
-			effect.Size = size
+			effect.Size = Vector3.one
 			effect.Material = material
 			effect.Parent = workspace
 			local mesh = nil
@@ -1567,15 +1583,16 @@ AddModule(function()
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
-		hum.WalkSpeed = 16 * root.Size.Z
+		hum.WalkSpeed = 16 * root.Size.Z -- figure:GetScale() hack
 		if math.random(3) == 1 then
 			randomdialog({
 				"surprise",
 				"got you",
 				"Immortality Lord, YOU CANNOT DO THIS",
 				"my mobility is far better",
-				"lightning fast",
-				"KEEP UP"
+				"LIGHTNING FAST",
+				"KEEP UP",
+				"EAT MY STARDUST",
 			}, true)
 		end
 		CreateSound(235097614, 1.5)
@@ -1674,9 +1691,21 @@ AddModule(function()
 				Boomerang = 0,
 				SizeBoomerang = 50
 			})
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(90))
+				nt = CFrame.Angles(0, 0, math.rad(-90))
+				rst = CFrame.Angles(math.rad(90), 0, math.rad(-90)) * CFrame.new(0, 0, 0.5)
+				lst = CFrame.Angles(math.rad(5), math.rad(5), math.rad(40)) * CFrame.new(0, 0, 0.5)
+				rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+				lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
+				gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(-90), 0, 0)
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			task.wait(0.08)
+			if not rootu:IsDescendantOf(workspace) then return end
 			animationOverride = nil
 			attacking = false
-			hum.WalkSpeed = 16 * root.Size.Z
+			hum.WalkSpeed = 50 * root.Size.Z
 		end)
 	end
 	local function KaBoom()
@@ -1689,7 +1718,7 @@ AddModule(function()
 		task.spawn(function()
 			--CreateSound(642890855, 0.45)
 			attacking = false
-			hum.WalkSpeed = 16 * root.Size.Z
+			hum.WalkSpeed = 50 * root.Size.Z
 		end)
 	end
 
@@ -1713,6 +1742,7 @@ AddModule(function()
 		flight = false
 		attacking = false
 		animationOverride = nil
+		figure.Humanoid.WalkSpeed = 50 * figure:GetScale()
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonPower.mp3"), "Ka1zer - INSaNiTY", 1)
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonFastBoi.mp3"), "RUNNING IN THE '90s", 1, NumberRange.new(24.226))
 		leftwing = {
