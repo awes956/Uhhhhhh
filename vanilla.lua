@@ -1833,7 +1833,7 @@ AddModule(function()
 		
 		-- animations
 		gunoff = CFrame.new(0.05, -1, -0.15) * CFrame.Angles(math.rad(-90), 0, 0)
-		if root.Velocity < 8 * scale then
+		if root.Velocity.Magnitude < 8 * scale then
 			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50))
 			nt = CFrame.Angles(math.rad(20), 0, 0)
 			rst = CFrame.Angles(math.rad(25), 0, math.rad(135 + 8.5 * math.cos(timingsine / 50)))
