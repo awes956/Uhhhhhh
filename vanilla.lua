@@ -1311,6 +1311,21 @@ AddModule(function()
 					text1.Font = randomfont
 					text2.Font = randomfont
 				end
+				local color = Color3.fromHSV(tick() % 1, 1, 1)
+				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
+				text2.TextColor3 = color
+				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+			until tick() - t > 2
+			t = tick()
+			repeat
+				task.wait()
+				if glitchy then
+					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
+					local randomfont = fonts[math.random(1, #fonts)]
+					text1.Font = randomfont
+					text2.Font = randomfont
+				end
 				local a = tick() - t
 				local color = Color3.fromHSV(tick() % 1, 1, 1)
 				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
@@ -1928,10 +1943,8 @@ AddModule(function()
 		end
 	end
 	m.Destroy = function(figure: Model?)
-		ContextActionService:UnbindAction("Uhhhhhh_ILFlight")
-		ContextActionService:UnbindAction("Uhhhhhh_ILAttack")
-		ContextActionService:UnbindAction("Uhhhhhh_ILTeleport")
-		ContextActionService:UnbindAction("Uhhhhhh_ILDestroy")
+		ContextActionService:UnbindAction("Uhhhhhh_LCFlight")
+		ContextActionService:UnbindAction("Uhhhhhh_LCDash")
 		flyv:Destroy()
 		flyg:Destroy()
 		if chatconn then
