@@ -952,6 +952,7 @@ AddModule(function()
 			"SO BORED, i would LOVE to use a NOOB skin",
 			"lets hope " .. game.Players.LocalPlayer.Name:lower() .. " is NOT BORING",
 			"last time things were FUN for me was FIGHTING LIGHTNING CANNON",
+			"server, tune up Lightning Cannon's powerup theme...",
 		}
 		task.delay(3, notify, lines[math.random(1, #lines)])
 		if chatconn then
@@ -1207,7 +1208,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Lightning Cannon"
-	m.Description = "lc if he locked in\nF - Toggle flight\nClick/Tap - \"Shoot\"\nZ - Dash (yes it kills)\nX then Click/Tap - Beam Shot\n(you can X again to cancel charge)\nC then Click/Tap - Barrage Shot\nV - GRENADE\nB -\"Special Attack\""
+	m.Description = "lc if he locked in\nF - Toggle flight\nClick/Tap - \"Shoot\"\nZ - Dash (yes it kills)\nX then Click/Tap - \"Singularity Beam\"\n(you can X again to cancel charge)\nC then Click/Tap - \"Painless Rain\"\nV - GRENADE\nB -\"Die X3\"\nM - Switch modes\nModes: 1. Normal\n       2. Power-up\n       3. Fast-as-frick Boii"
 	m.InternalName = "LightningFanon"
 	m.Assets = {}
 
@@ -1323,6 +1324,9 @@ AddModule(function()
 			until tick() - t > 1
 			dialog:Destroy()
 		end)
+	end
+	local function randomdialog(arr, glitchy)
+		notify(arr[math.random(1, arr)], glitchy)
 	end
 	local function Effect(params)
 		if not torso then return end
@@ -1451,6 +1455,13 @@ AddModule(function()
 			effect:Destroy()
 		end)
 	end
+	local function Effect2(params)
+		local params2 = table.clone(params)
+		local params3 = table.clone(params)
+		params2.Color = Color3.new(1, 0, 0)
+		params3.Color = Color3.new(1, 1, 1)
+		Effect(params2) Effect(params3)
+	end
 	local function Lightning(params)
 		local start = params.Start or Vector3.new(0, 0, 0)
 		local finish = params.Finish or Vector3.new(0, 512, 0)
@@ -1533,12 +1544,129 @@ AddModule(function()
 	local start = 0
 	local attacking = false
 	local animationOverride = nil
+	local currentmode = 0
+	local function Dash()
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 16 * root.Size.Z
+		if math.random(3) == 1 then
+			randomdialog({
+				"surprise",
+				"got you",
+				"Immortality Lord, YOU CANNOT DO THIS",
+				"my mobility is far better",
+				"lightning fast",
+				"KEEP UP"
+			}, true)
+		end
+		CreateSound(235097614, 1.5)
+		animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(-60))
+			nt = CFrame.Angles(0, 0, math.rad(60))
+			rst = CFrame.new(-0.25, 0, 0.25) * CFrame.Angles(math.rad(-60), 0, math.rad(-90)) * CFrame.new(0, 0, 0.5)
+			lst = CFrame.new(0.25, 0, 0.25) * CFrame.Angles(math.rad(10), 0, math.rad(95)) * CFrame.new(0, 0, 0.5)
+			rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
+			gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+			return rt, nt, rst, lst, rht, lht, gunoff
+		end
+		task.spawn(function()
+			task.wait(0.15)
+			if not rootu:IsDescendantOf(workspace) then return end
+			CreateSound(642890855, 0.45)
+			Effect2({
+				Time = 25,
+				EffectType = "Box",
+				Size = Vector3.new(2, 2, 2),
+				SizeEnd = Vector3.new(5, 5, 5),
+				Transparency = 0,
+				TransparencyEnd = 1,
+				CFrame = root.CFrame,
+				RotationX = math.random(-1, 1),
+				RotationY = math.random(-1, 1),
+				RotationZ = math.random(-1, 1),
+				Material = "Neon",
+				Boomerang = 0,
+				SizeBoomerang = 50
+			})
+			Effect({
+				Time = math.random(25, 45),
+				EffectType = "Sphere",
+				Size = Vector3.new(2, 100, 2),
+				SizeEnd = Vector3.new(6, 100, 6),
+				Transparency = 0,
+				TransparencyEnd = 1,
+				CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))),
+				Material = "Neon",
+				Color = Color3.new(1, 0, 0),
+				Boomerang = 0,
+				SizeBoomerang = 45
+			})
+			Effect({
+				Time = math.random(25, 45),
+				EffectType = "Sphere",
+				Size = Vector3.new(3, 100, 3),
+				SizeEnd = Vector3.new(9, 100, 9),
+				Transparency = 0,
+				TransparencyEnd = 1,
+				CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))),
+				Material = "Neon",
+				Color = Color3.new(1, 1, 1),
+				Boomerang = 0,
+				SizeBoomerang = 45
+			})
+			Attack(root.Position, 14)
+			for _=1,4 do
+				root.CFrame = root.CFrame * CFrame.new(0, 0, -25)
+				Attack(root.Position, 14)
+				Lightning({
+					Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
+					Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
+					Offset = 25,
+					Color = Color3.new(1, 1, 1),
+					Time = math.random(30, 45),
+					SizeStart = 0.5,
+					SizeEnd = 1.5,
+					BoomerangSize = 60
+				})
+				Lightning({
+					Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
+					Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)),
+					Offset = 25,
+					Color = Color3.new(1, 0, 0),
+					Time = math.random(30, 45),
+					SizeStart = 0.5,
+					SizeEnd = 1.5,
+					BoomerangSize = 60
+				})
+			end
+			Effect2({
+				Time = 25,
+				EffectType = "Box",
+				Size = Vector3.new(2, 2, 2),
+				SizeEnd = Vector3.new(5, 5, 5),
+				Transparency = 0,
+				TransparencyEnd = 1,
+				CFrame = root.CFrame,
+				RotationX = math.random(-1, 1),
+				RotationY = math.random(-1, 1),
+				RotationZ = math.random(-1, 1),
+				Material = "Neon",
+				Boomerang = 0,
+				SizeBoomerang = 50
+			})
+			animationOverride = nil
+			attacking = false
+			hum.WalkSpeed = 16 * root.Size.Z
+		end)
+	end
 	local function KaBoom()
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
 		hum.WalkSpeed = 0
-		notify("die... Die... DIE!!!")
+		notify("die... Die... DIE!!!", true)
 		CreateSound(1566051529)
 		task.spawn(function()
 			--CreateSound(642890855, 0.45)
@@ -1567,7 +1695,8 @@ AddModule(function()
 		flight = false
 		attacking = false
 		animationOverride = nil
-		--SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
+		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonPower.mp3"), "Ka1zer - INSaNiTY", 1)
+		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonFastBoi.mp3"), "RUNNING IN THE '90s", 1, NumberRange.new(24.226))
 		leftwing = {
 			MeshId = "17269814619", TextureId = "",
 			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
@@ -1622,8 +1751,15 @@ AddModule(function()
 		end, true, Enum.KeyCode.F)
 		ContextActionService:SetTitle("Uhhhhhh_LCFlight", "F")
 		ContextActionService:SetPosition("Uhhhhhh_LCFlight", UDim2.new(1, -130, 1, -130))
+		ContextActionService:BindAction("Uhhhhhh_LCDash", function(_, state, _)
+			if state == Enum.UserInputState.Begin then
+				if not attacking then Dash() end
+			end
+		end, true, Enum.KeyCode.Z)
+		ContextActionService:SetTitle("Uhhhhhh_LCDash", "Z")
+		ContextActionService:SetPosition("Uhhhhhh_LCDash", UDim2.new(1, -180, 1, -130))
 		task.delay(0, notify, "Lightning Cannon, by LuaQuack")
-		local lines = {
+		task.delay(1, randomdialog, {
 			"Immortality Lord did not have to say that...",
 			"that intro sucked",
 			"I THINK THE USER KNOWS WHO I AM",
@@ -1633,8 +1769,7 @@ AddModule(function()
 			"its been years since the good times for me",
 			"WHO ARE WE GOING TO BLAST TO STARDUST TODAY?",
 			"ready or not, MY LIGHTNING CANNON IS READY",
-		}
-		task.delay(1, notify, lines[math.random(1, #lines)], true)
+		}, true)
 		if chatconn then
 			chatconn:Disconnect()
 		end
@@ -1699,20 +1834,20 @@ AddModule(function()
 		if root.Velocity < 8 * scale then
 			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50))
 			nt = CFrame.Angles(math.rad(20), 0, 0)
-			rst = CFrame.Angles(math.rad(135 + 8.5 * math.cos(timingsine / 50)), 0, math.rad(25))
-			lst = CFrame.Angles(math.rad(25 + 8.5 * math.cos(timingsine / 50)), 0, math.rad(-25 - 5 * math.cos(timingsine / 25)))
-			rht = CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+			rst = CFrame.Angles(math.rad(25), 0, math.rad(135 + 8.5 * math.cos(timingsine / 50)))
+			lst = CFrame.Angles(math.rad(-25 - 5 * math.cos(timingsine / 25)), 0, math.rad(-25 - 8.5 * math.cos(timingsine / 50)))
+			rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
 			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
 		else
 			rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(math.rad(40), 0, 0)
 			nt = CFrame.new(0, -0.25, 0) * CFrame.Angles(math.rad(-20), 0, 0)
-			rst = CFrame.Angles(math.rad(-45), 0, math.rad(5 + 2 * math.cos(timingsine / 19)))
-			lst = CFrame.Angles(math.rad(-45), 0, math.rad(-5 - 2 * math.cos(timingsine / 19)))
-			rht = CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-20 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
+			rst = CFrame.Angles(math.rad(-5 - 2 * math.cos(timingsine / 19)), 0, math.rad(-45))
+			lst = CFrame.Angles(math.rad(-5 - 2 * math.cos(timingsine / 19)), 0, math.rad(45))
+			rht = CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.rad(-10), 0) * CFrame.Angles(math.rad(-20 + 9 * math.cos(timingsine / 74) + 5 * math.cos(timingsine / 37)), 0, 0)
 			lht = CFrame.Angles(0, math.rad(10), 0) * CFrame.Angles(math.rad(-20 - 9 * math.cos(timingsine / 54) - 5 * math.cos(timingsine / 41)), 0, 0)
 		end
 		if animationOverride then
-			rt, nt, rst, lst, rht, lht, gunoff = animationOverride(rt, nt, rst, lst, rht, lht, gunoff)
+			rt, nt, rst, lst, rht, lht, gunoff = animationOverride(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 		end
 		
 		-- apply scaling
