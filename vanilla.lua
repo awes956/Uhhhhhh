@@ -1508,7 +1508,7 @@ AddModule(function()
 							effect.Color = Color3.fromHSV(tick() % 1, sOK, vOK)
 						end
 						local loop = t * 60
-						mesh.Scale = size - growth * (1 - (loop / ticks) * bmr2) * bmr2
+						mesh.Scale = size - growth * (1 - (loop / ticks) * bmr2) * bmr2 * loop
 						effect.Transparency = transparency + (endtransparency - transparency) * (loop / ticks)
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -1581,9 +1581,10 @@ AddModule(function()
 		local sizeend = params.SizeEnd or 1
 		local transparency = params.Transparency or 0
 		local endtransparency = params.TransparencyEnd or 1
+		local lenperseg = params.SegmentSize or 5
 		local boomerangsize = params.BoomerangSize
 		local dist = (finish - start).Magnitude
-		local segs = math.clamp(dist // 10, 1, 20)
+		local segs = math.clamp(dist // lenperseg, 1, 20)
 		local curpos = start
 		local progression = (1 / segs) * dist
 		for i=1, segs do
@@ -1625,6 +1626,10 @@ AddModule(function()
 		sound.Volume = 1
 		sound.Pitch = pitch
 		sound.Parent = torso
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
 	end
 	local function Attack(position, radius)
 		local hitvis = Instance.new("Part")
@@ -1741,16 +1746,6 @@ AddModule(function()
 					BoomerangSize = 60
 				})
 			end
-			Lightning({
-				Start = root.CFrame * Vector3.new(0, 0, 100),
-				Finish = root.Position,
-				Offset = 25,
-				Color = Color3.new(1, 0, 0),
-				Time = math.random(30, 45),
-				SizeStart = 0.5,
-				SizeEnd = 1.5,
-				BoomerangSize = 60
-			})
 			Effect2({
 				Time = 25,
 				EffectType = "Box",
@@ -1846,6 +1841,8 @@ AddModule(function()
 		flyg.P = 3000
 		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		flyg.Parent = nil
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
 		ContextActionService:BindAction("Uhhhhhh_LCFlight", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
