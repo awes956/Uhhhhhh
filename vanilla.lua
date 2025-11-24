@@ -123,6 +123,80 @@ main file structure
 <string animation_name> <2 bytes short n> <keyframe keyframes, times n>
 ```
 
+## Uhhhhhh's env
+Uhhhhhh gives modules whatever it can. Here are all of it!
+```
+-- whatever = whatever
+
+RandomString(length) -- Random String function
+
+-- UI Util functions, used for config UI
+-- refer to line ~58 for usage
+Util_CreateText
+Util_CreateButton
+Util_CreateSwitch
+Util_CreateTextbox
+Util_CreateDropdown
+Util_CreateCanvas
+Util_CreateScrollCanvas
+Util_CreateSeparator
+
+-- Reanimators
+LimbReanimator
+	.Running -- is running
+	.Mode -- rootpart offset mode
+		-- 0 - RootPart in void
+		-- 1 - Keep RootPart streamed
+		-- 2 - CurrentAngle style
+		-- 3 - RootPart is Torso
+HatReanimator
+	.Running -- is running
+	.Permadeath -- has permadeath?
+	.HatCollide -- hat collde enabled?
+	.HatCFrameOverride -- array of hat overrides
+ReanimateShowHitboxes() -- function to show hitboxes, laggy for many hats
+ReanimateFling(target, duration) -- fling target
+-- target can be model, part, Vector3 or CFrame
+-- duration can be 0 for fling to last a frame
+
+-- music overrides
+SetOverrideMovesetMusic(assetid, musicname, volume, loopregion) -- play music, pass no arguments to stop
+GetOverrideMovesetMusicTime() -- returns time
+SetOverrideMovesetMusicTime(time) -- set time
+SetOverrideMovesetMusicSpeed(speed) -- set speed
+-- same for dance, dances are high priority
+SetOverrideDanceMusic(assetid, musicname, volume, loopregion)
+GetOverrideDanceMusicTime()
+SetOverrideDanceMusicTime(time)
+SetOverrideDanceMusicSpeed(speed)
+
+AnimLib -- Uhhhhhh's animation library
+	.Track -- track util
+		.fromfile(path) -- loads animation from file, must be in STEVE's KeyframeSequence file format
+		.frominstance(ks) -- loads animation from a KeyframeSequence
+		.paste(target, source, timeoffset) -- pastes keyframes from source to target, with a time offset
+		.getPoses(track, time, looped) -- used by Animator
+	.Animator -- animator
+		.new() -- creates an animator
+			.rig -- the character model
+			.track -- the animation track
+			.map -- map input time to animation time
+			.looped -- loop animation by track end time
+			.speed -- input time multiplication
+			.weight -- use to blend with other animators, or smoothen animation
+			:Step(time) -- apply pose
+
+-- utils for grabbing assets from Uhhhhhh/Assets/...
+AssetGetPathFromFilename(filename) -- used for AnimLib.Track.fromfile
+AssetGetContentId(filename) -- loads file with getcustomasset
+
+-- chat
+ProtectedChat(message) -- make player say something, errors are supressed
+OnPlayerChatted.Event:Connect(function(player, message) end) -- event when a player chats
+
+HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
+```
+
 ]]
 
 local modules = {}
@@ -202,6 +276,12 @@ AddModule(function()
 		return #workspace:FindPartsInRegion3(extents, figure) > 0
 	end
 	local function findLadder(figure, root, hum)
+		local scale = figure:GetScale()
+		searchDepth = 0.7 * scale
+		maxClimbDist = 2.45 * scale
+		sampleSpacing = scale / 7
+		lowLadderSearch = 2.7 * scale
+		ladderSearchDist = 2.0 * scale
 		if not findPartInLadderZone(figure, root, hum) then
 			return false
 		end
