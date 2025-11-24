@@ -926,12 +926,12 @@ AddModule(function()
 		necksnap = 0
 		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
 		leftwing = {
-			MeshId = "17269814619", TextureId = "",
-			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
+			Group = "LeftWing",
+			Limb = "Torso", Offset = CFrame.new(-0.15, 0, 0)
 		}
 		rightwing = {
-			MeshId = "17269824947", TextureId = "",
-			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+			Group = "RightWing",
+			Limb = "Torso", Offset = CFrame.new(0.15, 0, 0)
 		}
 		sword = {
 			Group = "Sword",
@@ -1232,15 +1232,15 @@ AddModule(function()
 		
 		-- wings
 		if figure:GetAttribute("IsDancing") then
-			leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105), 0) * CFrame.new(2.2, -2, 1.5)
-			rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.new(2.2, -2, -1.5)
+			leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15), 0)
+			rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15), 0)
 		else
 			if m.Bee then
-				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, 1.5)
-				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, -1.5)
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine)), 0)
 			else
-				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
-				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine / 25)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine / 25)), 0)
 			end
 		end
 		
@@ -1839,12 +1839,12 @@ AddModule(function()
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonPower.mp3"), "Ka1zer - INSaNiTY", 1)
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonFastBoi.mp3"), "RUNNING IN THE '90s", 1, NumberRange.new(24.226))
 		leftwing = {
-			MeshId = "17269814619", TextureId = "",
-			Limb = "Torso", Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, 1.5)
+			Group = "LeftWing",
+			Limb = "Torso", Offset = CFrame.new(-0.15, 0, 0)
 		}
 		rightwing = {
-			MeshId = "17269824947", TextureId = "",
-			Limb = "Torso", Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(270), 0) * CFrame.new(2.2, -2, -1.5)
+			Group = "RightWing",
+			Limb = "Torso", Offset = CFrame.new(0.15, 0, 0)
 		}
 		sword = {
 			Group = "Gun",
@@ -2032,15 +2032,15 @@ AddModule(function()
 		
 		-- wings
 		if figure:GetAttribute("IsDancing") then
-			leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105), 0) * CFrame.new(2.2, -2, 1.5)
-			rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.new(2.2, -2, -1.5)
+			leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15), 0)
+			rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15), 0)
 		else
 			if m.Bee then
-				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, 1.5)
-				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine)), 0) * CFrame.new(2.2, -2, -1.5)
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine)), 0)
 			else
-				leftwing.Offset = CFrame.new(-0.3, 0, 0) * CFrame.Angles(0, math.rad(-105 + 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, 1.5)
-				rightwing.Offset = CFrame.new(0.3, 0, 0) * CFrame.Angles(0, math.rad(-75 - 25 * math.cos(timingsine / 25)), 0) * CFrame.new(2.2, -2, -1.5)
+				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine / 25)), 0)
+				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine / 25)), 0)
 			end
 		end
 		
