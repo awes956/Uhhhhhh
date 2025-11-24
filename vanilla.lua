@@ -1368,7 +1368,7 @@ AddModule(function()
 			dialog:Destroy()
 		end
 		dialog = Instance.new("BillboardGui", torso)
-		dialog.Size = UDim2.new(0, 2000, 2, 0)
+		dialog.Size = UDim2.new(50, 0, 2, 0)
 		dialog.StudsOffset = Vector3.new(0, 5, 0)
 		dialog.Adornee = torso
 		dialog.Name = "NOTIFICATION"
@@ -1387,11 +1387,7 @@ AddModule(function()
 		text2.Parent = dialog
 		text2.ZIndex = 1
 		task.spawn(function()
-			local cps = 30
-			local t = tick()
-			local ll = 0
-			repeat
-				task.wait()
+			local function update()
 				if glitchy then
 					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
 					local randomfont = fonts[math.random(1, #fonts)]
@@ -1401,12 +1397,19 @@ AddModule(function()
 				local color = Color3.fromHSV(tick() % 1, 1, 1)
 				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
 				text2.TextColor3 = color
-				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
-				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				text1.Position = UDim2.new(0, math.random(-1, 1), 0, math.random(-1, 1))
+				text2.Position = UDim2.new(0, math.random(-1, 1), 0, math.random(-1, 1))
+			end
+			local cps = 30
+			local t = tick()
+			local ll = 0
+			repeat
+				task.wait()
 				local l = math.floor((tick() - t) * cps)
 				if l > ll then
 					ll = l
 				end
+				update()
 				text1.Text = string.sub(message, 1, l)
 				text2.Text = string.sub(message, 1, l)
 			until ll >= #message
@@ -1415,33 +1418,12 @@ AddModule(function()
 			t = tick()
 			repeat
 				task.wait()
-				if glitchy then
-					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
-					local randomfont = fonts[math.random(1, #fonts)]
-					text1.Font = randomfont
-					text2.Font = randomfont
-				end
-				local color = Color3.fromHSV(tick() % 1, 1, 1)
-				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
-				text2.TextColor3 = color
-				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
-				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				update()
 			until tick() - t > 2
 			t = tick()
 			repeat
 				task.wait()
-				if glitchy then
-					local fonts = {"Antique", "Arcade", "Arial", "ArialBold", "Bodoni", "Cartoon", "Code", "Fantasy", "Garamond", "Gotham", "GothamBlack", "GothamBold", "GothamSemibold", "Highway", "SciFi", "SourceSans", "SourceSansBold", "SourceSansItalic", "SourceSansLight", "SourceSansSemibold"}
-					local randomfont = fonts[math.random(1, #fonts)]
-					text1.Font = randomfont
-					text2.Font = randomfont
-				end
-				local a = tick() - t
-				local color = Color3.fromHSV(tick() % 1, 1, 1)
-				text1.TextColor3 = Color3.new(0, 0, 0):Lerp(color, 0.5)
-				text2.TextColor3 = color
-				text1.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
-				text2.Position = UDim2.new(0, math.random(-3, 3), 0, math.random(-3, 3))
+				update()
 				text1.Rotation = a * math.random() * -20
 				text2.Rotation = a * math.random() * 20
 				text1.TextTransparency = a
@@ -1679,7 +1661,7 @@ AddModule(function()
 		hum.WalkSpeed = 16 * root.Size.Z -- figure:GetScale() hack
 		if math.random(3) == 1 then
 			randomdialog({
-				"surprise",
+				"SURPRISE",
 				"got you",
 				"Immortality Lord, YOU CANNOT DO THIS",
 				"my mobility is far better",
