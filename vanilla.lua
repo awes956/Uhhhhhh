@@ -3315,33 +3315,33 @@ AddModule(function()
 				text.Parent = sgui
 				id += 1
 			end
-			addtext("NEEDY", 60, 65, 240, 50, 0) -- 0
-			addtext("GIRL", 60, 65, 240, 50, 1) -- 1
+			addtext("NEEDY", 20, 65, 320, 50, 0) -- 0
+			addtext("GIRL", 20, 65, 320, 50, 1) -- 1
 			addtext("NEEDY", 180, 45, 180, 30, 2) -- 2
 			addtext("GIRL", 0, 105, 180, 30, 2) -- 3
 			addtext("A N G E L", 0, 0, 360, 60, 2) -- 4
 			addtext("\n\nn e e d y\n\ng i r l\n\no v e r d o s e", 0, 45, 360, 45, 2) -- 5
 			addtext("\n\nn e e d y\n\ng i r l\n\no v e r d o s e", 0, 90, 360, 45, 2) -- 6
 			addtext("\n\nn e e d y\n\ng i r l\n\no v e r d o s e", 0, 135, 360, 45, 2) -- 7
-			addtext("INTERNET", 60, 40, 240, 40, 0) -- 8
-			addtext("INTERNET", 60, 40, 240, 40, 1) -- 9
-			addtext("INTERNET", 60, 40, 240, 40, 2) -- 10
-			addtext("INTERNET", 60, 70, 240, 40, 0) -- 11
-			addtext("INTERNET", 60, 70, 240, 40, 1) -- 12
-			addtext("INTERNET", 60, 70, 240, 40, 2) -- 13
-			addtext("INTERNET", 60, 100, 240, 40, 0) -- 14
-			addtext("INTERNET", 60, 100, 240, 40, 1) -- 15
-			addtext("INTERNET", 60, 100, 240, 40, 2) -- 16
+			addtext("INTERNET", 20, 40, 320, 40, 0) -- 8
+			addtext("INTERNET", 20, 40, 320, 40, 2) -- 9
+			addtext("INTERNET", 20, 40, 320, 40, 1) -- 10
+			addtext("INTERNET", 20, 70, 320, 40, 0) -- 11
+			addtext("INTERNET", 20, 70, 320, 40, 2) -- 12
+			addtext("INTERNET", 20, 70, 320, 40, 1) -- 13
+			addtext("INTERNET", 20, 100, 320, 40, 0) -- 14
+			addtext("INTERNET", 20, 100, 320, 40, 2) -- 15
+			addtext("INTERNET", 20, 100, 320, 40, 1) -- 16
 			addtext("ANGEL", 0, 0, 360, 180, 2) -- 17
-			addtext("INTERNET", 60, 80, 240, 20, 1) -- 18
-			addtext("INTERNET", 60, 85, 240, 10, 1) -- 19
-			addtext("P A T T E R N   B L U E", 60, 80, 240, 10, 2) -- 20
-			addtext("A N G E L", 60, 100, 240, 10, 1) -- 21
-			addtext("NEEDY GIRL", 60, 65, 240, 50, 0) -- 22
-			addtext("NEEDY GIRL", 60, 65, 240, 50, 1) -- 23
-			addtext("\"I-N-TE-RU-NE-TO\"", 0, 160, 360, 10, 1) -- 24
-			addtext("\"ANGEL\"", 0, 160, 360, 10, 1) -- 25
-			addtext("\"NEEDY GIRL\"", 0, 160, 360, 10, 1) -- 26
+			addtext("INTERNET", 20, 80, 320, 20, 2) -- 18
+			addtext("INTERNET", 20, 85, 320, 10, 2) -- 19
+			addtext("P A T T E R N   B L U E", 60, 80, 240, 10, 1) -- 20
+			addtext("A N G E L", 60, 100, 240, 10, 2) -- 21
+			addtext("NEEDY GIRL", 20, 65, 320, 50, 0) -- 22
+			addtext("NEEDY GIRL", 20, 65, 320, 50, 1) -- 23
+			addtext("\"I-N-TE-RU-NE-TO\"", 0, 160, 360, 10, 2) -- 24
+			addtext("\"ANGEL\"", 0, 160, 360, 10, 2) -- 25
+			addtext("\"NEEDY GIRL\"", 0, 160, 360, 10, 2) -- 26
 			textsandstuff.Parent = figure
 		end
 	end
@@ -3451,6 +3451,12 @@ AddModule(function()
 			end
 		elseif t < 36 then
 			animator3:Step(t - 34.5)
+			if t % 0.75 < 0.375 then
+				textvis[4] = true
+			end
+			if (t + 0.000) % 1 < 0.7 then textvis[5] = true end
+			if (t + 0.333) % 1 < 0.7 then textvis[6] = true end
+			if (t + 0.667) % 1 < 0.7 then textvis[7] = true end
 		else
 			local eva = (t - 36) / 0.75
 			if t < 48 then
@@ -3482,7 +3488,7 @@ AddModule(function()
 		if not root then return end
 		local scale = figure:GetScale()
 		if textsandstuff then
-			textsandstuff.CFrame = root.CFrame * CFrame.new(0, 0, -1 * scale)
+			textsandstuff.CFrame = root.CFrame * CFrame.new(0, 0, -2 * scale)
 			local ui = textsandstuff:FindFirstChild("UI")
 			if ui then
 				for _,v in ui:GetChildren() do
