@@ -3300,7 +3300,7 @@ AddModule(function()
 			sgui.Parent = textsandstuff
 			local id = 0
 			local function addtext(t, x, y, sx, sy, align)
-				local t = Instance.new("TextLabel")
+				local text = Instance.new("TextLabel")
 				text.Position = UDim2.new(0, x, 0, y)
 				text.Size = UDim2.new(0, sx, 0, sy)
 				text.BackgroundTransparency = 1
