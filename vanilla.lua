@@ -1506,7 +1506,7 @@ AddModule(function()
 					if movedir ~= nil then
 						movespeed = ((cfr.Position - movedir).Magnitude / ticks) * bmr1
 					end
-					growth = (size - endsize) * (bmr2 + 1)
+					growth = (endsize - size) * (bmr2 + 1)
 					local t = 0
 					repeat
 						local dt = task.wait()
@@ -1515,30 +1515,32 @@ AddModule(function()
 							effect.Color = Color3.fromHSV(tick() % 1, sOK, vOK)
 						end
 						local loop = t * 60
-						mesh.Scale = size - growth * (1 - (loop / ticks) * bmr2) * bmr2 * loop
-						effect.Transparency = transparency + (endtransparency - transparency) * (loop / ticks)
+						local t2 = loop / ticks
+						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 + b * b * 0.5 * t2 * t2)
+						effect.Transparency = transparency + (endtransparency - transparency) * t2
+						local add = CFrame.identity
+						if movedir ~= nil then
+							add = CFrame.new(0, 0, -movespeed * (1 + t2 + bmr1 * 0.5 * t2 * t2))
+						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2
-							)
+							) * add
 						else
 							effect.CFrame = cfr * CFrame.Angles(
 								math.rad(rotx * loop),
 								math.rad(roty * loop),
 								math.rad(rotz * loop)
-							)
-						end
-						if movedir ~= nil then
-							effect.Position += CFrame.new(effect.Position, movedir).LookVector * movespeed * (1 - (loop / ticks) * bmr1)
+							) * add
 						end
 					until t > ticks / 60
 				else
 					if movedir ~= nil then
 						movespeed = (cfr.Position - movedir).Magnitude / ticks
 					end
-					growth = size - endsize
+					growth = endsize - size
 					local t = 0
 					repeat
 						local dt = task.wait()
@@ -1547,23 +1549,25 @@ AddModule(function()
 							effect.Color = Color3.fromHSV(tick() % 1, sOK, vOK)
 						end
 						local loop = t * 60
-						mesh.Scale = size - growth * (loop / ticks)
-						effect.Transparency = transparency + (endtransparency - transparency) * (loop / ticks)
+						local t2 = loop / ticks
+						mesh.Scale = size + growth * t2
+						effect.Transparency = transparency + (endtransparency - transparency) * t2
+						local add = CFrame.identity
+						if movedir ~= nil then
+							add = CFrame.new(0, 0, -movespeed * t2)
+						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2
-							)
+							) * add
 						else
 							effect.CFrame = cfr * CFrame.Angles(
 								math.rad(rotx * loop),
 								math.rad(roty * loop),
 								math.rad(rotz * loop)
-							)
-						end
-						if movedir ~= nil then
-							effect.Position += CFrame.new(effect.Position, movedir).LookVector * movespeed
+							) * add
 						end
 					until t > ticks / 60
 				end
@@ -1710,7 +1714,7 @@ AddModule(function()
 					"READ MY NAME, I AM LIGHTNING CANNON.",
 				}, true)
 			end
-			task.wait(0.08)
+			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			animationOverride = nil
 			attacking = false
@@ -2563,7 +2567,7 @@ AddModule(function()
 	m.Name = "科目三 (Subject Three)"
 	m.Description = "剑起江湖恩怨 拂袖罩明月\n西風葉落花謝 枕刀劍難眠\n汝为山河过客 却总长叹伤离别\n鬓如霜一杯浓烈"
 	m.InternalName = "KEMUSAN"
-	m.Assets = {"SubjectThree.anim", "SubjectThree.mp3", "SubjectThreeDubmood.mp3"}
+	m.Assets = {"SubjectThree.anim", "SubjectThreeForsaken.anim", "SubjectThree.mp3", "SubjectThreeDubmood.mp3"}
 
 	m.Alternative = false
 	m.Config = function(parent: GuiBase2d)
@@ -2588,14 +2592,16 @@ AddModule(function()
 		animator.rig = figure
 		animator.looped = true
 		if m.Alternative then
-			animator.speed = 0.9867189
+			--animator.speed = 0.9867189
+			animator.speed = 1
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubjectThreeForsaken.anim"))
 			SetOverrideDanceMusic(AssetGetContentId("SubjectThreeDubmood.mp3"), "Dubmood - The Scene Is Dead 2024", 1)
 		else
 			start += 3.71
 			animator.speed = 1.01034703
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubjectThree.anim"))
 			SetOverrideDanceMusic(AssetGetContentId("SubjectThree.mp3"), "Subject Three - Wen Ren Ting Shu", 1, NumberRange.new(3.71, 77.611))
 		end
-		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SubjectThree.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -3227,7 +3233,7 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "DANCE"
 	m.Name = "INTERNET ANGEL"
-	m.Description = "Needy Girl Overdose\n\nme when i\noverdose myself\nwith es-"
+	m.Description = "Needy Girl Overdose\n\nthe 67th angel of evangelion\nonly way to beat it is use a fire wall"
 	m.Assets = {"InternetAngel.anim", "InternetAngelEva.anim", "InternetAngelNeedy.anim", "InternetAngel.mp3"}
 
 	m.FullVersion = false
@@ -3421,8 +3427,12 @@ AddModule(function()
 				end
 			end
 		elseif t < 34.5 then
-			animator2:Step(t)
 			local needy = t % 6
+			if needy < 4.5 then
+				animator2:Step(t)
+			else
+				animator3:Step(needy - 4.5)
+			end
 			if needy < 0.75 then
 			elseif needy < 1.5 then
 				textvis[22] = true
@@ -3451,12 +3461,7 @@ AddModule(function()
 			end
 		elseif t < 36 then
 			animator3:Step(t - 34.5)
-			if t % 0.75 < 0.375 then
-				textvis[4] = true
-			end
-			if (t + 0.000) % 1 < 0.7 then textvis[5] = true end
-			if (t + 0.333) % 1 < 0.7 then textvis[6] = true end
-			if (t + 0.667) % 1 < 0.7 then textvis[7] = true end
+			for i=1, 23 do textvis[i] = math.random(3) == 1 end
 		else
 			local eva = (t - 36) / 0.75
 			if t < 48 then
@@ -3504,6 +3509,33 @@ AddModule(function()
 		animator2 = nil
 		animator3 = nil
 		if textsandstuff then textsandstuff:Destroy() textsandstuff = nil end
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Stocks"
+	m.Description = "the graph is pointing UP!\n\nthanks to the consultant\notherwise itll be pointing DOWN\n(this is a pencilmation reference)"
+	m.Assets = {"StockDance.anim", "StockDance.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("StockDance.mp3"), "Lights, Camera, Action! - Sonic Mania", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("StockDance.anim"))
+		animator.looped = false
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
 	end
 	return m
 end)
