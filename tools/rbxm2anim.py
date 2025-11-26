@@ -1313,7 +1313,7 @@ def convert(path, inst):
 		putshort(len(poses))
 		for pose in poses:
 			putstring(pose.Name)
-			putfloat(pose.Weight or 0)
+			putfloat(pose.Weight or 1)
 			putstring(e_style[(pose.EasingStyle or {}).get("value", 0)])
 			putstring(e_direc[(pose.EasingDirection or {}).get("value", 0)])
 			cf = pose.CFrame or CFrame()
@@ -1361,10 +1361,12 @@ def parsenconvert(path):
 import sys
 def main(args):
 	print("RBXM To STEVE's KeyframeSequence file format")
+	print("Hello! I convert RBXM files to STEVE's KeyframeSequence file format.")
+	print("I also know about RBXMX, and I looooove C structs!")
 	if len(args) >= 2:
 		return parsenconvert(args[1])
 	print("Usage: rbxm2anim.py [path to rbxm]")
-	return parsenconvert(input("	  or enter path here: "))
+	return parsenconvert(input("  or enter path here: "))
 
 if __name__ == "__main__":
 	main(sys.argv)
