@@ -3605,7 +3605,7 @@ AddModule(function()
 		animator2.rig = figure
 		animator2.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("InternetYamero.anim"))
 		animator2.looped = true
-		animator2.map = {{0.667, 62.944}, {0, 64.667}}
+		animator2.map = {{11, 62.944}, {0, 53.33333}}
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = GetOverrideDanceMusicTime()
