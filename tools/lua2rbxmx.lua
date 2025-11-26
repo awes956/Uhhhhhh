@@ -1,3 +1,4 @@
+print("Loading file...")
 local func = loadfile("filetoload.lua")
 local env = getfenv(func)
 local insts = {}
@@ -59,6 +60,7 @@ env.Instance = {
 		error("unknown instance " .. classname)
 	end
 }
+print("Running file...")
 local ks = func()
 local e_style = {"Linear", "Constant", "Elastic", "Cubic", "Bounce", "CubicV2"}
 local e_direc = {"In", "Out", "InOut"}
@@ -87,7 +89,10 @@ local function genreferent()
 	table.insert(referents, str)
 	return str
 end
+local instcount = 0
 local function serialize(inst)
+	instcount = instcount + 1
+	print(math.floor((instcount / #insts) * 10000) / 100)
 	xml = xml .. "<Item class=\"" .. inst.ClassName .. "\" referent=\"" .. genreferent() .. "\">"
 	xml = xml .. "<Properties>"
 	xml = xml .. "<BinaryString name=\"AttributesSerialize\"></BinaryString><SecurityCapabilities name=\"Capabilities\">0</SecurityCapabilities><bool name=\"DefinesCapabilities\">false</bool><string name=\"Name\">" .. inst.Name .. "</string><int64 name=\"SourceAssetId\">-1</int64><BinaryString name=\"Tags\"></BinaryString>"
