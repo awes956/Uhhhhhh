@@ -1516,11 +1516,11 @@ AddModule(function()
 						end
 						local loop = t * 60
 						local t2 = loop / ticks
-						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 + bmr2 * bmr2 * 0.5 * t2 * t2)
+						mesh.Scale = size + growth * (bmr2 + bmr2 * t2 - bmr2 * bmr2 * 0.5 * t2 * t2)
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = CFrame.identity
 						if movedir ~= nil then
-							add = CFrame.new(0, 0, -movespeed * (1 + t2 + bmr1 * 0.5 * t2 * t2))
+							add = CFrame.new(0, 0, -movespeed * (1 + t2 - bmr1 * 0.5 * t2 * t2))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -1579,7 +1579,7 @@ AddModule(function()
 		local start = params.Start or Vector3.new(0, 0, 0)
 		local finish = params.Finish or Vector3.new(0, 512, 0)
 		local offset = params.Offset or 0
-		local color = params.color or Color3.new(1, 0, 0)
+		local color = params.Color or Color3.new(1, 0, 0)
 		local ticks = params.Time or 15
 		local sizestart = params.SizeStart or 0
 		local sizeend = params.SizeEnd or 1
