@@ -3877,4 +3877,162 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Brain"
+	m.Description = "bendy and the ink machine ass beat\npick your poison: garou or gojo"
+	m.Assets = {"Brain.anim", "Brain.mp3"}
+
+	m.Alternative = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Garou slide", m.Alternative).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Brain.mp3"), "Kanaria - BRAIN", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.map = {{0, 66.527}, {0, 65.52}}
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Brain.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		if m.Alternative then
+			animator:Step(0.267)
+		else
+			animator:Step(GetOverrideDanceMusicTime())
+		end
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.WalkSpeed = 4 * figure:GetScale()
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+		if not figure then return end
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.WalkSpeed = 16 * figure:GetScale()
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Left Right Left Right"
+	m.Description = "up down up down\nburger king, burger throne"
+	m.Assets = {"LeftRight.anim", "LeftRight.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("LeftRight.mp3"), "idk this tune", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("LeftRight.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Silly Billy"
+	m.Description = "bro that shit aint 'me' :wilted_rose:"
+	m.Assets = {"Billy.anim", "Billy2.anim", "Billy.mp3"}
+
+	m.Alternative = false
+	m.Config = function(parent: GuiBase2d)
+		Util_CreateSwitch(parent, "Alt. Version", m.Alternative).Changed:Connect(function(val)
+			m.Alternative = val
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Alternative = not not save.Alternative
+	end
+	m.SaveConfig = function()
+		return {
+			Alternative = m.Alternative
+		}
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Billy.mp3"), "FNF VS Yourself mod", 1, NumberRange.new(2.13, 87.3))
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		if m.Alternative then
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Billy2.anim"))
+		else
+			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Billy.anim"))
+		end
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Skipping"
+	m.Description = ":D"
+	m.Assets = {"SkippingHappily.anim", "SkippingHappily.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("SkippingHappily.mp3"), "idk this tune", 1)
+		start = tick()
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = true
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("SkippingHappily.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.WalkSpeed = 4 * figure:GetScale()
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+		if not figure then return end
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		hum.WalkSpeed = 16 * figure:GetScale()
+	end
+	return m
+end)
+
 return modules
