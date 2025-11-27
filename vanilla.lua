@@ -3431,7 +3431,7 @@ AddModule(function()
 			if needy < 4.5 then
 				animator2:Step(t)
 			else
-				animator3:Step(needy - 4.5)
+				animator3:Step(needy - 3)
 			end
 			if needy < 0.75 then
 			elseif needy < 1.5 then
@@ -3612,6 +3612,12 @@ AddModule(function()
 		local t = GetOverrideDanceMusicTime()
 		if t < 11 then
 			animator1:Step(t)
+		elseif t < 18.667 then
+			animator2:Step(math.max((t - 18.667) / 0.1, 1.2))
+		elseif t < 19.333 then
+			animator2:Step(math.max((t - 19.333) / 0.1, 1.34))
+		elseif t < 21.333 then
+			animator2:Step(t * 100)
 		else
 			animator2:Step(t)
 		end
