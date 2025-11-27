@@ -1426,6 +1426,7 @@ AddModule(function()
 			repeat
 				task.wait()
 				update()
+				local a = tick() - t
 				text1.Rotation = a * math.random() * -20
 				text2.Rotation = a * math.random() * 20
 				text1.TextTransparency = a
