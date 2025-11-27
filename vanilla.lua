@@ -3613,8 +3613,10 @@ AddModule(function()
 		if t < 11 then
 			animator1:Step(t)
 		elseif t < 18.667 then
-			animator2:Step(math.min((t - 18.667) / 0.1, 1.2))
+			animator2:Step(t)
 		elseif t < 19.333 then
+			animator2:Step(math.min((t - 18.667) / 0.1, 1.2))
+		elseif t < 20 then
 			animator2:Step(math.min((t - 19.333) / 0.1, 1.34))
 		elseif t < 21.333 then
 			animator2:Step(t * 100)
