@@ -4151,7 +4151,7 @@ AddModule(function()
 				pillar1.Transparency = group1t
 			end
 			if pillar2 then
-				pillar2.CFrame = root.CFrame * CFrame.new(-3.5, 1.5, 2 + group1t)
+				pillar2.CFrame = root.CFrame * CFrame.new(-3.5, 1.5, 2 - group1t)
 				pillar2.Transparency = group1t
 			end
 			if pillar3 then
