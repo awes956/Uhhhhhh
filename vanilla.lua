@@ -4080,13 +4080,13 @@ AddModule(function()
 			star1.RotSpeed = NumberRange.new(-180)
 			star1.Speed = NumberRange.new(0.001)
 			star1.LockedToPart = true
-			star1.ZIndex = 0
+			star1.ZOffset = 0
 			star1.Parent = effects.Particles
 			local star2 = star1:Clone()
 			star2.Name = "Star2"
 			star2.Color = ColorSequence.new(Color3.fromRGB(148, 138, 255))
 			star2.Rate = 3
-			star2.ZIndex = 1
+			star2.ZOffset = 1
 			star2.Parent = effects.Particles
 			effects.Parent = figure
 		end
