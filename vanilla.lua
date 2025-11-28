@@ -4122,7 +4122,7 @@ AddModule(function()
 			local flash = effects:FindFirstChild("Flash")
 			local pcles = effects:FindFirstChild("Particles")
 			if glass then
-				glass.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t)
+				glass.CFrame = root.CFrame * CFrame.new(Vector3.new(0, 1.5, 2 - group1t) * scale)
 				if t < 6.9 or t > 30 then
 					glass.Transparency = 0.2 + 0.8 * group1t
 				else
