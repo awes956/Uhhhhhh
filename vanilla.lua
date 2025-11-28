@@ -4111,7 +4111,7 @@ AddModule(function()
 		if not root then return end
 		if effects then
 			local group1t = 1 - math.pow(1 - math.clamp(t - 11, 0, 1), 3)
-			group1t -= math.max(0, t - 45.537)
+			group1t -= math.max(0, t - 44.537)
 			local glass = effects:FindFirstChild("Glass")
 			local pillar1 = effects:FindFirstChild("Pillar1")
 			local pillar2 = effects:FindFirstChild("Pillar2")
@@ -4131,7 +4131,7 @@ AddModule(function()
 				local j = i - 1
 				local shard = effects:FindFirstChild("Shard" .. i)
 				if shard then
-					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 0, 1)) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
+					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 1, 0)) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
 					if (j // 2) % 2 == 0 then
 						cf *= CFrame.Angles(0, math.pi, 0)
 					end
@@ -4173,9 +4173,10 @@ AddModule(function()
 				pcles.CFrame = root.CFrame * CFrame.new(0, 0.25, 3)
 				local starflash = 2
 				if t < 18.05 then
+					starflash = 2
+				elseif t < 23.6 then
 					starflash = 2 + 5 * (1 - math.min(t - 18.05, 5) / 5)
-				end
-				if t < 23.6 then
+				else
 					starflash = 5
 				end
 				local star1 = pcles:FindFirstChild("Star1")
