@@ -3925,7 +3925,7 @@ AddModule(function()
 		if not hum then return end
 		hum.WalkSpeed = 16 * figure:GetScale()
 	end
-	return m
+	--return m
 end)
 
 AddModule(function()
