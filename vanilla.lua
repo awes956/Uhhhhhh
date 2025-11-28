@@ -4062,7 +4062,7 @@ AddModule(function()
 			flash.OutlineTransparency = 1
 			flash.Parent = effects
 			makepart("Particles", Color3.new(0, 0, 0), Enum.Material.Plastic, Vector3.zero, 0, 1)
-			local star1 = Instance.new("Highlight")
+			local star1 = Instance.new("ParticleEmitter")
 			star1.Name = "Star1"
 			star1.Enabled = true
 			star1.Texture = "rbxasset://textures/particles/sparkles_main.dds"
