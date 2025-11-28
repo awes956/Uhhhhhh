@@ -3999,6 +3999,7 @@ AddModule(function()
 			animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Billy.anim"))
 		end
 		if m.Effects then
+			local scale = figure:GetScale()
 			effects = Instance.new("Model")
 			effects.Name = "SillyBilly"
 			local arm = figure:FindFirstChild("Left Arm")
@@ -4010,14 +4011,14 @@ AddModule(function()
 				handle.CanCollide = false
 				handle.CanTouch = false
 				handle.CanQuery = false
-				handle.Size = Vector3.new(1, 0.5, 0.5)
+				handle.Size = Vector3.new(1, 0.5, 0.5) * scale
 				handle.Shape = "Cylinder"
 				handle.Parent = effects
 				local grip = Instance.new("Weld")
 				grip.Name = "MicGrip"
 				grip.Part0 = arm
 				grip.Part1 = handle
-				grip.C0 = CFrame.new(0, -1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
+				grip.C0 = CFrame.new(0, -1 * scale, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
 				grip.Parent = effects
 				local casing = Instance.new("Part")
 				casing.Name = "MicRoundThing"
@@ -4026,14 +4027,14 @@ AddModule(function()
 				casing.CanCollide = false
 				casing.CanTouch = false
 				casing.CanQuery = false
-				casing.Size = Vector3.new(1, 1, 1)
+				casing.Size = Vector3.new(1, 1, 1) * scale
 				casing.Shape = "Ball"
 				casing.Parent = effects
 				local weld = Instance.new("Weld")
 				weld.Name = "MicWeld"
 				weld.Part0 = handle
 				weld.Part1 = casing
-				weld.C0 = CFrame.new(0.875, 0, 0)
+				weld.C0 = CFrame.new(0.875 * scale, 0, 0)
 				weld.Parent = effects
 			end
 			local function makepart(name, color, mater, size, tra)
@@ -4046,7 +4047,7 @@ AddModule(function()
 				part.CanCollide = false
 				part.CanTouch = false
 				part.CanQuery = false
-				part.Size = size
+				part.Size = size * scale
 				part.Parent = effects
 			end
 			makepart("Glass", Color3.fromRGB(111, 130, 255), Enum.Material.SmoothPlastic, Vector3.new(6, 9, 0.2), 0)
@@ -4110,6 +4111,7 @@ AddModule(function()
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		if effects then
+			local scale = figure:GetScale()
 			local group1t = 1 - math.pow(1 - math.clamp(t - 11, 0, 1), 3)
 			group1t -= math.max(0, t - 44.537)
 			local glass = effects:FindFirstChild("Glass")
@@ -4131,14 +4133,15 @@ AddModule(function()
 				local j = i - 1
 				local shard = effects:FindFirstChild("Shard" .. i)
 				if shard then
-					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 1, 0)) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
+					local cf = CFrame.new((CFrame.Angles(0, 0, (j // 2) * math.pi * 0.5) * Vector3.new(1, 1, 0) * scale) * Vector3.new(1.5, 2.25, 0)) * CFrame.Angles(0, -math.pi / 2, 0)
 					if (j // 2) % 2 == 0 then
 						cf *= CFrame.Angles(0, math.pi, 0)
 					end
 					if j % 2 == 0 then
 						cf *= CFrame.Angles(math.pi, 0, 0)
 					end
-					shard.CFrame = root.CFrame * CFrame.new(0, 1.5, 2 - group1t + shardsoffset[i]) * cf
+					shard.CFrame = root.CFrame * CFrame.new(0, 1.5 * scale, (2 - group1t + shardsoffset[i]) * scale) * cf
+					shard.Size = Vector3.new(0.5, 4.5, 3) * scale
 					if t < 6.9 or t > 30 then
 						shard.Transparency = 1
 					else
@@ -4147,19 +4150,19 @@ AddModule(function()
 				end
 			end
 			if pillar1 then
-				pillar1.CFrame = root.CFrame * CFrame.new(3.5, 1.5, 2 - group1t)
+				pillar1.CFrame = root.CFrame * CFrame.new(Vector3.new(3.5, 1.5, 2 - group1t) * scale)
 				pillar1.Transparency = group1t
 			end
 			if pillar2 then
-				pillar2.CFrame = root.CFrame * CFrame.new(-3.5, 1.5, 2 - group1t)
+				pillar2.CFrame = root.CFrame * CFrame.new(Vector3.new(-3.5, 1.5, 2 - group1t) * scale)
 				pillar2.Transparency = group1t
 			end
 			if pillar3 then
-				pillar3.CFrame = root.CFrame * CFrame.new(3.5, -2.5, 2 - group1t)
+				pillar3.CFrame = root.CFrame * CFrame.new(Vector3.new(3.5, -2.5, 2 - group1t) * scale)
 				pillar3.Transparency = group1t
 			end
 			if pillar4 then
-				pillar4.CFrame = root.CFrame * CFrame.new(-3.5, -2.5, 2 - group1t)
+				pillar4.CFrame = root.CFrame * CFrame.new(Vector3.new(-3.5, -2.5, 2 - group1t) * scale)
 				pillar4.Transparency = group1t
 			end
 			if flash then
@@ -4170,7 +4173,7 @@ AddModule(function()
 				end
 			end
 			if pcles then
-				pcles.CFrame = root.CFrame * CFrame.new(0, 0.25, 3)
+				pcles.CFrame = root.CFrame * CFrame.new(Vector3.new(0, 0.25, 3) * scale)
 				local starflash = 2
 				if t < 18.05 then
 					starflash = 2
@@ -4183,13 +4186,13 @@ AddModule(function()
 				local star2 = pcles:FindFirstChild("Star2")
 				if star1 then
 					star1.Size = NumberSequence.new({
-						NumberSequenceKeypoint.new(0, 8 * group1t, 2 * group1t),
-						NumberSequenceKeypoint.new(1, 8 * group1t, 2 * group1t),
+						NumberSequenceKeypoint.new(0, 8 * group1t * scale, 2 * group1t * scale),
+						NumberSequenceKeypoint.new(1, 8 * group1t * scale, 2 * group1t * scale),
 					})
 					star1.Brightness = starflash
 				end
 				if star2 then
-					star2.Size = NumberSequence.new(5 * group1t)
+					star2.Size = NumberSequence.new(5 * group1t * scale)
 					star2.Brightness = starflash
 				end
 			end
