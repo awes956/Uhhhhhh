@@ -2179,6 +2179,7 @@ AddModule(function()
 		force = Instance.new("BodyVelocity")
 		force.P = 9e4
 		force.MaxForce = Vector3.new(math.huge, 0, math.huge)
+		force.Parent = figure.HumanoidRootPart
 	end
 	m.Update = function(dt: number, figure: Model)
 		animator:Step(tick() - start)
@@ -2198,6 +2199,7 @@ AddModule(function()
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil
+		force:Destroy()
 		if not figure then return end
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum or not hum.RootPart then return end

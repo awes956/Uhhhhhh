@@ -1725,6 +1725,7 @@ AddModule(function()
 		end)
 		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
 			if gpe then return end
+			if not clickpos then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				if (input.Position - clickpos).Magnitude < 5 then
 					if tick() - clicktime < 0.5 then
