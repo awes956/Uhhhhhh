@@ -27,7 +27,7 @@ AddModule(function()
 	m.Mode = 0
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateDropdown(parent, "Label", {"Normal", "Jointless", "CFrame Bug"}, m.Mode + 1).Changed:Connect(function(val)
-			m.Alternative = val - 1
+			m.Mode = val - 1
 		end)
 	end
 	m.LoadConfig = function(save: any)
