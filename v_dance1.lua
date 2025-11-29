@@ -24,12 +24,25 @@ AddModule(function()
 	m.InternalName = "RAGDOLL"
 	m.Assets = {}
 
+	m.Mode = 0
 	m.Config = function(parent: GuiBase2d)
+		Util_CreateDropdown(parent, "Label", {"Normal", "Jointless", "CFrame Bug"}, m.Mode + 1).Changed:Connect(function(val)
+			m.Alternative = val - 1
+		end)
+	end
+	m.LoadConfig = function(save: any)
+		m.Mode = save.Mode or m.Mode
+	end
+	m.SaveConfig = function()
+		return {
+			Mode = m.Mode
+		}
 	end
 
 	local motors = {}
 	local joints = {}
 	local teleporthack = nil
+	local selmode = 0
 	m.Init = function(figure: Model)
 		table.clear(motors)
 		table.clear(joints)
@@ -39,6 +52,8 @@ AddModule(function()
 		if not root then return end
 		local torso = figure:FindFirstChild("Torso")
 		if not torso then return end
+		
+		selmode = m.Mode
 		
 		local scale = figure:GetScale()
 		
@@ -81,39 +96,49 @@ AddModule(function()
 			table.insert(joints, att1)
 			table.insert(joints, joint)
 		end
-		root.CFrame = torso.CFrame
-		rj.Enabled = false
-		table.insert(motors, rj)
-		local weld = Instance.new("Weld")
-		weld.C0 = rj.C0
-		weld.Part0 = rj.Part0
-		weld.C1 = rj.C1
-		weld.Part1 = rj.Part1
-		weld.Parent = rj.Parent
-		table.insert(joints, weld)
-		createJoint(nj, CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, 1.57), CFrame.new(0, -0.5, 0) * CFrame.Angles(0, 0, 1.57))
-		createJoint(rsj, CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, 0, 3.14), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, 3.14))
-		createJoint(lsj, CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, 0, 0), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, 0))
-		createJoint(rhj, CFrame.new(0.5, -1, 0) * CFrame.Angles(0, 0, -1.57), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, -1.57))
-		createJoint(lhj, CFrame.new(-0.5, -1, 0) * CFrame.Angles(0, 0, -1.57), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, -1.57))
-		createNoCollide(rsj.Part1, nj.Part1)
-		createNoCollide(lsj.Part1, nj.Part1)
-		createNoCollide(rsj.Part1, rhj.Part1)
-		createNoCollide(lsj.Part1, lhj.Part1)
-		createNoCollide(lhj.Part1, rhj.Part1)
-		createNoCollide(root, nj.Part1)
-		createNoCollide(root, rsj.Part1)
-		createNoCollide(root, lsj.Part1)
-		createNoCollide(root, rhj.Part1)
-		createNoCollide(root, lhj.Part1)
-		teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
-			local cf = root.CFrame
-			nj.Part1.CFrame = cf
-			rsj.Part1.CFrame = cf
-			lsj.Part1.CFrame = cf
-			rhj.Part1.CFrame = cf
-			lhj.Part1.CFrame = cf
-		end)
+		
+		if selmode == 1 then
+			rj.Enabled = false
+			nj.Enabled = false
+			rsj.Enabled = false
+			lsj.Enabled = false
+			rhj.Enabled = false
+			lhj.Enabled = false
+		else
+			root.CFrame = torso.CFrame
+			rj.Enabled = false
+			table.insert(motors, rj)
+			local weld = Instance.new("Weld")
+			weld.C0 = rj.C0
+			weld.Part0 = rj.Part0
+			weld.C1 = rj.C1
+			weld.Part1 = rj.Part1
+			weld.Parent = rj.Parent
+			table.insert(joints, weld)
+			createJoint(nj, CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, 1.57), CFrame.new(0, -0.5, 0) * CFrame.Angles(0, 0, 1.57))
+			createJoint(rsj, CFrame.new(1.5, 0.5, 0) * CFrame.Angles(0, 0, 3.14), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, 3.14))
+			createJoint(lsj, CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(0, 0, 0), CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, 0))
+			createJoint(rhj, CFrame.new(0.5, -1, 0) * CFrame.Angles(0, 0, -1.57), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, -1.57))
+			createJoint(lhj, CFrame.new(-0.5, -1, 0) * CFrame.Angles(0, 0, -1.57), CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, -1.57))
+			createNoCollide(rsj.Part1, nj.Part1)
+			createNoCollide(lsj.Part1, nj.Part1)
+			createNoCollide(rsj.Part1, rhj.Part1)
+			createNoCollide(lsj.Part1, lhj.Part1)
+			createNoCollide(lhj.Part1, rhj.Part1)
+			createNoCollide(root, nj.Part1)
+			createNoCollide(root, rsj.Part1)
+			createNoCollide(root, lsj.Part1)
+			createNoCollide(root, rhj.Part1)
+			createNoCollide(root, lhj.Part1)
+			teleporthack = root:GetPropertyChangedSignal("CFrame"):Connect(function()
+				local cf = root.CFrame
+				for _,v in {nj, rsj, lsj, rhj, lhj} do
+					if (v.Part1.Position - cf.Position).Magnitude > 10 * figure:GetScale() then
+						v.Part1.CFrame = cf
+					end
+				end
+			end)
+		end
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick()
@@ -122,6 +147,20 @@ AddModule(function()
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		hum.PlatformStand = true
+		root.Velocity += hum.MoveDirection * dt * 50
+		if hum.Jump then
+			root.Velocity += Vector3.new(0, dt * 50, 0)
+		end
+		if selmode == 2 then
+			local he = figure:FindFirstChild("Head")
+			local la = figure:FindFirstChild("Left Arm")
+			local ra = figure:FindFirstChild("Right Arm")
+			local ll = figure:FindFirstChild("Left Leg")
+			local rl = figure:FindFirstChild("Right Leg")
+			RunService.PreSimulation:Once(function()
+				he.CFrame, la.CFrame, ra.CFrame, ll.CFrame, rl.CFrame = root.CFrame, root.CFrame, root.CFrame, root.CFrame, root.CFrame
+			end)
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		for _,v in motors do
