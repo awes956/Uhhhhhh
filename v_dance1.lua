@@ -147,9 +147,11 @@ AddModule(function()
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
 		hum.PlatformStand = true
-		root.Velocity = hum.MoveDirection * 100
-		if hum.Jump then
-			root.Velocity += Vector3.new(0, 100, 0)
+		if hum.MoveDirection.Magnitude > 0 or hum.Jump then
+			root.Velocity = hum.MoveDirection * 100
+			if hum.Jump then
+				root.Velocity += Vector3.new(0, 100, 0)
+			end
 		end
 		if selmode == 2 then
 			local he = figure:FindFirstChild("Head")
