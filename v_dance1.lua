@@ -104,6 +104,12 @@ AddModule(function()
 			lsj.Enabled = false
 			rhj.Enabled = false
 			lhj.Enabled = false
+			table.insert(motors, rj)
+			table.insert(motors, nj)
+			table.insert(motors, rsj)
+			table.insert(motors, lsj)
+			table.insert(motors, rhj)
+			table.insert(motors, lhj)
 		else
 			root.CFrame = torso.CFrame
 			rj.Enabled = false
