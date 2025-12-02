@@ -2267,11 +2267,11 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Headlock.mp3"), "what is this tune broski", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Headlock.mp3"), "Nakama - DIA DELICIA", 1, NumberRange.new(0, 73.866))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = true
-		animator.map = {{0, 14.774}, {0, 14.76}}
+		animator.map = {{0, 73.866}, {0, 73.8}}
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Headlock.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
