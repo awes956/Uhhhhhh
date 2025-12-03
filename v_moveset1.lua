@@ -1142,7 +1142,7 @@ AddModule(function()
 	m.Name = "Lightning Cannon"
 	m.Description = "lc if he locked in\nF - Toggle flight\nClick/Tap - \"Shoot\"\nZ - Dash (yes it kills)\nX then Click/Tap - \"Singularity Beam\"\n(you can X again to cancel charge)\nC then Click/Tap - \"Painless Rain\"\nV - GRENADE\nB -\"Die X3\"\nM - Switch modes\nModes: 1. Normal\n       2. Power-up\n       3. Fast-as-frick Boii"
 	m.InternalName = "LightningFanon"
-	m.Assets = {}
+	m.Assets = {"LightningCannonTheme.mp3"}
 
 	m.Bee = false
 	m.Notifications = true
@@ -1580,13 +1580,14 @@ AddModule(function()
 		local rootu = root
 		attacking = true
 		local mouse = Player:GetMouse()
+		local target = mouse.Hit.Position
 		task.spawn(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
 				nt = CFrame.Angles(math.rad(15), 0, math.rad(-30))
 				rst = CFrame.Angles(math.rad(30), 0, math.rad(90))
 				lst = CFrame.Angles(math.rad(0), math.rad(0), math.rad(30))
-				local tcf = CFrame.lookAt(root.Position, mouse.Hit.Position)
+				local tcf = CFrame.lookAt(root.Position, target)
 				local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
 				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
 				return rt, nt, rst, lst, rht, lht, gunoff
@@ -1594,8 +1595,10 @@ AddModule(function()
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
-			local target = mouse.Hit.Position
 			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
+			if raycast then
+				target = raycast.Position
+			end
 			local dist = (hole.Position - target).Magnitude
 			CreateSound(642890855, 0.45)
 			CreateSound(192410089, 0.55)
@@ -1619,11 +1622,13 @@ AddModule(function()
 				randomdialog({
 					"BOOM",
 					"THAT ANT IS DEAD",
+					"JUST DOING A GOD'S WORK",
 					"Immortality Lord, YOU CANNOT DO THIS",
 					"LIGHTNING FAST",
 					"WHO THE HELL DO YOU THINK I AM???", -- gurren lagann referencs
-					"EAT THIS",
-					"READ MY NAME, I AM LIGHTNING CANNON.",
+					"EAT THIS IF YOU CAN EVEN",
+					"READ MY NAME, OF COURSE I SHOOT LIGHTNING",
+					"AND IT CANNOT FIGHT BACK",
 				}, true)
 			end
 			Attack(target, 10)
@@ -1662,7 +1667,9 @@ AddModule(function()
 		flight = false
 		attacking = false
 		animationOverride = nil
+		currentmode = 0
 		figure.Humanoid.WalkSpeed = 50 * figure:GetScale()
+		SetOverrideMovesetMusic(AssetGetContentId("LightningCannonTheme.mp3"), "Lost Connection (LC's Theme)", 1)
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonPower.mp3"), "Ka1zer - INSaNiTY", 1)
 		--SetOverrideMovesetMusic(AssetGetContentId("LightningCannonFastBoi.mp3"), "RUNNING IN THE '90s", 1, NumberRange.new(24.226))
 		leftwing = {
@@ -1700,18 +1707,19 @@ AddModule(function()
 				if math.random(4) == 1 then
 					if flight then
 						if math.random(4) == 1 then
-							notify("i PIERCE through the HEAVENS", true)
+							notify(Player.Name .. " just tried to tamper with my remotes.")
 						elseif math.random(3) == 1 then
 							notify("my FLYING ANIMATION is NOT JUST for SHOW", true)
 						elseif math.random(2) == 1 then
 							notify("im a birb")
 							task.delay(1.7, notify, "GOVERNMENT DRONE", true)
 						else
-							notify("PEASANTS.", true)
+							notify("PATHETIC PEASANTS.", true)
 						end
 					else
 						if math.random(2) == 1 then
 							task.delay(1, notify, "sometimes i wonder why i stay near ground")
+							task.delay(5, notify, "I AM A GOD AFTER ALL", true)
 						else
 							notify("watch me not crash on the ground as i descend")
 						end
@@ -1738,14 +1746,15 @@ AddModule(function()
 		task.delay(1, randomdialog, {
 			"Immortality Lord did not have to say that...",
 			"That intro sucked.",
-			"I THINK THIS MORTAL KNOWS WHO I AM",
+			"I THINK THIS MERE MORTAL KNOWS WHO I AM",
 			"Blah, blah, blah, blah, BLAHH!!",
 			"Die... Die... DIE!!!",
 			"Now, WHERE IS THE MELEE USER",
 			"It's been years since the good times for me",
 			"WHO ARE WE GOING TO BLAST TO STARDUST TODAY?",
 			"Ready or not, MY LIGHTNING CANNON IS READY",
-			"LETS BLAST SOMEONE WITH INFINITE VOLTS",g
+			"LETS BLAST SOMEONE WITH INFINITE VOLTS",
+			"YOU are such an IDIOT. YOU CANNOT KILL ME, A GOD",
 		}, true)
 		if uisbegin then
 			uisbegin:Disconnect()
