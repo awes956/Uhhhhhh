@@ -1770,6 +1770,9 @@ AddModule(function()
 	m.Description = "im gonna put a magnifying glass on ur eyes\nand dance while your eyes burn\nitll feel like a burning sunlight"
 	m.Assets = {"TortureDance1.anim", "TortureDance2.anim", "TortureDance.mp3"}
 
+	m.Config = function(parent: GuiBase2d)
+	end
+
 	local animator = nil
 	local start = 0
 	m.Init = function(figure: Model)
