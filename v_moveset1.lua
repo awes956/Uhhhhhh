@@ -508,7 +508,7 @@ AddModule(function()
 	m.Name = "Immortality Lord"
 	m.Description = "il but he chill\nF - Toggle flight\nZ - \"Attack\""
 	m.InternalName = "ImmortalityBored"
-	m.Assets = {"ImmortalityLordTheme.mp3"}
+	m.Assets = {"ImmortalityLordTheme.mp3", "ImmortalityLordTheme2.mp3", "ImmortalityLordTheme3.mp3"}
 
 	m.Bee = false
 	m.NeckSnap = true
@@ -716,12 +716,21 @@ AddModule(function()
 			end
 		end
 	end
+	local musictime = 0
+	local function changesong()
+		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
+		if math.random(3) == 1 then return end
+		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme2.mp3"), "Human Artifacts Found Underwater (IL's Theme)", 1)
+		if math.random(2) == 1 then return end
+		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme3.mp3"), "Sprawling Idiot Effigy (IL's Theme)", 1)
+	end
 	m.Init = function(figure: Model)
 		start = tick()
 		flight = false
 		dancereact = {}
 		attack = -999
 		necksnap = 0
+		musictime = 0
 		SetOverrideMovesetMusic(AssetGetContentId("ImmortalityLordTheme.mp3"), "In Aisles (IL's Theme)", 1)
 		leftwing = {
 			Group = "LeftWing",
@@ -873,6 +882,13 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = tick() - start
+		
+		local mt = GetOverrideMovesetMusicTime()
+		if musictime > mt then
+			changesong()
+		end
+		musictime = mt
+		
 		local scale = figure:GetScale()
 		
 		-- get vii
