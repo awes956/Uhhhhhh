@@ -1103,18 +1103,39 @@ AddModule(function()
 			{20.7, "[Delta log] In the"},
 			{21.7, "[Delta log] Dark"},
 		},
+		ORIGINAL = {
+			{0, "[Heaven] Pre-rendering sky..."},
+			{6, "[Heaven] Creating celestials..."},
+			{6.4, "[Heaven] Generating horizons..."},
+			{8.7, "[Heaven] Baking atmosphere..."},
+			{13.3, "[Heaven] Noising clouds..."},
+			{19.4, "[Heaven] Noising even more clouds..."},
+			{23.9, "[Heaven] Fluffifying clouds..."},
+			{26.5, "[Heaven] Smoothing terrain..."},
+			{37.9, "[Heaven] Placing structures..."},
+			{39.3, "[Heaven] Building entry gate..."},
+			{40, "[Heaven] Spawning entities..."},
+			{42.3, "[Heaven] Pacifying entities..."},
+			{43.8, "[ERROR] Restarting process..."},
+		},
 	}
+	local original = false
 	local function setmusic()
-		if math.random(10) == 1 or m.Deltarolled then
-			darkmode = true
-			SetOverrideDanceMusic(AssetGetContentId("SmugDance2.mp3"), "Portal Radio", 1)
+		if original then
+			SetOverrideDanceMusic(AssetGetContentId("SmugDance3.mp3"), "A Hat in Time OST - Peace and Tranquility", 1)
 		else
-			darkmode = false
-			SetOverrideDanceMusic(AssetGetContentId("SmugDance.mp3"), "Portal Radio", 1)
+			if math.random(10) == 1 or m.Deltarolled then
+				darkmode = true
+				SetOverrideDanceMusic(AssetGetContentId("SmugDance2.mp3"), "Portal Radio", 1)
+			else
+				darkmode = false
+				SetOverrideDanceMusic(AssetGetContentId("SmugDance.mp3"), "Portal Radio", 1)
+			end
 		end
 	end
 	m.Init = function(figure: Model)
 		start = tick()
+		original = m.Original
 		setmusic()
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
@@ -1194,6 +1215,7 @@ AddModule(function()
 		if text then
 			local str = ""
 			local arr = consolelogs[darkmode]
+			if original then arr = consolelogs.ORIGINAL end
 			for i=1, #arr do
 				if arr[i][1] <= t then
 					str ..= "\n" .. arr[i][2]
