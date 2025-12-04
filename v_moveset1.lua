@@ -1803,7 +1803,7 @@ AddModule(function()
 		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
-		table.insert(HatReanimator.HatCFrameOverride, sword)
+		table.insert(HatReanimator.HatCFrameOverride, gun)
 		flyv = Instance.new("BodyVelocity")
 		flyv.Name = "FlightBodyMover"
 		flyv.P = 90000
