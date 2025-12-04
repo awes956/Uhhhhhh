@@ -546,7 +546,7 @@ AddModule(function()
 
 	m.Variant = 1
 	m.Config = function(parent: GuiBase2d)
-		Util_CreateSwitch(parent, "Variant", {"Original", "Forsaken (Dubmood)", "Forsaken (OST)"}, m.Variant).Changed:Connect(function(val)
+		Util_CreateDropdown(parent, "Variant", {"Original", "Forsaken (Dubmood)", "Forsaken (OST)"}, m.Variant).Changed:Connect(function(val)
 			m.Variant = val
 		end)
 	end
