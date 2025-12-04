@@ -1620,6 +1620,7 @@ AddModule(function()
 				end
 				task.wait(0.7)
 			end
+			animationOverride = nil
 			task.wait(0.15)
 			local beam = root.CFrame
 			CreateSound(415700134)
