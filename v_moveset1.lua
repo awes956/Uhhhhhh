@@ -1606,7 +1606,7 @@ AddModule(function()
 				end
 				task.wait(0.15)
 				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * root.Size.Z)
-				EffectCannon(hole, root.CFrame * Vector3.new(0, 300, -50))
+				EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
 				animationOverride = nil
 				task.wait(0.7)
 			end
