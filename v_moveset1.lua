@@ -1154,6 +1154,7 @@ AddModule(function()
 	m.Sounds = true
 	m.NoCooldown = false
 	m.FlySpeed = 2
+	m.UseSword = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
 			m.Bee = val
@@ -1170,6 +1171,9 @@ AddModule(function()
 		Util_CreateSlider(parent, "Fly Speed", m.FlySpeed, 1, 8, 1).Changed:Connect(function(val)
 			m.FlySpeed = val
 		end)
+		Util_CreateSwitch(parent, "Gun = Sword", m.UseSword).Changed:Connect(function(val)
+			m.UseSword = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -1177,6 +1181,7 @@ AddModule(function()
 		m.Sounds = not save.Muted
 		m.NoCooldown = not not save.NoCooldown
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
+		m.UseSword = not not save.UseSword
 	end
 	m.SaveConfig = function()
 		return {
@@ -1185,6 +1190,7 @@ AddModule(function()
 			Muted = not m.Sounds,
 			NoCooldown = m.NoCooldown,
 			FlySpeed = m.FlySpeed,
+			UseSword = m.UseSword,
 		}
 	end
 
@@ -1192,6 +1198,9 @@ AddModule(function()
 	rcp.FilterType = Enum.RaycastFilterType.Exclude
 	rcp.RespectCanCollide = true
 	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		return workspace:Raycast(origin, direction, rcp)
+	end
 	local hum = nil
 	local root = nil
 	local torso = nil
@@ -1601,29 +1610,46 @@ AddModule(function()
 		notify("die... Die... DIE!!!", true)
 		CreateSound(1566051529)
 		task.spawn(function()
-			for _=1, 3 do
+			local fountain = math.random(30) == 1 and false
+			if fountain then
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
-					rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
+					rt = CFrame.new(0, 0, -2) * CFrame.Angles(math.rad(20), 0, 0)
 					nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
 					rst = CFrame.Angles(math.rad(10), math.rad(-10), math.rad(-175))
 					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+					
 					return rt, nt, rst, lst, rht, lht, gunoff
 				end
 				task.wait(0.15)
-				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * root.Size.Z)
-				EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
-				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
-					rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
-					nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
-					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
-					return rt, nt, rst, lst, rht, lht, gunoff
+				CreateSound(73280255204654)
+			else
+				for _=1, 3 do
+					animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+						rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
+						nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
+						rst = CFrame.Angles(math.rad(10), math.rad(-10), math.rad(-175))
+						lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+						return rt, nt, rst, lst, rht, lht, gunoff
+					end
+					task.wait(0.15)
+					if not rootu:IsDescendantOf(workspace) then return end
+					local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * root.Size.Z)
+					EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
+					animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+						rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
+						nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
+						lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+						return rt, nt, rst, lst, rht, lht, gunoff
+					end
+					task.wait(0.7)
+					if not rootu:IsDescendantOf(workspace) then return end
 				end
-				task.wait(0.7)
+				animationOverride = nil
+				task.wait(0.15)
 			end
-			animationOverride = nil
-			task.wait(0.15)
-			local beam = root.CFrame
+			if not rootu:IsDescendantOf(workspace) then return end
 			CreateSound(415700134)
+			local beam = root.CFrame
 			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(98, 1120, 98), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			Effect({Time = 140, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(280, 280, 280), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			local s = os.clock()
@@ -1635,6 +1661,7 @@ AddModule(function()
 			Attack(beam.Position, 560)
 			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(98, 1120, 98), SizeEnd = Vector3.new(0, 1120, 0), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
 			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(280, 280, 280), SizeEnd = Vector3.zero, Transparency = 0, TransparencyEnd = 0.6, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
+			if not rootu:IsDescendantOf(workspace) then return end
 			attacking = false
 			hum.WalkSpeed = 50 * root.Size.Z
 		end)
@@ -1660,7 +1687,7 @@ AddModule(function()
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
-			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
+			local raycast = PhysicsRaycast(hole.Position, target - hole.Position)
 			if raycast then
 				target = raycast.Position
 			end
@@ -1698,68 +1725,40 @@ AddModule(function()
 		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
+		hum.WalkSpeed = 0
 		task.spawn(function()
+			CreateSound(2785493, 0.8)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
-				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
-				nt = CFrame.Angles(math.rad(15), 0, math.rad(-30))
-				rst = CFrame.Angles(math.rad(30), 0, math.rad(90))
-				lst = CFrame.Angles(math.rad(0), math.rad(0), math.rad(30))
-				local tcf = CFrame.lookAt(root.Position, target)
-				local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
-				root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
+				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(-30))
+				nt = CFrame.Angles(math.rad(-5), 0, math.rad(30))
+				lst = CFrame.Angles(math.rad(0), math.rad(30), math.rad(-85))
 				return rt, nt, rst, lst, rht, lht, gunoff
 			end
-			task.wait(0.15)
-			if not rootu:IsDescendantOf(workspace) then return end
-			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
-			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
-			if raycast then
-				target = raycast.Position
-			end
-			local dist = (hole.Position - target).Magnitude
-			CreateSound(642890855, 0.45)
-			CreateSound(192410089, 0.55)
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(dist, 1, 1), SizeEnd = Vector3.new(dist, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(0, math.rad(90), 0), Material = "Neon", Color = Color3.new(1, 1, 1)})
-			for _=1,5 do
-				Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
-			end
-			for _=0,2 do
-				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
-			end
-			for _=0,2 do
-				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-				Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
-			end
-			if math.random(2) == 1 then
-				randomdialog({
-					"BOOM",
-					"THAT ANT IS DEAD",
-					"JUST DOING A GOD'S WORK",
-					"Immortality Lord, YOU CANNOT DO THIS",
-					"LIGHTNING FAST",
-					"WHO THE HELL DO YOU THINK I AM???", -- gurren lagann referencs
-					"EAT THIS IF YOU CAN EVEN",
-					"READ MY NAME, OF COURSE I SHOOT LIGHTNING",
-					"AND IT CANNOT FIGHT BACK",
-				}, true)
-			end
-			Attack(target, 10)
-			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
-				rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(30))
-				nt = CFrame.Angles(math.rad(10), 0, math.rad(-60))
-				rst = CFrame.Angles(math.rad(60), math.rad(-20), math.rad(-160))
-				lst = CFrame.Angles(math.rad(-5), math.rad(5), math.rad(40))
-				return rt, nt, rst, lst, rht, lht, gunoff
+			for _=1, math.random(27, 41) do
+				task.spawn(function()
+					local death = Instance.new("Part")
+					death.Massless = true
+					death.Transparency = transparency
+					death.Anchored = true
+					death.CanCollide = false
+					death.CanTouch = false
+					death.CanQuery = false
+					death.Color = color
+					death.Name = RandomString()
+					death.Size = Vector3.one
+					death.Material = material
+					death.Parent = workspace
+					local from = root.CFrame * Vector3.new(-1.2, 0.5, -2)
+					CreateSound(168513088, 1.1)
+				end)
+				task.wait(0.02)
+				if not rootu:IsDescendantOf(workspace) then return end
 			end
 			task.wait(0.1)
 			if not rootu:IsDescendantOf(workspace) then return end
 			animationOverride = nil
 			attacking = false
+			hum.WalkSpeed = 50 * root.Size.Z
 		end)
 	end
 
@@ -1797,7 +1796,7 @@ AddModule(function()
 			Group = "RightWing",
 			Limb = "Torso", Offset = CFrame.new(0.15, 0, 0)
 		}
-		sword = {
+		gun = {
 			Group = "Gun",
 			Limb = "Right Arm",
 			Offset = CFrame.identity
@@ -2044,8 +2043,13 @@ AddModule(function()
 			end
 		end
 		
-		-- sword
-		sword.Offset = joints.sw
+		-- gun
+		if m.UseSword then
+			gun.Group = "Sword"
+		else
+			gun.Group = "Gun"
+		end
+		gun.Offset = joints.sw
 		
 		-- dance reactions
 		if figure:GetAttribute("IsDancing") then
