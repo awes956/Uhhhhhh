@@ -1127,7 +1127,7 @@ AddModule(function()
 	local original = false
 	local function setmusic()
 		if original then
-			SetOverrideDanceMusic(AssetGetContentId("SmugDance3.mp3"), "A Hat in Time OST - Peace and Tranquility", 1)
+			SetOverrideDanceMusic(AssetGetContentId("SmugDance3.mp3"), "A Hat in Time OST - Peace and Tranquility", 2)
 		else
 			if math.random(10) == 1 or m.Deltarolled then
 				darkmode = true
@@ -1573,7 +1573,7 @@ AddModule(function()
 	local animator = nil
 	m.Init = function(figure: Model)
 		if m.Once then
-			SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1, NumberRange.new(16.59200, 16.59201))
+			SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1, NumberRange.new(16.665, 16.666))
 			SetOverrideDanceMusicTime(14.746)
 		else
 			SetOverrideDanceMusic(AssetGetContentId("DoTheFlop.mp3"), "asdfmovie - Do The Flop", 1)
