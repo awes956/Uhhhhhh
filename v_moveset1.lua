@@ -1460,6 +1460,22 @@ AddModule(function()
 			curpos = CFrame.new(curpos, uwu) * Vector3.new(0, 0, -length)
 		end
 	end
+	local function CreateSound(id, pitch)
+		pitch = pitch or 1
+		if not m.Sounds then return end
+		if not torso then return end
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.Parent = torso
+		sound.EmitterSize = 300
+		sound:Play()
+		sound.Ended:Connect(function()
+			sound:Destroy()
+		end)
+	end
 	local function EffectCannon(hole, target)
 		CreateSound(642890855, 0.45)
 		CreateSound(192410089, 0.55)
@@ -1481,22 +1497,6 @@ AddModule(function()
 			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
 			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 		end
-	end
-	local function CreateSound(id, pitch)
-		pitch = pitch or 1
-		if not m.Sounds then return end
-		if not torso then return end
-		local sound = Instance.new("Sound")
-		sound.Name = tostring(id)
-		sound.SoundId = "rbxassetid://" .. id
-		sound.Volume = 1
-		sound.Pitch = pitch
-		sound.Parent = torso
-		sound.EmitterSize = 300
-		sound:Play()
-		sound.Ended:Connect(function()
-			sound:Destroy()
-		end)
 	end
 	local function Attack(position, radius)
 		local hitvis = Instance.new("Part")
