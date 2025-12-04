@@ -1612,7 +1612,12 @@ AddModule(function()
 				task.wait(0.15)
 				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * root.Size.Z)
 				EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
-				animationOverride = nil
+				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+					rt = CFrame.new(0.5 * math.cos(timingsine / 50), 0, -0.5 * math.sin(timingsine / 50)) * CFrame.Angles(0, 0, math.rad(5))
+					nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
+					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+					return rt, nt, rst, lst, rht, lht, gunoff
+				end
 				task.wait(0.7)
 			end
 			task.wait(0.15)
