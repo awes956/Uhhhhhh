@@ -1643,6 +1643,7 @@ AddModule(function()
 			end
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
+			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * root.Size.Z)
 			local raycast = workspace:Raycast(hole.Position, target - hole.Position, rcp)
 			if raycast then
 				target = raycast.Position
