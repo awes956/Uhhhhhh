@@ -889,13 +889,14 @@ AddModule(function()
 	m.Name = "Kai Cenat and Speed jumping"
 	m.Description = "adventures of luigi and mario\nW SPEED\n\nthis uses no keyframes"
 	m.InternalName = "SpeedAndKaiCenat"
-	m.Assets = {"SpeedJumping.mp3"}
+	m.Assets = {"SpeedJumping.mp3", "SpeedJumpingDec.mp3"}
 
 	m.Intro = true
 	m.DifferentTiming = false
 	m.LegFix = false
 	m.CorrectFlipping = false
 	m.PoseToTheFans = true
+	m.MusicVariant = 1
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Intro", m.Intro).Changed:Connect(function(val)
 			m.Intro = val
@@ -912,6 +913,9 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Pose for the fans", m.PoseToTheFans).Changed:Connect(function(val)
 			m.PoseToTheFans = val
 		end)
+		Util_CreateDropdown(parent, "Music Variant", {"Normal", "Christmas"}, m.DifferentTiming and 2 or 1).Changed:Connect(function(val)
+			m.MusicVariant = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Intro = not not save.Intro
@@ -919,6 +923,7 @@ AddModule(function()
 		m.LegFix = not not save.LegFix
 		m.CorrectFlipping = not not save.CorrectFlipping
 		m.PoseToTheFans = not save.DontPose
+		m.MusicVariant = save.MusicVariant or m.MusicVariant
 	end
 	m.SaveConfig = function()
 		return {
@@ -926,12 +931,18 @@ AddModule(function()
 			KaiCenat = m.DifferentTiming,
 			LegFix = m.LegFix,
 			CorrectFlipping = m.CorrectFlipping,
-			DontPose = not m.PoseToTheFans
+			DontPose = not m.PoseToTheFans,
+			MusicVariant = m.MusicVariant
 		}
 	end
 
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("SpeedJumping.mp3"), "BABY LAUGH JERSEY FUNK", 1, NumberRange.new(5.516, 19.726))
+		if m.MusicVariant == 1 then
+			SetOverrideDanceMusic(AssetGetContentId("SpeedJumping.mp3"), "BABY LAUGH JERSEY FUNK", 1, NumberRange.new(5.516, 19.726))
+		end
+		if m.MusicVariant == 2 then
+			SetOverrideDanceMusic(AssetGetContentId("SpeedJumpingDec.mp3"), "BABY LAUGH JOLLY BEAT", 1, NumberRange.new(5.516, 19.726))
+		end
 		if not m.Intro then
 			SetOverrideDanceMusicTime(5.516)
 		end
