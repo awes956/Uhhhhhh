@@ -2420,4 +2420,32 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Boogie"
+	m.Description = "how is he hitting every beat"
+	m.Assets = {"Boogie.anim", "Boogie.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	local start = 0
+	m.Init = function(figure: Model)
+		start = tick()
+		SetOverrideDanceMusic(AssetGetContentId("Boogie.mp3"), "Funked up.mp3", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Boogie.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(tick() - start)
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
