@@ -2431,16 +2431,15 @@ AddModule(function()
 	end
 
 	local animator = nil
-	local start = 0
 	m.Init = function(figure: Model)
-		start = tick()
 		SetOverrideDanceMusic(AssetGetContentId("Boogie.mp3"), "Funked up.mp3", 1)
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
+		animator.looped = true
 		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Boogie.anim"))
 	end
 	m.Update = function(dt: number, figure: Model)
-		animator:Step(tick() - start)
+		animator:Step(GetOverrideDanceMusicTime())
 	end
 	m.Destroy = function(figure: Model?)
 		animator = nil

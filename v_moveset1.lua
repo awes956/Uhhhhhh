@@ -159,6 +159,7 @@ AddModule(function()
 	local toolAnim = "None"
 	local toolAnimTime = 0
 	local canClimb = false
+	local hipHeight = 0
 
 	local rng = Random.new(math.random(-65536, 65536))
 	
@@ -206,12 +207,12 @@ AddModule(function()
 				pose = "Jumping"
 				canClimb = true
 				hum.AutoRotate = false
-				hum.HipHeight = -1
+				hipHeight = -1
 			elseif state == "Freefall" then
 				pose = "Freefall"
 				canClimb = true
 				hum.AutoRotate = false
-				hum.HipHeight = -1
+				hipHeight = -1
 			elseif state == "Landed" then
 				pose = "Freefall"
 				canClimb = true
@@ -227,7 +228,7 @@ AddModule(function()
 					end
 				end
 				hum.AutoRotate = false
-				hum.HipHeight = -1
+				hipHeight = -1
 				f:Play()
 			elseif state == "Seated" then
 				pose = "Seated"
@@ -264,6 +265,8 @@ AddModule(function()
 		local t = tick()
 
 		rcp.FilterDescendantsInstances = {figure}
+
+		local scale = figure:GetScale()
 
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
@@ -325,9 +328,9 @@ AddModule(function()
 			climbforce.Parent = nil
 		end
 
-		if not climbing and (jumping or hum.HipHeight < -0.01) then
+		if not climbing and (jumping or hipHeight < -0.01) then
 			if not jumping then
-				hum.HipHeight *= math.exp(-16 * dt)
+				hipHeight *= math.exp(-16 * dt)
 			end
 			hum.JumpPower = 0
 			rs.V = 0.5
@@ -349,7 +352,6 @@ AddModule(function()
 			lh.D = -1.57
 		else
 			hum.AutoRotate = true
-			hum.HipHeight = 0
 			hum.JumpPower = 50
 
 			local amplitude = 1
@@ -410,6 +412,7 @@ AddModule(function()
 				toolAnimTime = 0
 			end
 		end
+		hum.HipHeight = hipHeight * scale
 
 		local rj = root:FindFirstChild("RootJoint")
 		local nj = torso:FindFirstChild("Neck")
@@ -958,7 +961,7 @@ AddModule(function()
 		if figure:GetAttribute("IsDancing") then
 			hum.HipHeight = 0
 		else
-			hum.HipHeight = 2.5
+			hum.HipHeight = 2.5 * scale
 		end
 		
 		-- joints
