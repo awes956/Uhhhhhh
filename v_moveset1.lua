@@ -1170,7 +1170,7 @@ AddModule(function()
 	m.Name = "Lightning Cannon"
 	m.Description = "lc if he locked in\nF - Toggle flight\nClick/Tap - \"Shoot\"\nZ - Dash (yes it kills)\nX then Click/Tap - \"Singularity Beam\"\n(you can X again to cancel charge)\nC then Click/Tap - \"Painless Rain\"\nV then Click/Tap - GRENADE\nB -\"Die X3\"\nM - Switch modes\nModes: 1. Normal\n       2. Power-up\n       3. Fast-as-frick Boii"
 	m.InternalName = "LightningFanon"
-	m.Assets = {"LightningCannonTheme.mp3"}
+	m.Assets = {"LightningCannonTheme.mp3", "LightningCannonPower.mp3", "LightningCannonFastBoi.mp3"}
 
 	m.Bee = false
 	m.Notifications = true
@@ -1522,6 +1522,7 @@ AddModule(function()
 						end
 					until t > ticks / 60
 				end
+				effect.Transparency = 1
 				Debris:AddItem(effect, 5)
 			end)
 		else
@@ -1751,6 +1752,7 @@ AddModule(function()
 					rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-60)) * RIGHTSHOULDERC0
 					lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 					gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
+					return rt, nt, rst, lst, rht, lht, gunoff
 				end
 				task.wait(0.1)
 				CreateSound(73280255204654)
@@ -1769,9 +1771,9 @@ AddModule(function()
 				task.wait(0.8)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 					rt *= CFrame.new(0, 0, -3) * CFrame.Angles(math.rad(90), 0, 0)
-					nt = CFrame.Angles(math.rad(15), 0, math.rad(-5))
-					rst = CFrame.Angles(math.rad(10), math.rad(-10), math.rad(-175))
-					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10))
+					nt = NECKC0 * CFrame.Angles(math.rad(15), 0, math.rad(-5))
+					rst = CFrame.Angles(math.rad(10), math.rad(-10), math.rad(-175)) * RIGHTSHOULDERC0
+					lst = CFrame.Angles(math.rad(5), math.rad(-10), math.rad(-10)) * LEFTSHOULDERC0
 					return rt, nt, rst, lst, rht, lht, gunoff
 				end
 				task.wait(0.05)
@@ -1910,19 +1912,6 @@ AddModule(function()
 					"DODGE THIS",
 				}, true)
 			end
-			local core = Instance.new("Part")
-			core.Massless = true
-			core.Transparency = 0
-			core.Color = Color3.new(1, 1, 1)
-			core.Anchored = true
-			core.CanCollide = false
-			core.CanTouch = false
-			core.CanQuery = false
-			core.Name = RandomString()
-			core.Size = Vector3.one
-			core.Shape = Enum.PartType.Ball
-			core.Material = Enum.Material.Neon
-			core.Parent = workspace
 			CreateSound(2785493, 0.8)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				local cos12 = math.cos(timingsine / 12)
@@ -1936,20 +1925,15 @@ AddModule(function()
 			local s = os.clock()
 			local throt = 0
 			repeat
-				local hole = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
-				core.Size = Vector3.one * math.pow(1.085, (os.clock() - s) * 60)
-				core.Color = curcolor
-				core.CFrame = hole
 				if throt > 0.02 then
 					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 50, BoomerangSize = 50})
 				end
 				throt += task.wait()
 			until os.clock() - s > 0.85 or not rootu:IsDescendantOf(workspace)
-			if not rootu:IsDescendantOf(workspace) then core:Destroy() return end
-			local target = mouse.Hit.Position
+			if not rootu:IsDescendantOf(workspace) then return end
 			for _=1, amount do
 				task.spawn(function()
-					local from = core.CFrame
+					local from = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
 					local death = Instance.new("Part")
 					death.Massless = true
 					death.Transparency = 0
@@ -1966,7 +1950,7 @@ AddModule(function()
 					Effect({Time = math.random(5, 20), EffectType = "Sphere", Size = Vector3.new(3, 3, 3) * math.random(-3, 2), SizeEnd = Vector3.new(6, 6, 6) * math.random(-3, 2), Transparency = 0.4, TransparencyEnd = 1, CFrame = from, Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 25})
 					for _=1, amount do task.wait() end
 					Effect({Time = math.random(25, 35), EffectType = "Sphere", Size = Vector3.new(0.6, 0.6, 0.6), SizeEnd = Vector3.new(1.6, 1.6, 1.6), Transparency = 0, TransparencyEnd = 1, CFrame = from, Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 25})
-					local toward = target + Vector3.new(math.random(-15, 15), math.random(-7, 7), math.random(-15, 15))
+					local toward = mouse.Hit.Position + Vector3.new(math.random(-15, 15), math.random(-7, 7), math.random(-15, 15))
 					local raycast = PhysicsRaycast(from.Position, (toward - from.Position) * 5)
 					if raycast then
 						toward = raycast.Position
@@ -1998,17 +1982,11 @@ AddModule(function()
 					death:Destroy()
 				end)
 				core.Color = curcolor
-				task.wait(0.02)
+				task.wait()
 				if not rootu:IsDescendantOf(workspace) then return end
 			end
 			animationOverride = nil
-			s = os.clock()
-			repeat
-				core.Transparency = (os.clock() - s) / 0.1
-				core.Color = curcolor
-				task.wait()
-			until os.clock() - s > 0.1 or not rootu:IsDescendantOf(workspace)
-			core:Destroy()
+			task.wait()
 			if not rootu:IsDescendantOf(workspace) then return end
 			attacking = false
 			hum.WalkSpeed = 50 * scale
@@ -2212,8 +2190,9 @@ AddModule(function()
 				end
 				local dist = (target - hole.Position).Magnitude
 				beam.Size = Vector3.new(dist, 2.5, 2.5)
-				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target)
+				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
 				if throt > 0.02 then
+					Lightning({Start = hole.Position, Finish = target, Offset = 25, Color = Color3.new(1, 0, 0), Time = math.random(30, 45), SizeStart = 0.5, SizeEnd = 1.5, BoomerangSize = 60})
 					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
 					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
 					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
@@ -2516,8 +2495,8 @@ AddModule(function()
 		else
 			rt = ROOTC0 * CFrame.new(0.5 * cos50, 0, 10 * math.clamp(math.pow(1 - t, 3), 0, 1) - 0.5 * sin50) * CFrame.Angles(math.rad(40), 0, 0)
 			nt = NECKC0 * CFrame.new(0, -0.25, 0) * CFrame.Angles(math.rad(-40), 0, 0)
-			rsj = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-45), 0, math.rad(5 + 2 * math.cos(timingsine / 19))) * RIGHTSHOULDERC0
-			lsj = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-45), 0, math.rad(-5 - 2 * math.cos(timingsine / 19))) * LEFTSHOULDERC0
+			rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-45), 0, math.rad(5 + 2 * math.cos(timingsine / 19))) * RIGHTSHOULDERC0
+			lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-45), 0, math.rad(-5 - 2 * math.cos(timingsine / 19))) * LEFTSHOULDERC0
 			rht = CFrame.new(1, -0.5, -0.5) * CFrame.Angles(math.rad(-15 + 9 * math.cos(timingsine / 74)), math.rad(80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 37)), 0, 0)
 			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54)), math.rad(-80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 41)), 0, 0)
 		end
@@ -2585,14 +2564,6 @@ AddModule(function()
 				end
 			end
 			if segment then
-				local sin5 = math.sin(timingsine / 5)
-				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-timingsine * 6), 0, 0)
-				nt = NECKC0
-				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-75 * sin5), 0, 0) * RIGHTSHOULDERC0
-				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(75 * sin5), 0, 0) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin5), math.rad(90), 0)
-				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin5), math.rad(-90), 0)
-			else
 				local sin2 = math.sin(timingsine / 2)
 				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-45), 0, 0)
 				nt = NECKC0 * CFrame.Angles(math.rad(-45), 0, 0)
@@ -2600,6 +2571,14 @@ AddModule(function()
 				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-135), 0, 0) * LEFTSHOULDERC0
 				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin2), math.rad(90), 0)
 				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin2), math.rad(-90), 0)
+			else
+				local sin5 = math.sin(timingsine / 5)
+				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-timingsine * 6), 0, 0)
+				nt = NECKC0
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-75 * sin5), 0, 0) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(75 * sin5), 0, 0) * LEFTSHOULDERC0
+				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin5), math.rad(90), 0)
+				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin5), math.rad(-90), 0)
 			end
 			curcolor = Color3.new(0, 0, 0)
 			if math.random(10) == 1 then
