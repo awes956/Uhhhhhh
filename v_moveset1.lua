@@ -1760,8 +1760,9 @@ AddModule(function()
 					local interval = 0.8 / 17
 					local w = interval
 					for i=-8, 8 do
+						local cf = root.CFrame * CFrame.new(i * 2, 8 + math.random(), 3)
 						for _=1, 3 do
-							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.2, 1, 0.2), SizeEnd = Vector3.new(0.2, 1, 0.2), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(i * 2, 7.5 + math.random() * 3, 3) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Material = "Neon", Color = Color3.new(1, 0, 0)})
+							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.2, 1, 0.2), SizeEnd = Vector3.new(0.2, 1, 0.2), Transparency = 0, TransparencyEnd = 1, CFrame = cf * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Material = "Neon", Color = Color3.new(1, 0, 0)})
 						end
 						local s = os.clock() + interval
 						task.wait(w)
@@ -1809,7 +1810,7 @@ AddModule(function()
 			local s = os.clock()
 			local throt = 0
 			repeat
-				local t = beamtime * (os.clock() - s) / 140
+				local t = 140 * (os.clock() - s) / beamtime
 				if throt > 0.05 then
 					Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5, Material = "Neon", Color = Color3.new(0, 0, 1)})
 					throt = 0
@@ -1925,6 +1926,7 @@ AddModule(function()
 			local s = os.clock()
 			local throt = 0
 			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
 				if throt > 0.02 then
 					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 50, BoomerangSize = 50})
 				end
