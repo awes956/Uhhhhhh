@@ -1744,6 +1744,7 @@ AddModule(function()
 				end)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 					rt *= CFrame.new(0, 0, 8) * CFrame.Angles(math.rad((timingsine * 120 * 22) % 360), 0, 0)
+					return rt, nt, rst, lst, rht, lht, gunoff
 				end
 				task.wait(0.45)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
@@ -1983,7 +1984,6 @@ AddModule(function()
 					task.wait(3)
 					death:Destroy()
 				end)
-				core.Color = curcolor
 				task.wait()
 				if not rootu:IsDescendantOf(workspace) then return end
 			end
