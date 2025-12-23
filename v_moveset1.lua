@@ -1737,7 +1737,7 @@ AddModule(function()
 			local beamtime = 140
 			if fountain then
 				task.spawn(function()
-					for _=1,2 do
+					for _=1,9 do
 						task.wait(0.2)
 						CreateSound(199145095)
 					end
