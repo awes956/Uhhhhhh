@@ -1743,10 +1743,10 @@ AddModule(function()
 					end
 				end)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
-					rt *= CFrame.new(0, 0, 8) * CFrame.Angles(math.rad((timingsine * 120 * 22) % 360), 0, 0)
+					rt *= CFrame.new(0, 0, 8) * CFrame.Angles(math.rad((os.clock() * 120 * 22) % 360), 0, 0)
 					return rt, nt, rst, lst, rht, lht, gunoff
 				end
-				task.wait(0.45)
+				task.wait(1.85)
 				animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 					rt *= CFrame.new(0, 0, 10) * CFrame.Angles(math.rad(90), 0, math.rad(-60))
 					nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
@@ -2194,7 +2194,7 @@ AddModule(function()
 				beam.Size = Vector3.new(dist, 2.5, 2.5)
 				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
 				if throt > 0.02 then
-					Lightning({Start = hole.Position, Finish = target, Offset = 25, Color = Color3.new(1, 0, 0), Time = math.random(30, 45), SizeStart = 0.5, SizeEnd = 1.5, BoomerangSize = 60})
+					Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
 					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
 					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
@@ -2465,13 +2465,17 @@ AddModule(function()
 		if isdancing then
 			hum.HipHeight = 0
 		else
-			hum.HipHeight = 3
 			-- and be fast if not attacking
-			if not attacking then
+			if attacking then
+				hum.HipHeight = 3
+			else
+				-- mode 3 is fast, and not floating
 				if currentmode == 2 then
 					hum.WalkSpeed = 300 * figure:GetScale()
+					hum.HipHeight = 0
 				else
 					hum.WalkSpeed = 50 * figure:GetScale()
+					hum.HipHeight = 3
 				end
 			end
 		end
