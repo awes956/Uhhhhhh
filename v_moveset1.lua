@@ -2793,9 +2793,8 @@ AddModule(function()
 					CreateSound(1042716828)
 				end
 			end
-			if sanitysongsync >= 8 then
-				curcolor = Color3.new(1, 0, 1)
-				--curcolor = Color3.fromHSV(math.random(0, 19) / 20, 1, 1)
+			if sanitysongsync >= 8 and not attacking then
+				curcolor = Color3.fromHSV(math.random(0, 19) / 20, 1, 1)
 				rt = ROOTC0 * CFrame.new(0, 0, 0.5 * sin50) * CFrame.Angles(math.rad(20), 0, 0)
 				nt = NECKC0
 				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-41.6 - 4 * sin50), 0, 0) * RIGHTSHOULDERC0
@@ -2827,22 +2826,24 @@ AddModule(function()
 					SetOverrideMovesetMusicTime((os.clock() - fastboistart) % 24.226)
 				end
 			end
-			if segment then
-				local sin2 = math.sin(timingsine / 2)
-				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-45), 0, 0)
-				nt = NECKC0 * CFrame.Angles(math.rad(-45), 0, 0)
-				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-135), 0, 0) * RIGHTSHOULDERC0
-				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-135), 0, 0) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin2), math.rad(90), 0)
-				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin2), math.rad(-90), 0)
-			else
-				local sin5 = math.sin(timingsine / 5)
-				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-timingsine * 6), 0, 0)
-				nt = NECKC0
-				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-75 * sin5), 0, 0) * RIGHTSHOULDERC0
-				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(75 * sin5), 0, 0) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin5), math.rad(90), 0)
-				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin5), math.rad(-90), 0)
+			if not attacking then
+				if segment then
+					local sin2 = math.sin(timingsine / 2)
+					rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-45), 0, 0)
+					nt = NECKC0 * CFrame.Angles(math.rad(-45), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-135), 0, 0) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-135), 0, 0) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin2), math.rad(90), 0)
+					lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin2), math.rad(-90), 0)
+				else
+					local sin5 = math.sin(timingsine / 5)
+					rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-timingsine * 6), 0, 0)
+					nt = NECKC0
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-75 * sin5), 0, 0) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(75 * sin5), 0, 0) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(75 * sin5), math.rad(90), 0)
+					lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin5), math.rad(-90), 0)
+				end
 			end
 			curcolor = Color3.new(0, 0, 0)
 			if math.random(5) == 1 then
@@ -2877,7 +2878,7 @@ AddModule(function()
 		local lhj = torso:FindFirstChild("Left Hip")
 		
 		-- interpolation
-		local alpha = math.exp(-18.6 * dt)
+		local alpha = 0--math.exp(-18.6 * dt)
 		joints.r = rt:Lerp(joints.r, alpha)
 		joints.n = nt:Lerp(joints.n, alpha)
 		joints.rs = rst:Lerp(joints.rs, alpha)
