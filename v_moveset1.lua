@@ -2570,9 +2570,9 @@ AddModule(function()
 						elseif type == "Divide" then
 							scaler2 = 1/value
 						end
-						coroutine.resume(coroutine.create(function()
+						task.spawn(function()
 							for i = 0,10/bonuspeed,0.1 do
-								swait()
+								task.wait()
 								if type == "Add" then
 									scaler2 = scaler2 - 0.01*value/bonuspeed
 								elseif type == "Divide" then
@@ -2583,7 +2583,7 @@ AddModule(function()
 								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,scaler2*bonuspeed)
 							end
 							rng:Destroy()
-						end))
+						end)
 					end
 					local function sphere2(bonuspeed,type,pos,scale,value,value2,value3,color)
 						local type = type
@@ -2614,9 +2614,9 @@ AddModule(function()
 							scaler2b = 1/value2
 							scaler2c = 1/value3
 						end
-						coroutine.resume(coroutine.create(function()
+						task.spawn(function()
 							for i = 0,10/bonuspeed,0.1 do
-								swait()
+								task.wait()
 								if type == "Add" then
 									scaler2 = scaler2 - 0.01*value/bonuspeed
 									scaler2b = scaler2b - 0.01*value/bonuspeed
@@ -2630,7 +2630,7 @@ AddModule(function()
 								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2b*bonuspeed,scaler2c*bonuspeed)
 							end
 							rng:Destroy()
-						end))
+						end)
 					end
 					local function PixelBlockX(bonuspeed,FastSpeed,type,pos,x1,y1,z1,value,color,outerpos)
 						local type = type
@@ -2657,9 +2657,9 @@ AddModule(function()
 						elseif type == "Divide" then
 							scaler2 = 1/value
 						end
-						coroutine.resume(coroutine.create(function()
+						task.spawn(function()
 							for i = 0,10/bonuspeed,0.1 do
-								swait()
+								task.wait()
 								if type == "Add" then
 									scaler2 = scaler2 - 0.01*value/bonuspeed
 								elseif type == "Divide" then
@@ -2672,7 +2672,7 @@ AddModule(function()
 								rngm.Scale = rngm.Scale - Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,scaler2*bonuspeed)
 							end
 							rng:Destroy()
-						end))
+						end)
 					end
 					local function sphereMK(bonuspeed,FastSpeed,type,pos,x1,y1,z1,value,color,outerpos)
 						local type = type
@@ -2699,9 +2699,9 @@ AddModule(function()
 						elseif type == "Divide" then
 							scaler2 = 1/value
 						end
-						coroutine.resume(coroutine.create(function()
+						task.spawn(function()
 							for i = 0,10/bonuspeed,0.1 do
-								swait()
+								task.wait()
 								if type == "Add" then
 									scaler2 = scaler2 - 0.01*value/bonuspeed
 								elseif type == "Divide" then
@@ -2714,7 +2714,7 @@ AddModule(function()
 								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,0)
 							end
 							rng:Destroy()
-						end))
+						end)
 					end
 					local function slash(bonuspeed,rotspeed,rotatingop,typeofshape,type,typeoftrans,pos,scale,value,color)
 						local type = type
@@ -2749,9 +2749,9 @@ AddModule(function()
 							scaler2 = 1/value/10
 						end
 						local randomrot = math.random(1,2)
-						coroutine.resume(coroutine.create(function()
+						task.spawn(function()
 							for i = 0,10/bonuspeed,0.1 do
-								swait()
+								task.wait()
 								if type == "Add" then
 									scaler2 = scaler2 - 0.01*value/bonuspeed/10
 								elseif type == "Divide" then
@@ -2772,7 +2772,7 @@ AddModule(function()
 								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed/10,0,scaler2*bonuspeed/10)
 							end
 							rng:Destroy()
-						end))
+						end)
 					end
 					sphere(1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-10,10)),math.rad(math.random(-10,10)),math.rad(math.random(-10,10))),Vector3.new(1,100000,1),0.6,BrickColor.new("Really black"))
 					sphere2(math.random(1,4),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),Vector3.new(5,1,5),-0.005,math.random(25,100)/25,-0.005,BrickColor.new("Institutional white"))
