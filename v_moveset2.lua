@@ -63,11 +63,14 @@ AddModule(function()
 
 	local VECTOR3_XZ = Vector3.new(1, 0, 1)
 	local XZ_DIRS = {
-		Vector3.new(-1, 0, 0)
+		Vector3.new(-1, 0, 0),
+		Vector3.new(0, 0, -1),
+		Vector3.new(1, 0, 0),
+		Vector3.new(0, 0, 1),
 	}
 	local maryo = {}
 	maryo.Enums = {}
-	maryo.Enums.StateGroups = {
+	maryo.Enums.ActionGroups = {
 		-- Group Flags
 		STATIONARY = bit32.lshift(0, 6),
 		MOVING = bit32.lshift(1, 6),
@@ -80,7 +83,7 @@ AddModule(function()
 		-- Mask for capturing these Flags
 		GROUP_MASK = 0b_000000111000000,
 	}
-	maryo.Enums.StateFlags = {
+	maryo.Enums.ActionFlags = {
 		STATIONARY = bit32.lshift(1, 9),
 		MOVING = bit32.lshift(1, 10),
 		AIR = bit32.lshift(1, 11),
@@ -104,9 +107,7 @@ AddModule(function()
 		WATER_OR_TEXT = bit32.lshift(1, 29),
 		THROWING = bit32.lshift(1, 31),
 	}
-	maryo.Enums.States = {
-		UNINITIALIZED = 0x00000000, -- (0x000)
-
+	maryo.Enums.Action = {
 		-- group 0x000: stationary actions
 		IDLE = 0x0C400201, -- (0x001 | FLAG_STATIONARY | FLAG_IDLE | FLAG_ALLOW_FIRST_PERSON | FLAG_PAUSE_EXIT)
 		START_SLEEPING = 0x0C400202, -- (0x002 | FLAG_STATIONARY | FLAG_IDLE | FLAG_ALLOW_FIRST_PERSON | FLAG_PAUSE_EXIT)
@@ -352,23 +353,35 @@ AddModule(function()
 		HOLDING_BOWSER = 0x00000391, -- (0x191 | FLAG_STATIONARY)
 		RELEASING_BOWSER = 0x00000392, -- (0x192 | FLAG_STATIONARY)
 	}
-	maryo.Enums.Flags = {
-		NORMAL_CAP = 0x00000001,
-		VANISH_CAP = 0x00000002,
-		METAL_CAP = 0x00000004,
-		WING_CAP = 0x00000008,
-		CAP_ON_HEAD = 0x00000010,
-		CAP_IN_HAND = 0x00000020,
-		METAL_SHOCK = 0x00000040,
-		TELEPORTING = 0x00000080,
-		MOVING_UP_IN_AIR = 0x00000100,
-		ACTION_SOUND_PLAYED = 0x00010000,
-		MARIO_SOUND_PLAYED = 0x00020000,
-		FALLING_FAR = 0x00040000,
-		PUNCHING = 0x00100000,
-		KICKING = 0x00200000,
-		TRIPPING = 0x00400000,
-	}
+	-- states preprocess
+	for k,v in maryo.Enums.Action do
+		local w = {}
+		for l,x in maryo.Enums.ActionFlags do
+			w[l] = bit32.band(v, x) ~= 0
+		end
+		w.GROUP = "UNKNOWN"
+		local y = bit32.band(v, maryo.Enums.ActionGroups.GROUP_MASK)
+		for l,x in maryo.Enums.ActionGroups do
+			if l ~= "GROUP_MASK" then
+				if y == x then
+					w.GROUP = l
+					break
+				end
+			end
+		end
+		w.ID = bit32.band(v, 0x1FF)
+		w.NAME = k
+		maryo.Enums.Action[k] = w
+	end
+	function maryo.PlaySound(sound)
+		maryo.Sounds[sound] = true
+	end
+	function maryo.PlaySoundIfNoFlag(sound, flagname)
+		if not maryo.Flags[flagname] then
+			maryo.Flags[flagname] = true
+			maryo.PlaySound(sound)
+		end
+	end
 	function maryo.ToRotation(angle)
 		return CFrame.fromAxisAngle(Vector3.yAxis, angle.Y) * CFrame.fromAxisAngle(Vector3.xAxis, -angle.X) * CFrame.fromAxisAngle(Vector3.zAxis, -angle.Z)
 	end
@@ -381,15 +394,15 @@ AddModule(function()
 	end
 	function maryo.FindFloor(pos)
 		local height = -10000
-		local result = maryo.Raycast(pos, Vector3.new(0, -10000, 0))
+		local result = maryo.Raycast(pos + Vector3.new(0, 5, 0), Vector3.new(0, -10000, 0))
 		if result then
 			height = result.Position.Y
 		end
 		return height, result
 	end
-	function maryo.FindCeiling(pos)
+	function maryo.FindCeiling(pos, height)
 		local height = 10000
-		local result = maryo.Raycast(pos, Vector3.new(0, 10000, 0))
+		local result = maryo.Raycast(Vector3.new(pos.X, (height or pos.Y) + 4, pos.Z), Vector3.new(0, 10000, 0))
 		if result then
 			height = result.Position.Y
 		end
@@ -397,7 +410,7 @@ AddModule(function()
 	end
 	function maryo.FindWalls(pos, offset, radius)
 		local origin = pos + Vector3.new(0, offset, 0)
-		local lastWall = nil
+		local lastwall = nil
 		local disp = Vector3.zero
 		for _,dir in XZ_DIRS do
 			local contact = Util.RaycastSM64(origin, dir * radius)
@@ -409,17 +422,465 @@ AddModule(function()
 					local dist = move.Magnitude
 					if dist < radius then
 						disp += (contact.Normal * VECTOR3_XZ) * (radius - dist)
-						lastWall = contact
+						lastwall = contact
 					end
 				end
 			end
 		end
-		return pos + disp, lastWall
+		return pos + disp, lastwall
+	end
+	function maryo.SetForwardVel(forwardVel)
+		maryo.ForwardVel = forwardVel
+		maryo.SlideVelX = math.sin(maryo.FaceAngle.Y) * forwardVel
+		maryo.SlideVelZ = math.cos(maryo.FaceAngle.Y) * forwardVel
+		maryo.Velocity = Vector3.new(maryo.SlideVelX, maryo.Velocity.Y, maryo.SlideVelZ)
+	end
+	function maryo.SetUpwardVel(upwardVel)
+		maryo.Velocity = Vector3.new(maryo.Velocity.X, upwardVel, maryo.Velocity.Z)
+	end
+	function maryo.GetFloorFriction()
+		local f = maryo.Floor
+		if f then
+			local hit = f.Instance
+			if hit then
+				local friction = 0.7
+				if hit:IsA("BasePart") then
+					friction = hit.CurrentPhysicalProperties.Friction
+				else
+					-- its likely a terrain
+					friction = PhysicalProperties.new(f.Material).Friction
+				end
+				if friction <= 0.025 then
+					return "WHOOPSIES"
+				elseif friction <= 0.5 then
+					return "SLIPPERY"
+				elseif friction >= 0.9 then
+					return "STICKY"
+				end
+			end
+		end
+		return "DEFAULT"
+	end
+	-- this is for my reference
+	-- positions scaled: 1 stud is 20 maryo units
+	-- angle range [-pi, pi)
+	-- cuz signed short does -0x8000 to 0x7FFF
+	-- hoping cframes also do the same ^^
+	function maryo.NormalizeAngle(angle)
+		while angle < -math.pi do
+			angle += 2 * math.pi
+		end
+		while angle >= math.pi do
+			angle -= 2 * math.pi
+		end
+		return angle
+	end
+	function maryo.FacingDownhill(backwards)
+		local faceAngleYaw = maryo.FaceAngle.Y
+		if backwards and maryo.ForwardVel < 0 then
+			faceAngleYaw = maryo.NormalizeAngle(faceAngleYaw + math.pi)
+		end
+		return math.abs(maryo.NormalizeAngle(maryo.FloorAngle - faceAngleYaw)) < math.pi / 2 -- 0x4000 is 90 degrees :3
+	end
+	function maryo.FloorAngleClassify(a, b, c, d)
+		local f = maryo.Floor
+		if f then
+			local class = maryo.GetFloorFriction()
+			local d = a
+			if class == "WHOOPSIES" then
+				d = b
+			elseif class == "SLIPPERY" then
+				d = c
+			elseif class == "STICKY" then
+				d = d
+			end
+			return floor.Normal.Y <= math.cos(math.rad(d))
+		end
+		return false
+	end
+	function maryo.FloorIsSlippery()
+		return maryo.FloorAngleClassify(90, 10, 20, 38)
+	end
+	function maryo.FloorIsSlope()
+		return maryo.FloorAngleClassify(15, 5, 10, 20)
+	end
+	function maryo.FloorIsSteep()
+		return maryo.FloorAngleClassify(30, 1, 20, 30)
+	end
+	function maryo.FindFloorHeightRelativePolar(angle, dist)
+		local x = math.sin(maryo.FaceAngle.Y + angle) * dist
+		local z = math.cos(maryo.FaceAngle.Y + angle) * dist
+		return maryo.FindFloor(maryo.Position + Vector3.new(x, 5, z))
+	end
+	function maryo.FindFloorSlope(angle)
+		local x = math.sin(maryo.FaceAngle.Y + angle) * 5
+		local z = math.cos(maryo.FaceAngle.Y + angle) * 5
+		local floor1 = maryo.FindFloor(maryo.Position + Vector3.new(x, 5, z))
+		local floor2 = maryo.FindFloor(maryo.Position + Vector3.new(-x, 5, -z))
+		local result = 0
+		if floor1 and floor2 then
+			local delta1 = floor1 - maryo.Position.Y
+			local delta2 = maryo.Position.Y - floor2
+			if delta * delta1 < delta2 * delta2 then
+				result = math.atan2(5, forwardYDelta)
+			else
+				result = math.atan2(5, backwardYDelta)
+			end
+		end
+		return maryo.NormalizeAngle(result)
+	end
+	function maryo.SetSteepJumpAction()
+		maryo.SteepJumpYaw = maryo.FaceAngle.Y
+		if maryo.ForwardVel > 0 then
+			local angleTemp = maryo.FloorAngle + math.pi
+			local faceAngleTemp = maryo.FaceAngle.Y - angleTemp
+			local y = math.sin(faceAngleTemp) * maryo.ForwardVel
+			local x = math.cos(faceAngleTemp) * maryo.ForwardVel * 0.75
+			maryo.ForwardVel = math.sqrt(y * y + x * x)
+			maryo.FaceAngle = Vector3.new(maryo.FaceAngle.X, maryo.NormalizeAngle(math.atan2(x, y) + angleTemp), maryo.FaceAngle.Z)
+		end
+		maryo.SetAction("STEEP_JUMP")
+	end
+	function maryo.SetYVelBasedOnFSpeed(inity, mult)
+		maryo.SetUpwardVel(inity + maryo.ForwardVel * mult)
+		if maryo.SquishTimer ~= 0 or maryo.QuicksandDepth > 1 then
+			maryo.Velocity *= Vector3.new(1, 0.5, 1)
+		end
+	end
+	function maryo.SetActionAirborne(action, arg)
+		if maryo.SquishTimer ~= 0 or maryo.QuicksandDepth > 1 then
+			if action.NAME == "DOUBLE_JUMP" or action.NAME == "TWIRLING" then
+				action = maryo.Enums.Action.JUMP
+			end
+		end
+		if action.NAME == "DOUBLE_JUMP" then
+			maryo.SetYVelBasedOnFSpeed(52, 0.25)
+			maryo.ForwardVel *= 0.8
+		elseif action.NAME == "BACKFLIP" then
+			maryo.AnimReset = true
+			maryo.ForwardVel = -16
+			maryo.SetYVelBasedOnFSpeed(62, 0)
+		elseif action.NAME == "TRIPLE_JUMP" then
+			maryo.SetYVelBasedOnFSpeed(69, 0)
+			maryo.ForwardVel *= 0.8
+		elseif action.NAME == "FLYING_TRIPLE_JUMP" then
+			maryo.SetYVelBasedOnFSpeed(82, 0)
+		elseif action.NAME == "WATER_JUMP" or action == "HOLD_WATER_JUMP" then
+			if arg == 0 then
+				maryo.SetYVelBasedOnFSpeed(42, 0)
+			end
+		elseif action.NAME == "BURNING_JUMP" then
+			maryo.SetUpwardVel(31.5)
+			maryo.ForwardVel = 8
+		elseif action.NAME == "RIDING_SHELL_JUMP" then
+			maryo.SetYVelBasedOnFSpeed(42, 0.25)
+		elseif action.NAME == "JUMP" or action == "HOLD_JUMP" then
+			maryo.AnimReset = true
+			maryo.SetYVelBasedOnFSpeed(42, 0.25)
+			maryo.ForwardVel *= 0.8
+		elseif action.NAME == "WALL_KICK_AIR" or action == "TOP_OF_POLE_JUMP" then
+			maryo.SetYVelBasedOnFSpeed(62, 0)
+			if maryo.ForwardVel < 24 then
+				maryo.ForwardVel = 24
+			end
+			maryo.WallKickTimer = 0
+		elseif action.NAME == "SIDE_FLIP" then
+			maryo.SetYVelBasedOnFSpeed(62, 0)
+			maryo.ForwardVel = 8
+			maryo.FaceAngle = Vector3.new(maryo.FaceAngle.X, maryo.IntendedYaw, maryo.FaceAngle.Z)
+		elseif action.NAME == "STEEP_JUMP" then
+			maryo.AnimReset = true
+			maryoSetYVelBasedOnFSpeed(42, 0.25)
+			maryo.FaceAngle = Vector3.new(-math.pi / 4, maryo.FaceAngle.Y, maryo.FaceAngle.Z)
+		elseif action.NAME == "LAVA_BOOST" then
+			maryo.SetUpwardVel(84)
+			if arg == 0 then
+				maryo.ForwardVel = 0
+			end
+		elseif action.NAME == "DIVE" then
+			local forwardVel = maryo.ForwardVel + 15
+			if forwardVel > 48 then
+				forwardVel = 48
+			end
+			maryo.SetForwardVel(forwardVel)
+		elseif action.NAME == "LONG_JUMP" then
+			maryo.AnimReset = true
+			maryo.SetYVelBasedOnFSpeed(30, 0)
+			maryo.LongJumpIsSlow = m.ForwardVel <= 16
+			maryo.ForwardVel *= 1.5
+			if maryo.ForwardVel > 48 then
+				maryo.ForwardVel = 48
+			end
+		elseif action.NAME == "SLIDE_KICK" then
+			maryo.SetUpwardVel(12)
+			if maryo.ForwardVel < 32 then
+				maryo.ForwardVel = 32
+			end
+		elseif action.NAME == "JUMP_KICK" then
+			maryo.SetUpwardVel(20)
+		end
+		maryo.PeakHeight = maryo.Position.Y
+		maryo.Flags.MOVING_UP_IN_AIR = true
+		return action
+	end
+	function maryo.SetActionMoving(action, arg)
+		local forwardVel = maryo.ForwardVel
+		local frick = maryo.GetFloorFriction()
+		local mag = math.min(maryo.IntendedMag, 8)
+		if action.NAME == "WALKING" then
+			if frick ~= "WHOOPSIES" then
+				if 0.0 <= forwardVel and forwardVel < mag then
+					maryo.ForwardVel = mag
+				end
+			end
+			maryo.WalkingPitch = 0
+		elseif action.NAME == "HOLD_WALKING" then
+			if 0.0 <= forwardVel and forwardVel < mag / 2 then
+				maryo.ForwardVel = mag / 2
+			end
+		elseif action.NAME == "BEGIN_SLIDING" then
+			if maryo.FacingDownhill() then
+				action = maryo.Enums.Action.BUTT_SLIDE
+			else
+				action = maryo.Enums.Action.STOMACH_SLIDE
+			end
+		elseif action.NAME == "HOLD_BEGIN_SLIDING" then
+			if maryo.FacingDownhill() then
+				action = maryo.Enums.Action.HOLD_BUTT_SLIDE
+			else
+				action = maryo.Enums.Action.HOLD_STOMACH_SLIDE
+			end
+		end
+		return action
+	end
+	function maryo.SetActionSubmerged(action, arg)
+		if action.NAME == "METAL_WATER_JUMP" or action.NAME == "HOLD_METAL_WATER_JUMP" then
+			maryo.SetUpwardVel(32)
+		end
+		return action
+	end
+	function maryo.SetActionCutscene(action, arg)
+		if action.NAME == "EMERGE_FROM_PIPE" then
+			maryo.SetUpwardVel(52)
+		elseif action.NAME == "FALL_AFTER_STAR_GRAB" then
+			maryo.SetForwardVel(0)
+		elseif action.NAME == "SPAWN_SPIN_AIRBORNE" then
+			maryo.SetForwardVel(2)
+		elseif action.NAME == "SPECIAL_EXIT_AIRBORNE" or action.NAME == "SPECIAL_DEATH_EXIT" then
+			maryo.SetUpwardVel(64)
+		end
+		return action
+	end
+	function maryo.SetAction(action, arg)
+		action = maryo.Enums.Action[action] or action or nil
+		arg = arg or 0
+		if action then
+			if action.GROUP == "MOVING" then
+				action = maryo.SetActionMoving(action, arg)
+			elseif action.GROUP == "AIRBORNE" then
+				action = maryo.SetActionAirborne(action, arg)
+			elseif action.GROUP == "SUBMERGED" then
+				action = maryo.SetActionSubmerged(action, arg)
+			elseif action.GROUP == "CUTSCENE" then
+				action = maryo.SetActionCutscene(action, arg)
+			end
+			maryo.Flags.ACTION_SOUND_PLAYED = false
+			maryo.Flags.MARIO_SOUND_PLAYED = false
+			if not maryo.Action.AIR then
+				maryo.Flags.FALLING_FAR = false
+			end
+		end
+		maryo.PrevAction = maryo.Action
+		maryo.Action = action
+		maryo.ActionArg = arg or 0
+		maryo.ActionState = 0
+		maryo.ActionTimer = 0
+	end
+	function maryo.SetJumpFromLanding()
+		if maryo.FloorIsSteep() then
+			maryo.SetSteepJumpAction()
+		elseif maryo.DoubleJumpTimer == 0 or maryo.SquishTimer ~= 0 then
+			maryo.SetAction("JUMP")
+		else
+			local prev = maryo.PrevAction or {}
+			if prev.NAME == "JUMP_LAND" then
+				maryo.SetAction("DOUBLE_JUMP")
+			elseif prev.NAME == "FREEFALL_LAND" then
+				maryo.SetAction("DOUBLE_JUMP")
+			elseif prev.NAME == "SIDE_FLIP_LAND_STOP" then
+				maryo.SetAction("DOUBLE_JUMP")
+			elseif prev.NAME == "DOUBLE_JUMP_LAND" then
+				if maryo.Flags.WING_CAP then
+					maryo.SetAction("FLYING_TRIPLE_JUMP")
+				elseif maryo.ForwardVel > 20 then
+					maryo.SetAction("TRIPLE_JUMP")
+				else
+					maryo.SetAction("JUMP")
+				end
+			else
+				maryo.SetAction("JUMP")
+			end
+		end
+		maryo.DoubleJumpTimer = 0
+	end
+	function maryo.SetJumpingAction(action, arg)
+		if maryo.FloorIsSteep() then
+			maryo.SetSteepJumpAction()
+		else
+			maryo.SetAction(action, arg)
+		end
+	end
+	function maryo.DamageAndSetAction(action, arg, damage)
+		maryo.HealthSub = damage
+		maryo.SetAction(action, arg)
+	end
+	function maryo.CheckCommonActionExits()
+		if maryo.Input.A_PRESSED then
+			maryo.SetAction("JUMP")
+			return true
+		end
+		if maryo.Input.OFF_FLOOR then
+			maryo.SetAction("FREEFALL")
+			return true
+		end
+		if maryo.Input.NONZERO_ANALOG then
+			maryo.SetAction("WALKING")
+			return true
+		end
+		if maryo.Input.ABOVE_SLIDE then
+			maryo.SetAction("BEGIN_SLIDING")
+			return true
+		end
+		return false
+	end
+	function maryo.UpdatePunchSequence()
+		local endAction, crouchEndAction, animFrame
+		if maryo.Action.MOVING then
+			endAction = Action.WALKING
+			crouchEndAction = Action.CROUCH_SLIDE
+		else
+			endAction = Action.IDLE
+			crouchEndAction = Action.CROUCHING
+		end
+	
+		local actionArg = maryo.ActionArg
+	
+		if actionArg == 0 or actionArg == 1 then
+			if actionArg == 0 then
+				m:PlaySound(Sounds.MARIO_PUNCH_YAH)
+			end
+	
+			m:SetAnimation(Animations.FIRST_PUNCH)
+			m.ActionArg = m:IsAnimAtEnd() and 2 or 1
+	
+			if m.AnimFrame >= 2 then
+				m.Flags:Add(MarioFlags.PUNCHING)
+			end
+		elseif actionArg == 2 then
+			m:SetAnimation(Animations.FIRST_PUNCH_FAST)
+	
+			if m.AnimFrame <= 0 then
+				m.Flags:Add(MarioFlags.PUNCHING)
+			end
+	
+			if m.Input:Has(InputFlags.B_PRESSED) then
+				m.ActionArg = 3
+			end
+	
+			if m:IsAnimAtEnd() then
+				m:SetAction(endAction)
+			end
+		elseif actionArg == 3 or actionArg == 4 then
+			if actionArg == 3 then
+				m:PlaySound(Sounds.MARIO_PUNCH_WAH)
+			end
+	
+			m:SetAnimation(Animations.SECOND_PUNCH)
+			m.ActionArg = m:IsAnimPastEnd() and 5 or 4
+	
+			if m.AnimFrame > 0 then
+				m.Flags:Add(MarioFlags.PUNCHING)
+			end
+	
+			if m.ActionArg == 5 then
+				m.BodyState.PunchType = 1
+				m.BodyState.PunchTimer = 4
+			end
+		elseif actionArg == 5 then
+			m:SetAnimation(Animations.SECOND_PUNCH_FAST)
+	
+			if m.AnimFrame <= 0 then
+				m.Flags:Add(MarioFlags.PUNCHING)
+			end
+	
+			if m.Input:Has(InputFlags.B_PRESSED) then
+				m.ActionArg = 6
+			end
+	
+			if m:IsAnimAtEnd() then
+				m:SetAction(endAction)
+			end
+		elseif actionArg == 6 then
+			m:PlayActionSound(Sounds.MARIO_PUNCH_HOO, 1)
+			animFrame = m:SetAnimation(Animations.GROUND_KICK)
+	
+			if animFrame == 0 then
+				m.BodyState.PunchType = 2
+				m.BodyState.PunchTimer = 6
+			end
+	
+			if animFrame >= 0 and animFrame < 8 then
+				m.Flags:Add(MarioFlags.KICKING)
+			end
+	
+			if m:IsAnimAtEnd() then
+				m:SetAction(endAction)
+			end
+		elseif actionArg == 9 then
+			m:PlayActionSound(Sounds.MARIO_PUNCH_HOO, 1)
+			m:SetAnimation(Animations.BREAKDANCE)
+			animFrame = m.AnimFrame
+	
+			if animFrame >= 2 and animFrame < 8 then
+				m.Flags:Add(MarioFlags.TRIPPING)
+			end
+	
+			if m:IsAnimAtEnd() then
+				m:SetAction(crouchEndAction)
+			end
+		end
+	
+		return false
+	end
+	function maryo.Step()
+		if not maryo.Action then
+			return
+		end
 	end
 
 	function maryo.Reset(spawn)
-		maryo.Flags = maryo.Enums.Flags.MOVING_UP_IN_AIR
-		maryo.State = maryo.Enums.States.SPAWN_SPIN_AIRBORNE
+		maryo.Flags = {
+			NORMAL_CAP = true,
+			VANISH_CAP = false,
+			METAL_CAP = false,
+			WING_CAP = false,
+			CAP_ON_HEAD = true,
+			CAP_IN_HAND = false,
+			METAL_SHOCK = false,
+			TELEPORTING = false,
+			MOVING_UP_IN_AIR = false,
+			ACTION_SOUND_PLAYED = false,
+			MARIO_SOUND_PLAYED = false,
+			FALLING_FAR = false,
+			PUNCHING = false,
+			KICKING = false,
+			TRIPPING = false,
+		}
+		maryo.Action = nil
+		maryo.ActionArg = 0
+		maryo.ActionState = 0
+		maryo.ActionTimer = 0
+		maryo.PrevAction = nil
 		maryo.Health = 8
 		maryo.HealthAdd = 0
 		maryo.HealthSub = 0
@@ -430,10 +891,21 @@ AddModule(function()
 		maryo.ForwardVel = 0
 		maryo.SlideVelX = 0
 		maryo.SlideVelZ = 0
+		maryo.FaceAngle = 0
+		maryo.AngleVel = 0
 		maryo.CeilHeight = 0
+		maryo.Floor = nil
 		maryo.FloorHeight = 0
 		maryo.FloorAngle = 0
 		maryo.WaterLevel = 0
+		maryo.IntendedMag = 0
+		maryo.IntendedYaw = 0
+		maryo.InvincTimer = 0
+		maryo.FramesSinceA = 255
+		maryo.FramesSinceB = 255
+		maryo.WallKickTimer = 0
+		maryo.DoubleJumpTimer = 0
+		maryo.SetAction("SPAWN_SPIN_AIRBORNE")
 	end
 
 	m.Init = function(figure: Model)

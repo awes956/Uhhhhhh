@@ -1391,13 +1391,8 @@ AddModule(function()
 		local rotx = params.RotationX or 0
 		local roty = params.RotationY or 0
 		local rotz = params.RotationZ or 0
-		local material = params.Material or "Neon"
-		local color = params.Color or Color3.new(1, 1, 1)
-		local hOK,sOK,vOK = color:ToHSV()
-		local rainbow = false
-		if sOK > .1 then
-			rainbow = true
-		end
+		local material = params.Material or Enum.Material.Neon
+		local color = params.Color or "RAINBOW"
 		local ticks = params.Time or 45
 		local start = os.clock()
 		local boomerang = params.Boomerang
@@ -1410,7 +1405,7 @@ AddModule(function()
 		effect.CanCollide = false
 		effect.CanTouch = false
 		effect.CanQuery = false
-		effect.Color = color
+		effect.Color = Color3.new(1, 1, 1)
 		effect.Name = RandomString()
 		effect.Size = Vector3.one
 		effect.Material = material
@@ -1442,15 +1437,6 @@ AddModule(function()
 			task.spawn(function()
 				local movespeed = nil
 				local growth = nil
-				if shapetype == "Block" then
-					effect.CFrame = cfr * CFrame.Angles(
-						math.random() * math.pi * 2,
-						math.random() * math.pi * 2,
-						math.random() * math.pi * 2
-					)
-				else
-					effect.CFrame = cfr
-				end
 				if boomerang and boomerangsize then
 					local bmr1 = 1 + boomerang / 50
 					local bmr2 = 1 + boomerangsize / 50
@@ -1460,32 +1446,36 @@ AddModule(function()
 					growth = (endsize - size) * (bmr2 + 1)
 					local t = 0
 					repeat
-						local dt = task.wait()
 						t = os.clock() - start
-						if rainbow then
+						if color == "RAINBOW" then
 							effect.Color = curcolor
+						elseif color == "RANDOM" then
+							effect.Color = BrickColor.random().Color
+						else
+							effect.Color = color
 						end
 						local loop = t * 60
 						local t2 = loop / ticks
 						mesh.Scale = size + growth * (t2 - bmr2 * 0.5 * t2 * t2) * bmr2
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
-						local add = CFrame.identity
+						local add = Vector3.zero
 						if movedir ~= nil then
-							add = CFrame.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2))
+							add = CFrame.lookAt(cfr.Position, movedir) * Vector3.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2
-							) * add
+							) + add
 						else
 							effect.CFrame = cfr * CFrame.Angles(
 								math.rad(rotx * loop),
 								math.rad(roty * loop),
 								math.rad(rotz * loop)
-							) * add
+							) + add
 						end
+						task.wait()
 					until t > ticks / 60
 				else
 					if movedir ~= nil then
@@ -1494,32 +1484,36 @@ AddModule(function()
 					growth = endsize - size
 					local t = 0
 					repeat
-						local dt = task.wait()
 						t = os.clock() - start
-						if rainbow then
+						if color == "RAINBOW" then
 							effect.Color = curcolor
+						elseif color == "RANDOM" then
+							effect.Color = BrickColor.random().Color
+						else
+							effect.Color = color
 						end
 						local loop = t * 60
 						local t2 = loop / ticks
 						mesh.Scale = size + growth * t2
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
-						local add = CFrame.identity
+						local add = Vector3.zero
 						if movedir ~= nil then
-							add = CFrame.new(0, 0, -movespeed * t2)
+							add = CFrame.lookAt(cfr.Position, movedir) * Vector3.new(0, 0, -movespeed * t2)
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2,
 								math.random() * math.pi * 2
-							) * add
+							) + add
 						else
 							effect.CFrame = cfr * CFrame.Angles(
 								math.rad(rotx * loop),
 								math.rad(roty * loop),
 								math.rad(rotz * loop)
-							) * add
+							) + add
 						end
+						task.wait()
 					until t > ticks / 60
 				end
 				effect.Transparency = 1
@@ -1535,8 +1529,8 @@ AddModule(function()
 		local start = params.Start or Vector3.new(0, 0, 0)
 		local finish = params.Finish or Vector3.new(0, 512, 0)
 		local offset = params.Offset or 0
-		local color = params.Color or Color3.new(1, 0, 0)
 		local ticks = params.Time or 15
+		local color = params.Color or "RAINBOW"
 		local sizestart = params.SizeStart or 0
 		local sizeend = params.SizeEnd or 1
 		local transparency = params.Transparency or 0
@@ -1568,7 +1562,6 @@ AddModule(function()
 				Transparency = transparency,
 				TransparencyEnd = endtransparency,
 				CFrame = CFrame.new(curpos, uwu) * CFrame.new(0, 0, -length / 2),
-				Material = "Neon",
 				Color = color,
 				Boomerang = 0,
 				BoomerangSize = boomerangsize
@@ -1600,21 +1593,21 @@ AddModule(function()
 	local function EffectCannon(hole, target, bang)
 		local dist = (hole - target).Magnitude
 		hole = CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))) + hole
-		local before = Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-		local after = Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-		Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(dist, 1, 1), SizeEnd = Vector3.new(dist, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(0, math.rad(90), 0), Material = "Neon", Color = Color3.new(1, 1, 1)})
+		local before = Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = hole, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+		local after = Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+		Effect({Time = 25, EffectType = "Cylinder", Size = Vector3.new(dist, 1, 1), SizeEnd = Vector3.new(dist, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.lookAt((hole.Position + target) / 2, target) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.new(1, 1, 1)})
 		for _=1,5 do
-			Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+			Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Time = 25, BoomerangSize = 55})
 		end
 		for _=0,2 do
-			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 		end
 		for _=0,2 do
-			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+			Effect({Time = math.random(25, 50), EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 		end
 		if bang ~= false then CreateSound(before, 642890855, 0.45) end
 		CreateSound(after, 192410089, 0.55)
@@ -1678,18 +1671,18 @@ AddModule(function()
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			CreateSound(642890855, 0.45)
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(2, 100, 2), SizeEnd = Vector3.new(6, 100, 6), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 45})
-			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(3, 100, 3), SizeEnd = Vector3.new(9, 100, 9), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 45})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(2, 100, 2), SizeEnd = Vector3.new(6, 100, 6), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Boomerang = 0, BoomerangSize = 45})
+			Effect({Time = math.random(25, 45), EffectType = "Sphere", Size = Vector3.new(3, 100, 3), SizeEnd = Vector3.new(9, 100, 9), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame * CFrame.new(math.random(-1, 1), math.random(-1, 1), -50) * CFrame.Angles(math.rad(math.random(89, 91)), math.rad(math.random(-1, 1)), math.rad(math.random(-1, 1))), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 45})
 			Attack(root.Position, 14)
 			for _=1, 4 do
 				root.CFrame = root.CFrame * CFrame.new(0, 0, -25)
 				Attack(root.Position, 14)
-				Lightning({Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Offset = 25, Color = Color3.new(1, 0, 0), Time = math.random(30, 45), SizeStart = 0.5, SizeEnd = 1.5, BoomerangSize = 60})
+				Lightning({Start = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Finish = root.CFrame * Vector3.new(math.random(-2.5, 2.5), math.random(-5, 5), math.random(-15, 15)), Offset = 25, Time = math.random(30, 45), SizeStart = 0.5, SizeEnd = 1.5, BoomerangSize = 60})
 			end
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+			Effect({Time = 25, EffectType = "Box", Size = Vector3.new(2, 2, 2), SizeEnd = Vector3.new(5, 5, 5), Transparency = 0, TransparencyEnd = 1, CFrame = root.CFrame, RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = ROOTC0 * CFrame.Angles(0, 0, math.rad(90))
 				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(-90))
@@ -1763,7 +1756,7 @@ AddModule(function()
 					for i=-8, 8 do
 						local cf = root.CFrame * CFrame.new(i * 2, 8 + math.random(), 3)
 						for _=1, 3 do
-							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.2, 1, 0.2), SizeEnd = Vector3.new(0.2, 1, 0.2), Transparency = 0, TransparencyEnd = 1, CFrame = cf * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Material = "Neon", Color = Color3.new(1, 0, 0)})
+							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.2, 1, 0.2), SizeEnd = Vector3.new(0.2, 1, 0.2), Transparency = 0, TransparencyEnd = 1, CFrame = cf * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360)))})
 						end
 						local s = os.clock() + interval
 						task.wait(w)
@@ -1805,22 +1798,22 @@ AddModule(function()
 			end
 			if not rootu:IsDescendantOf(workspace) then return end
 			local beam = root.CFrame
-			local moonlord = Effect({Time = beamtime, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(98, 1120, 98), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
-			Effect({Time = beamtime, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(280, 280, 280), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 0, 0)})
+			local moonlord = Effect({Time = beamtime, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(98, 1120, 98), Transparency = 0, TransparencyEnd = 0, CFrame = beam})
+			Effect({Time = beamtime, EffectType = "Sphere", Size = Vector3.zero, SizeEnd = Vector3.new(280, 280, 280), Transparency = 0, TransparencyEnd = 0, CFrame = beam})
 			if not fountain then CreateSound(moonlord, 415700134) end
 			local s = os.clock()
 			local throt = 0
 			repeat
 				local t = 140 * (os.clock() - s) / beamtime
 				if throt > 0.05 then
-					Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5, Material = "Neon", Color = Color3.new(0, 0, 1)})
+					Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5, Color = Color3.new(0, 0, 1)})
 					throt = 0
 				end
 				throt += task.wait()
 			until os.clock() - s >= beamtime / 60
 			if rootu:IsDescendantOf(workspace) then Attack(beam.Position, 560) end
-			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(98, 1120, 98), SizeEnd = Vector3.new(0, 1120, 0), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Material = "Neon", Color = Color3.new(1, 1, 1)})
-			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(280, 280, 280), SizeEnd = Vector3.zero, Transparency = 0, TransparencyEnd = 0.6, CFrame = beam, Material = "Neon", Color = Color3.new(1, 1, 1)})
+			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(98, 1120, 98), SizeEnd = Vector3.new(0, 1120, 0), Transparency = 0, TransparencyEnd = 0, CFrame = beam, Color = Color3.new(1, 1, 1)})
+			Effect({Time = 75, EffectType = "Sphere", Size = Vector3.new(280, 280, 280), SizeEnd = Vector3.zero, Transparency = 0, TransparencyEnd = 0.6, CFrame = beam, Color = Color3.new(1, 1, 1)})
 			if not rootu:IsDescendantOf(workspace) then return end
 			animationOverride = nil
 			attacking = false
@@ -1929,7 +1922,7 @@ AddModule(function()
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(0, -1, -2) * scale)
 				if throt > 0.02 then
-					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 50, BoomerangSize = 50})
+					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Boomerang = 50, BoomerangSize = 50})
 				end
 				throt += task.wait()
 			until os.clock() - s > 0.85 or not rootu:IsDescendantOf(workspace)
@@ -1950,9 +1943,9 @@ AddModule(function()
 					death.Shape = Enum.PartType.Ball
 					death.Material = Enum.Material.Neon
 					death.Parent = workspace
-					Effect({Time = math.random(5, 20), EffectType = "Sphere", Size = Vector3.new(3, 3, 3) * math.random(-3, 2), SizeEnd = Vector3.new(6, 6, 6) * math.random(-3, 2), Transparency = 0.4, TransparencyEnd = 1, CFrame = from, Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 25})
+					Effect({Time = math.random(5, 20), EffectType = "Sphere", Size = Vector3.new(3, 3, 3) * math.random(-3, 2), SizeEnd = Vector3.new(6, 6, 6) * math.random(-3, 2), Transparency = 0.4, TransparencyEnd = 1, CFrame = from, Boomerang = 0, BoomerangSize = 25})
 					for _=1, amount do task.wait() end
-					Effect({Time = math.random(25, 35), EffectType = "Sphere", Size = Vector3.new(0.6, 0.6, 0.6), SizeEnd = Vector3.new(1.6, 1.6, 1.6), Transparency = 0, TransparencyEnd = 1, CFrame = from, Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 25})
+					Effect({Time = math.random(25, 35), EffectType = "Sphere", Size = Vector3.new(0.6, 0.6, 0.6), SizeEnd = Vector3.new(1.6, 1.6, 1.6), Transparency = 0, TransparencyEnd = 1, CFrame = from, Boomerang = 0, BoomerangSize = 25})
 					local toward = mouse.Hit.Position + Vector3.new(math.random(-15, 15), math.random(-7, 7), math.random(-15, 15))
 					local raycast = PhysicsRaycast(from.Position, (toward - from.Position) * 5)
 					if raycast then
@@ -1964,7 +1957,7 @@ AddModule(function()
 					repeat
 						local a = (os.clock() - s2) * 60
 						death.Color = curcolor
-						death.CFrame = from * CFrame.new(0, 100 * a * (t - a) / (t * t * h), -(toward - from.Position).Magnitude * (a / t))
+						death.CFrame = from * CFrame.new(0, 200 * a * (t - a) / (t * t * h), -(toward - from.Position).Magnitude * (a / t))
 						task.wait()
 					until os.clock() - s2 > t / 60
 					death.CFrame = from.Rotation + toward
@@ -1976,7 +1969,7 @@ AddModule(function()
 					until os.clock() - s2 > t / 60
 					CreateSound(death, 168513088, 1.1)
 					for _=1, 3 do
-						Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 10, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 20, BoomerangSize = 35})
+						Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 10, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Boomerang = 20, BoomerangSize = 35})
 					end
 					task.wait(0.1)
 					death.Transparency = 1
@@ -2057,6 +2050,7 @@ AddModule(function()
 					"SKY, BLAST THESE INSECTS",
 					"THE WEATHER IS WIERD TODAY.",
 					"Immortality Lord could NEVER do this!",
+					"This will be PAINLESS",
 				}, true)
 			end
 			task.wait(0.5)
@@ -2194,13 +2188,13 @@ AddModule(function()
 				beam.Size = Vector3.new(dist, 2.5, 2.5)
 				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
 				if throt > 0.02 then
-					Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Color = Color3.new(1, 0, 0), Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
-					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 50})
-					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
-					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
-					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 0, 0), Boomerang = 0, BoomerangSize = 15})
-					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Material = "Neon", Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					Lightning({Start = hole.Position, Finish = target, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 					local lod = 5
 					if dist < lod * 10 then
 						for i=0, (dist // 10) + 1 do
@@ -2241,6 +2235,7 @@ AddModule(function()
 	local rightwing = {}
 	local gun = {}
 	local flyv, flyg = nil, nil
+	local walkingwheel = nil
 	local chatconn = nil
 	local uisbegin, uisend = nil, nil
 	local dancereact = {}
@@ -2278,6 +2273,22 @@ AddModule(function()
 		flyg.P = 3000
 		flyg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		flyg.Parent = nil
+		walkingwheel = Instance.new("Model")
+		walkingwheel.Name = "WalkingWheel"
+		for i=1, 36 do
+			local v = Instance.new("Part")
+			v.Name = tostring(15 + 10 * i)
+			v.Size = Vector3.new(2, 0.2, 0.56)
+			v.Massless = true
+			v.Material = Enum.Material.Neon
+			v.Anchored = true
+			v.CanCollide = false
+			v.CanQuery = false
+			v.CanTouch = false
+			v.Color = Color3.new()
+			v.Parent = walkingwheel
+		end
+		walkingwheel.Parent = figure
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
@@ -2469,12 +2480,11 @@ AddModule(function()
 			if attacking then
 				hum.HipHeight = 3
 			else
-				-- mode 3 is fast, and not floating
+				hum.WalkSpeed = 50 * figure:GetScale()
+				-- mode 3 is not floating
 				if currentmode == 2 then
-					hum.WalkSpeed = 300 * figure:GetScale()
 					hum.HipHeight = 0
 				else
-					hum.WalkSpeed = 50 * figure:GetScale()
 					hum.HipHeight = 3
 				end
 			end
@@ -2537,10 +2547,253 @@ AddModule(function()
 						"Why would Roblox remove this audio...",
 						"Now...",
 					})
+					local function sphere(bonuspeed,type,pos,scale,value,color)
+						local type = type
+						local rng = Instance.new("Part",workspace)
+						rng.Anchored = true
+						rng.BrickColor = color
+						rng.CanCollide = false
+						rng.FormFactor = 3
+						rng.Name = RandomString()
+						rng.Material = "Neon"
+						rng.Size = Vector3.new(1,1,1)
+						rng.Transparency = 0
+						rng.TopSurface = 0
+						rng.BottomSurface = 0
+						rng.CFrame = pos
+						local rngm = Instance.new("SpecialMesh",rng)
+						rngm.MeshType = "Sphere"
+						rngm.Scale = scale
+						local scaler2 = 1
+						if type == "Add" then
+							scaler2 = 1*value
+						elseif type == "Divide" then
+							scaler2 = 1/value
+						end
+						coroutine.resume(coroutine.create(function()
+							for i = 0,10/bonuspeed,0.1 do
+								swait()
+								if type == "Add" then
+									scaler2 = scaler2 - 0.01*value/bonuspeed
+								elseif type == "Divide" then
+									scaler2 = scaler2 - 0.01/value*bonuspeed
+								end
+								rng.BrickColor = BrickColor.random()
+								rng.Transparency = rng.Transparency + 0.01*bonuspeed
+								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,scaler2*bonuspeed)
+							end
+							rng:Destroy()
+						end))
+					end
+					local function sphere2(bonuspeed,type,pos,scale,value,value2,value3,color)
+						local type = type
+						local rng = Instance.new("Part",workspace)
+						rng.Anchored = true
+						rng.BrickColor = color
+						rng.CanCollide = false
+						rng.FormFactor = 3
+						rng.Name = RandomString()
+						rng.Material = "Neon"
+						rng.Size = Vector3.new(1,1,1)
+						rng.Transparency = 0
+						rng.TopSurface = 0
+						rng.BottomSurface = 0
+						rng.CFrame = pos
+						local rngm = Instance.new("SpecialMesh",rng)
+						rngm.MeshType = "Sphere"
+						rngm.Scale = scale
+						local scaler2 = 1
+						local scaler2b = 1
+						local scaler2c = 1
+						if type == "Add" then
+							scaler2 = 1*value
+							scaler2b = 1*value2
+							scaler2c = 1*value3
+						elseif type == "Divide" then
+							scaler2 = 1/value
+							scaler2b = 1/value2
+							scaler2c = 1/value3
+						end
+						coroutine.resume(coroutine.create(function()
+							for i = 0,10/bonuspeed,0.1 do
+								swait()
+								if type == "Add" then
+									scaler2 = scaler2 - 0.01*value/bonuspeed
+									scaler2b = scaler2b - 0.01*value/bonuspeed
+									scaler2c = scaler2c - 0.01*value/bonuspeed
+								elseif type == "Divide" then
+									scaler2 = scaler2 - 0.01/value*bonuspeed
+									scaler2b = scaler2b - 0.01/value*bonuspeed
+									scaler2c = scaler2c - 0.01/value*bonuspeed
+								end
+								rng.Transparency = rng.Transparency + 0.01*bonuspeed
+								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2b*bonuspeed,scaler2c*bonuspeed)
+							end
+							rng:Destroy()
+						end))
+					end
+					local function PixelBlockX(bonuspeed,FastSpeed,type,pos,x1,y1,z1,value,color,outerpos)
+						local type = type
+						local rng = Instance.new("Part",workspace)
+						rng.Anchored = true
+						rng.BrickColor = color
+						rng.CanCollide = false
+						rng.FormFactor = 3
+						rng.Name = RandomString()
+						rng.Material = "Neon"
+						rng.Size = Vector3.new(1,1,1)
+						rng.Transparency = 0
+						rng.TopSurface = 0
+						rng.BottomSurface = 0
+						rng.CFrame = pos
+						rng.CFrame = rng.CFrame + rng.CFrame.lookVector*outerpos
+						local rngm = Instance.new("SpecialMesh",rng)
+						rngm.MeshType = "Brick"
+						rngm.Scale = Vector3.new(x1,y1,z1)
+						local scaler2 = 1
+						local speeder = FastSpeed/10
+						if type == "Add" then
+							scaler2 = 1*value
+						elseif type == "Divide" then
+							scaler2 = 1/value
+						end
+						coroutine.resume(coroutine.create(function()
+							for i = 0,10/bonuspeed,0.1 do
+								swait()
+								if type == "Add" then
+									scaler2 = scaler2 - 0.01*value/bonuspeed
+								elseif type == "Divide" then
+									scaler2 = scaler2 - 0.01/value*bonuspeed
+								end
+								rng.BrickColor = BrickColor.random()
+								speeder = speeder - 0.01*FastSpeed*bonuspeed/10
+								rng.CFrame = rng.CFrame + rng.CFrame.lookVector*speeder*bonuspeed
+								rng.Transparency = rng.Transparency + 0.01*bonuspeed
+								rngm.Scale = rngm.Scale - Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,scaler2*bonuspeed)
+							end
+							rng:Destroy()
+						end))
+					end
+					local function sphereMK(bonuspeed,FastSpeed,type,pos,x1,y1,z1,value,color,outerpos)
+						local type = type
+						local rng = Instance.new("Part",workspace)
+						rng.Anchored = true
+						rng.BrickColor = color
+						rng.CanCollide = false
+						rng.FormFactor = 3
+						rng.Name = RandomString()
+						rng.Material = "Neon"
+						rng.Size = Vector3.new(1,1,1)
+						rng.Transparency = 0
+						rng.TopSurface = 0
+						rng.BottomSurface = 0
+						rng.CFrame = pos
+						rng.CFrame = rng.CFrame + rng.CFrame.lookVector*outerpos
+						local rngm = Instance.new("SpecialMesh",rng)
+						rngm.MeshType = "Sphere"
+						rngm.Scale = Vector3.new(x1,y1,z1)
+						local scaler2 = 1
+						local speeder = FastSpeed
+						if type == "Add" then
+							scaler2 = 1*value
+						elseif type == "Divide" then
+							scaler2 = 1/value
+						end
+						coroutine.resume(coroutine.create(function()
+							for i = 0,10/bonuspeed,0.1 do
+								swait()
+								if type == "Add" then
+									scaler2 = scaler2 - 0.01*value/bonuspeed
+								elseif type == "Divide" then
+									scaler2 = scaler2 - 0.01/value*bonuspeed
+								end
+								rng.BrickColor = BrickColor.random()
+								speeder = speeder - 0.01*FastSpeed*bonuspeed
+								rng.CFrame = rng.CFrame + rng.CFrame.lookVector*speeder*bonuspeed
+								rng.Transparency = rng.Transparency + 0.01*bonuspeed
+								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed,scaler2*bonuspeed,0)
+							end
+							rng:Destroy()
+						end))
+					end
+					local function slash(bonuspeed,rotspeed,rotatingop,typeofshape,type,typeoftrans,pos,scale,value,color)
+						local type = type
+						local rotenable = rotatingop
+						local rng = Instance.new("Part",workspace)
+						rng.Anchored = true
+						rng.BrickColor = color
+						rng.CanCollide = false
+						rng.FormFactor = 3
+						rng.Name = RandomString()
+						rng.Material = "Neon"
+						rng.Size = Vector3.new(1,1,1)
+						rng.Transparency = 0
+						if typeoftrans == "In" then
+							rng.Transparency = 1
+						end
+						rng.TopSurface = 0
+						rng.BottomSurface = 0
+						rng.CFrame = pos
+						local rngm = Instance.new("SpecialMesh",rng)
+						rngm.MeshType = "FileMesh"
+						if typeofshape == "Normal" then
+							rngm.MeshId = "rbxassetid://662586858"
+						elseif typeofshape == "Round" then
+							rngm.MeshId = "rbxassetid://662585058"
+						end
+						rngm.Scale = scale
+						local scaler2 = 1/10
+						if type == "Add" then
+							scaler2 = 1*value/10
+						elseif type == "Divide" then
+							scaler2 = 1/value/10
+						end
+						local randomrot = math.random(1,2)
+						coroutine.resume(coroutine.create(function()
+							for i = 0,10/bonuspeed,0.1 do
+								swait()
+								if type == "Add" then
+									scaler2 = scaler2 - 0.01*value/bonuspeed/10
+								elseif type == "Divide" then
+									scaler2 = scaler2 - 0.01/value*bonuspeed/10
+								end
+								if rotenable == true then
+									if randomrot == 1 then
+										rng.CFrame = rng.CFrame*CFrame.Angles(0,math.rad(rotspeed*bonuspeed/2),0)
+									elseif randomrot == 2 then
+										rng.CFrame = rng.CFrame*CFrame.Angles(0,math.rad(-rotspeed*bonuspeed/2),0)
+									end
+								end
+								if typeoftrans == "Out" then
+									rng.Transparency = rng.Transparency + 0.01*bonuspeed
+								elseif typeoftrans == "In" then
+									rng.Transparency = rng.Transparency - 0.01*bonuspeed
+								end
+								rngm.Scale = rngm.Scale + Vector3.new(scaler2*bonuspeed/10,0,scaler2*bonuspeed/10)
+							end
+							rng:Destroy()
+						end))
+					end
+					sphere(1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-10,10)),math.rad(math.random(-10,10)),math.rad(math.random(-10,10))),Vector3.new(1,100000,1),0.6,BrickColor.new("Really black"))
+					sphere2(math.random(1,4),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),Vector3.new(5,1,5),-0.005,math.random(25,100)/25,-0.005,BrickColor.new("Institutional white"))
+					sphere(1,"Add",torso.CFrame,Vector3.new(1,1,1),0.8,BrickColor.new("Really black"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5),0.5,0.5,0.5,BrickColor.new("Institutional white"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5),0.75,0.75,0.75,BrickColor.new("Institutional white"))
+					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5),1,1,1,BrickColor.new("Institutional white"))
+					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5),1.25,1.25,1.25,BrickColor.new("Institutional white"))
+					sphere2(1,"Add",torso.CFrame,Vector3.new(5,10000,5),0.5,0.5,0.5,BrickColor.new("Institutional white"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,10000,5),0.6,0.6,0.6,BrickColor.new("Institutional white"))
+					for i = 0,49 do
+						PixelBlockX(1,math.random(1,20),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),8,8,8,0.16,BrickColor.new("Really black"),0)
+						sphereMK(2.5,-1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),2.5,2.5,25,-0.025,BrickColor.new("Really black"),0)
+						slash(math.random(10,20)/10,5,true,"Round","Add","Out",torso.CFrame*CFrame.new(0,-3,0)*CFrame.Angles(math.rad(math.random(-30,30)),math.rad(math.random(-30,30)),math.rad(math.random(-40,40))),Vector3.new(0.05,0.01,0.05),math.random(50,60)/250,BrickColor.new("Really black"))
+					end
+					CreateSound(239000203)
+					CreateSound(1042716828)
 				end
 			end
 			if sanitysongsync >= 8 then
-				curcolor = Color3.fromHSV(math.random(), 1, 1)
+				curcolor = Color3.fromHSV(math.random(0, 19) / 20, 1, 1)
 				rt = ROOTC0 * CFrame.new(0, 0, 0.5 * sin50) * CFrame.Angles(math.rad(20), 0, 0)
 				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-41.6 - 4 * sin50), 0, 0) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(20), 0, math.rad(-10 - 10 * sin50)) * LEFTSHOULDERC0
@@ -2558,7 +2811,11 @@ AddModule(function()
 			end
 		end
 		if currentmode == 2 then
-			local segment = root.Velocity.Magnitude > 8 * scale
+			local dir = hum.MoveDirection * Vector3.new(1, 0, 1)
+			if dir.Magnitude > 0 then
+				dir = dir.Unit * 300
+			end
+			local segment = dir.Magnitude > 0
 			if segment ~= fastboisegment then
 				fastboisegment = segment
 				if segment then
@@ -2587,12 +2844,27 @@ AddModule(function()
 				lht = CFrame.new(-1, -1, -0.01) * CFrame.Angles(math.rad(-75 * sin5), math.rad(-90), 0)
 			end
 			curcolor = Color3.new(0, 0, 0)
-			if math.random(10) == 1 then
+			if math.random(5) == 1 then
 				curcolor = Color3.new(0, 0, math.random())
 			end
+			root.Velocity = Vector3.new(dir.X, root.Velocity.Y, dir.Z)
 		end
 		if animationOverride then
 			rt, nt, rst, lst, rht, lht, gunoff = animationOverride(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+		end
+		for _,v in walkingwheel:GetChildren() do
+			if v:IsA("BasePart") then
+				local i = tonumber(v.Name)
+				if i then
+					if currentmode == 2 and not fastboisegment then
+						v.CFrame = root.CFrame * CFrame.new(0, 0.01, 0) * CFrame.Angles(math.rad(i), 0, 0) * CFrame.new(0, 3.1, 0)
+						v.Color = curcolor
+						v.Transparency = 0
+					else
+						v.Transparency = 1
+					end
+				end
+			end
 		end
 		
 		-- joints
@@ -2672,6 +2944,7 @@ AddModule(function()
 		ContextActionService:UnbindAction("Uhhhhhh_LCMusic")
 		flyv:Destroy()
 		flyg:Destroy()
+		walkingwheel:Destroy()
 		if uisbegin then
 			uisbegin:Disconnect()
 			uisbegin = nil
