@@ -1381,6 +1381,7 @@ AddModule(function()
 	end
 	local function Effect(params)
 		if not torso then return end
+		local ticks = params.Time or 45
 		local shapetype = params.EffectType or "Sphere"
 		local size = params.Size or Vector3.new(1, 1, 1)
 		local endsize = params.SizeEnd or Vector3.new(0, 0, 0)
@@ -1393,10 +1394,9 @@ AddModule(function()
 		local rotz = params.RotationZ or 0
 		local material = params.Material or Enum.Material.Neon
 		local color = params.Color or "RAINBOW"
-		local ticks = params.Time or 45
-		local start = os.clock()
 		local boomerang = params.Boomerang
 		local boomerangsize = params.BoomerangSize
+		local start = os.clock()
 		local effect = Instance.new("Part")
 		effect.Massless = true
 		effect.Transparency = transparency
@@ -1459,8 +1459,8 @@ AddModule(function()
 						mesh.Scale = size + growth * (t2 - bmr2 * 0.5 * t2 * t2) * bmr2
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = Vector3.zero
-						if movedir ~= nil then
-							add = CFrame.lookAt(cfr.Position, movedir) * Vector3.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2))
+						if movedir ~= nil and movespeed > 0 then
+							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2)))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -1497,8 +1497,8 @@ AddModule(function()
 						mesh.Scale = size + growth * t2
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = Vector3.zero
-						if movedir ~= nil then
-							add = CFrame.lookAt(cfr.Position, movedir) * Vector3.new(0, 0, -movespeed * t2)
+						if movedir ~= nil and movespeed > 0 then
+							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * t2))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -2278,7 +2278,7 @@ AddModule(function()
 		walkingwheel.Name = "WalkingWheel"
 		for i=1, 36 do
 			local v = Instance.new("Part")
-			v.Name = tostring(15 + 10 * i)
+			v.Name = tostring(5 + 10 * i)
 			v.Size = Vector3.new(2, 0.2, 0.56)
 			v.Massless = true
 			v.Material = Enum.Material.Neon
