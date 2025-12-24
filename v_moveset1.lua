@@ -2517,7 +2517,7 @@ AddModule(function()
 			lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-15 - 9 * math.cos(timingsine / 54)), math.rad(-80), 0) * CFrame.Angles(math.rad(5 * math.cos(timingsine / 41)), 0, 0)
 		end
 		if currentmode == 1 then
-			local sync = math.floor(GetOverrideMovesetMusicTime() / 2.795)
+			local sync = (GetOverrideMovesetMusicTime() - 0.776) // 2.679
 			if sanitysongsync < sync then
 				sanitysongsync = sync
 				if sanitysongsync == 0 then
@@ -2537,7 +2537,7 @@ AddModule(function()
 				elseif sanitysongsync == 7 then
 					notify("Instincts controlling me")
 				elseif sanitysongsync == 8 then
-					task.delay(1, randomdialog, {
+					task.delay(3, randomdialog, {
 						"Immortality Lord can't sing.",
 						"Take that, Immortality Lord!",
 						"DEATH IS INESCAPABLE.",
@@ -2546,6 +2546,7 @@ AddModule(function()
 						"I know you love these effects, " .. Player.Name,
 						"Why would Roblox remove this audio...",
 						"Now...",
+						""
 					})
 					local function sphere(bonuspeed,type,pos,scale,value,color)
 						local type = type
@@ -2793,8 +2794,10 @@ AddModule(function()
 				end
 			end
 			if sanitysongsync >= 8 then
-				curcolor = Color3.fromHSV(math.random(0, 19) / 20, 1, 1)
+				curcolor = Color3.new(1, 0, 1)
+				--curcolor = Color3.fromHSV(math.random(0, 19) / 20, 1, 1)
 				rt = ROOTC0 * CFrame.new(0, 0, 0.5 * sin50) * CFrame.Angles(math.rad(20), 0, 0)
+				nt = NECKC0
 				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-41.6 - 4 * sin50), 0, 0) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(20), 0, math.rad(-10 - 10 * sin50)) * LEFTSHOULDERC0
 				rht = CFrame.new(1, -1, -0.01) * CFrame.Angles(math.rad(10), math.rad(80), math.rad(10 + 10 * sin50))
@@ -2805,8 +2808,6 @@ AddModule(function()
 						nt = NECKC0 * CFrame.Angles(math.rad(20 + math.random(-20, 20)), math.rad(10 * math.cos(timingsine / 100) + math.random(-20, 20)), math.rad(math.random(-20, 20)))
 						joints.n = nt
 					end
-				else
-					nt = NECKC0
 				end
 			end
 		end
