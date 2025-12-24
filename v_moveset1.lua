@@ -2543,7 +2543,7 @@ AddModule(function()
 						"DEATH IS INESCAPABLE.",
 						"And my instincts, is to be A GOD",
 						"INSaNiTY- oh wrong timing... nevermind.",
-						"I know you love these effects, " .. Player.Name
+						"I know you love these effects, " .. Player.Name,
 						"Why would Roblox remove this audio...",
 						"Now...",
 					})
