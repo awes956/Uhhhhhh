@@ -1460,7 +1460,7 @@ AddModule(function()
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = Vector3.zero
 						if movedir ~= nil and movespeed > 0 then
-							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2)))
+							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * ((x + 1) - (bmr1 / ticks) * (x * (x + 1) / 2))))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
@@ -1807,7 +1807,7 @@ AddModule(function()
 			repeat
 				local t = 140 * (os.clock() - s) / beamtime
 				if throt > 0.05 then
-					Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5, Color = Color3.new(0, 0, 1)})
+					Effect({Time = 5 + t * 60, EffectType = "Swirl", Size = Vector3.one * t * 128, SizeEnd = Vector3.new(0, t * 111.5, 0), Transparency = 0.8, TransparencyEnd = 1, CFrame = beam * CFrame.Angles(0, math.rad(t * 300), 0), RotationY = t * 7.5})
 					throt = 0
 				end
 				throt += task.wait()
@@ -1996,8 +1996,8 @@ AddModule(function()
 			end
 			if currentmode == 2 then return end
 		end
-		if attacking then return end
-		if not root or not hum then return end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
 		hum.WalkSpeed = 16 * scale
@@ -2076,8 +2076,8 @@ AddModule(function()
 			end
 			if currentmode == 2 then return end
 		end
-		if attacking then return end
-		if not root or not hum then return end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
 		local rootu = root
 		attacking = true
 		hum.WalkSpeed = 0
@@ -2279,7 +2279,7 @@ AddModule(function()
 		for i=1, 36 do
 			local v = Instance.new("Part")
 			v.Name = tostring(5 + 10 * i)
-			v.Size = Vector3.new(2, 0.2, 0.56)
+			v.Transparency = 1
 			v.Massless = true
 			v.Material = Enum.Material.Neon
 			v.Anchored = true
@@ -2533,7 +2533,7 @@ AddModule(function()
 				joints.n = nt
 			end
 		elseif currentmode == 2 then
-			if segment then
+			if fastboisegment then
 				local sin2 = math.sin(timingsine / 2)
 				rt = ROOTC0 * CFrame.new(0, 0, -0.2) * CFrame.Angles(math.rad(-45), 0, 0)
 				nt = NECKC0 * CFrame.Angles(math.rad(-45), 0, 0)
@@ -2812,19 +2812,19 @@ AddModule(function()
 							rng:Destroy()
 						end)
 					end
-					sphere(1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-10,10)),math.rad(math.random(-10,10)),math.rad(math.random(-10,10))),Vector3.new(1,100000,1),0.6,BrickColor.new("Really black"))
-					sphere2(math.random(1,4),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),Vector3.new(5,1,5),-0.005,math.random(25,100)/25,-0.005,BrickColor.new("Institutional white"))
-					sphere(1,"Add",torso.CFrame,Vector3.new(1,1,1),0.8,BrickColor.new("Really black"))
-					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5),0.5,0.5,0.5,BrickColor.new("Institutional white"))
-					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5),0.75,0.75,0.75,BrickColor.new("Institutional white"))
-					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5),1,1,1,BrickColor.new("Institutional white"))
-					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5),1.25,1.25,1.25,BrickColor.new("Institutional white"))
-					sphere2(1,"Add",torso.CFrame,Vector3.new(5,10000,5),0.5,0.5,0.5,BrickColor.new("Institutional white"))
-					sphere2(2,"Add",torso.CFrame,Vector3.new(5,10000,5),0.6,0.6,0.6,BrickColor.new("Institutional white"))
+					sphere(1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-10,10)),math.rad(math.random(-10,10)),math.rad(math.random(-10,10))),Vector3.new(1,100000,1)*scale,0.6,BrickColor.new("Really black"))
+					sphere2(math.random(1,4),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),Vector3.new(5,1,5)*scale,-0.005,math.random(25,100)/25,-0.005,BrickColor.new("Institutional white"))
+					sphere(1,"Add",torso.CFrame,Vector3.new(1,1,1)*scale,0.8,BrickColor.new("Really black"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5)*scale,0.5,0.5,0.5,BrickColor.new("Institutional white"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,5,5)*scale,0.75,0.75,0.75,BrickColor.new("Institutional white"))
+					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5)*scale,1,1,1,BrickColor.new("Institutional white"))
+					sphere2(3,"Add",torso.CFrame,Vector3.new(5,5,5)*scale,1.25,1.25,1.25,BrickColor.new("Institutional white"))
+					sphere2(1,"Add",torso.CFrame,Vector3.new(5,10000,5)*scale,0.5,0.5,0.5,BrickColor.new("Institutional white"))
+					sphere2(2,"Add",torso.CFrame,Vector3.new(5,10000,5)*scale,0.6,0.6,0.6,BrickColor.new("Institutional white"))
 					for i = 0,49 do
-						PixelBlockX(1,math.random(1,20),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),8,8,8,0.16,BrickColor.new("Really black"),0)
-						sphereMK(2.5,-1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),2.5,2.5,25,-0.025,BrickColor.new("Really black"),0)
-						slash(math.random(10,20)/10,5,true,"Round","Add","Out",torso.CFrame*CFrame.new(0,-3,0)*CFrame.Angles(math.rad(math.random(-30,30)),math.rad(math.random(-30,30)),math.rad(math.random(-40,40))),Vector3.new(0.05,0.01,0.05),math.random(50,60)/250,BrickColor.new("Really black"))
+						PixelBlockX(1,math.random(1,20),"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),8*scale,8*scale,8*scale,0.16,BrickColor.new("Really black"),0)
+						sphereMK(2.5,-1,"Add",torso.CFrame*CFrame.Angles(math.rad(math.random(-360,360)),math.rad(math.random(-360,360)),math.rad(math.random(-360,360))),2.5*scale,2.5*scale,25*scale,-0.025,BrickColor.new("Really black"),0)
+						slash(math.random(10,20)/10,5,true,"Round","Add","Out",torso.CFrame*CFrame.new(0,-3*scale,0)*CFrame.Angles(math.rad(math.random(-30,30)),math.rad(math.random(-30,30)),math.rad(math.random(-40,40))),Vector3.new(0.05,0.01,0.05)*scale,math.random(50,60)/250,BrickColor.new("Really black"))
 					end
 					CreateSound(239000203)
 					CreateSound(1042716828)
@@ -2852,7 +2852,7 @@ AddModule(function()
 			end
 			curcolor = Color3.new(0, 0, 0)
 			if math.random(5) == 1 then
-				curcolor = Color3.new(0, 0, math.random())
+				curcolor = Color3.new(0, 0, math.random() * 0.4)
 			end
 			root.Velocity = Vector3.new(dir.X, root.Velocity.Y, dir.Z)
 		end
@@ -2864,7 +2864,8 @@ AddModule(function()
 				local i = tonumber(v.Name)
 				if i then
 					if currentmode == 2 and not fastboisegment then
-						v.CFrame = root.CFrame * CFrame.new(0, 0.01, 0) * CFrame.Angles(math.rad(i), 0, 0) * CFrame.new(0, 3.1, 0)
+						v.CFrame = root.CFrame * CFrame.new(0, 0.01, 0) * CFrame.Angles(math.rad(i), 0, 0) * CFrame.new(0, 3.1 * scale, 0)
+						v.Size = Vector3.new(2, 0.2, 0.56) * scale
 						v.Color = curcolor
 						v.Transparency = 0
 					else
@@ -2893,6 +2894,12 @@ AddModule(function()
 		joints.sw = gunoff:Lerp(joints.sw, alpha)
 		
 		-- apply transforms
+		--SetC0C1Joint(rj, joints.r, ROOTC0, scale)
+		--SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		--SetC0C1Joint(rsj, joints.rs, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		--SetC0C1Joint(lsj, joints.ls, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		--SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		--SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
 		SetC0C1Joint(rj, joints.r, ROOTC0, scale)
 		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
 		SetC0C1Joint(rsj, joints.rs, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
