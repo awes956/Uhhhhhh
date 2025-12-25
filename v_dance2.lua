@@ -45,4 +45,31 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "DANCE"
+	m.Name = "Results"
+	m.Description = "real ones know ts from pizza tower\neffortless upload"
+	m.Assets = {"Results.anim", "Results.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animator = nil
+	m.Init = function(figure: Model)
+		SetOverrideDanceMusic(AssetGetContentId("Results.mp3"), "Results! - PT Sugary Spire OST", 1)
+		animator = AnimLib.Animator.new()
+		animator.rig = figure
+		animator.looped = false
+		animator.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("Results.anim"))
+	end
+	m.Update = function(dt: number, figure: Model)
+		animator:Step(GetOverrideDanceMusicTime())
+	end
+	m.Destroy = function(figure: Model?)
+		animator = nil
+	end
+	return m
+end)
+
 return modules
