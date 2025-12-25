@@ -498,14 +498,37 @@ AddModule(function()
 	function maryo.PlayActionSound(sound)
 		maryo.PlaySoundIfNoFlag(sound, "ACTION_SOUND_PLAYED")
 	end
-	function maryo.PlayLandingSound()
+	function maryo.PlayLandingSound(sound)
+		sound = sound or "ACTION_TERRAIN_LANDING"
 		if maryo.Flags.METAL_CAP then
 			maryo.PlayMaterialSound("ACTION_METAL_LANDING")
+			return
 		end
-		maryo.PlayMaterialSound("ACTION_TERRAIN_LANDING")
+		maryo.PlayMaterialSound(sound)
 	end
 	function maryo.PlayLandingSoundOnce()
-		maryo.PlayActionSound(maryo.Flags.METAL_CAP and "ACTION_METAL_LANDING" or "ACTION_TERRAIN_LANDING")
+		sound = sound or "ACTION_TERRAIN_LANDING"
+		if maryo.Flags.METAL_CAP then
+			maryo.PlayActionSound("ACTION_METAL_LANDING")
+			return
+		end
+		maryo.PlayActionSound(sound)
+	end
+	function maryo.PlayHeavyLandingSound(sound)
+		sound = sound or "ACTION_TERRAIN_LANDING"
+		if maryo.Flags.METAL_CAP then
+			maryo.PlayMaterialSound("ACTION_METAL_HEAVY_LANDING")
+			return
+		end
+		maryo.PlayMaterialSound(sound)
+	end
+	function maryo.PlayHeavyLandingSoundOnce()
+		sound = sound or "ACTION_TERRAIN_LANDING"
+		if maryo.Flags.METAL_CAP then
+			maryo.PlayActionSound("ACTION_METAL_HEAVY_LANDING")
+			return
+		end
+		maryo.PlayActionSound(sound)
 	end
 	function maryo.PlayMarioSound(actionSound, marioSound)
 		if marioSound == nil then
@@ -1737,91 +1760,74 @@ AddModule(function()
 			maryo.StationaryGroundStep()
 			return false
 		end)
-		
-		DEF_ACTION(Action.BRAKING_STOP, function(m: Mario)
+		DEF_ACTION("BRAKING_STOP", function()
 			if maryo.Input.STOMPED then
 				maryo.SetAction("SHOCKWAVE_BOUNCE")
 				return true
 			end
-		
-			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
-				return maryo.SetAction(Action.FREEFALL)
+			if maryo.Input.OFF_FLOOR then
+				maryo.SetAction("FREEFALL")
+				return true
 			end
-		
-			if maryo.Input:Has(InputFlags.B_PRESSED) then
-				return maryo.SetAction(Action.PUNCHING)
+			if maryo.Input.B_PRESSED then
+				maryo.SetAction("PUNCHING")
+				return true
 			end
-		
-			if maryo.Input:Has(InputFlags.NONZERO_ANALOG, InputFlags.A_PRESSED, InputFlags.OFF_FLOOR, InputFlags.ABOVE_SLIDE) then
+			if maryo.Input.NONZERO_ANALOG or maryo.Input.A_PRESSED or maryo.Input.OFF_FLOOR or maryo.Input.ABOVE_SLIDE then
 				return maryo.CheckCommonActionExits()
 			end
-		
-			stoppingStep(m, Animations.STOP_SKID, Action.IDLE)
+			stoppingStep("STOP_SKID", "IDLE")
 			return false
 		end)
-		
-		DEF_ACTION(Action.BUTT_SLIDE_STOP, function(m: Mario)
-			if maryo.Input:Has(InputFlags.STOMPED) then
-				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+		DEF_ACTION("BUTT_SLIDE_STOP", function()
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
 			end
-		
-			if maryo.Input:Has(InputFlags.NONZERO_ANALOG, InputFlags.A_PRESSED, InputFlags.OFF_FLOOR, InputFlags.ABOVE_SLIDE) then
+			if maryo.Input.NONZERO_ANALOG or maryo.Input.A_PRESSED or maryo.Input.OFF_FLOOR or maryo.Input.ABOVE_SLIDE then
 				return maryo.CheckCommonActionExits()
 			end
-		
-			stoppingStep(m, Animations.STOP_SLIDE, Action.IDLE)
-		
+			stoppingStep("STOP_SLIDE", "IDLE")
 			if maryo.AnimFrame == 6 then
 				maryo.PlayLandingSound()
 			end
-		
 			return false
 		end)
-		
-		DEF_ACTION(Action.SLIDE_KICK_SLIDE_STOP, function(m: Mario)
-			if maryo.Input:Has(InputFlags.STOMPED) then
-				return maryo.SetAction(Action.SHOCKWAVE_BOUNCE)
+		DEF_ACTION("SLIDE_KICK_SLIDE_STOP", function()
+			if maryo.Input.STOMPED then
+				maryo.SetAction("SHOCKWAVE_BOUNCE")
+				return true
 			end
-		
-			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
-				return maryo.SetAction(Action.FREEFALL)
+			if maryo.Input.OFF_FLOOR then
+				maryo.SetAction("FREEFALL")
+				return true
 			end
-		
-			stoppingStep(m, Animations.CROUCH_FROM_SLIDE_KICK, Action.CROUCHING)
+			stoppingStep("CROUCH_FROM_SLIDE_KICK", "CROUCHING")
 			return false
 		end)
-		
-		DEF_ACTION(Action.START_CROUCHING, function(m: Mario)
+		DEF_ACTION("START_CROUCHING", function()
 			if maryo.CheckCommonActionExits() then
 				return true
 			end
-		
 			maryo.StationaryGroundStep()
-			maryo.SetAnimation(Animations.START_CROUCHING)
-		
+			maryo.SetAnimation("START_CROUCHING")
 			if maryo.IsAnimPastEnd() then
-				maryo.SetAction(Action.CROUCHING)
+				maryo.SetAction("CROUCHING")
 			end
-		
 			return false
 		end)
-		
-		DEF_ACTION(Action.STOP_CROUCHING, function(m: Mario)
+		DEF_ACTION("STOP_CROUCHING", function()
 			if maryo.CheckCommonActionExits() then
 				return true
 			end
-		
 			maryo.StationaryGroundStep()
-			maryo.SetAnimation(Animations.START_CROUCHING)
-		
+			maryo.SetAnimation("START_CROUCHING")
 			if maryo.IsAnimPastEnd() then
-				maryo.SetAction(Action.IDLE)
+				maryo.SetAction("IDLE")
 			end
-		
 			return false
 		end)
-		
-		DEF_ACTION(Action.START_CRAWLING, function(m: Mario)
+		DEF_ACTION("START_CRAWLING", function()
 			if maryo.Input:Has(InputFlags.OFF_FLOOR) then
 				return maryo.SetAction(Action.FREEFALL)
 			end
