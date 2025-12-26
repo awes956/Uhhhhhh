@@ -766,7 +766,7 @@ AddModule(function()
 		sndpoint:Destroy()
 		climbforce:Destroy()
 	end
-	return m
+	--return m
 end)
 
 AddModule(function()
