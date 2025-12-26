@@ -1,3 +1,5 @@
+-- update force 1
+
 cloneref = cloneref or function(o) return o end
 
 local Debris = cloneref(game:GetService("Debris"))
