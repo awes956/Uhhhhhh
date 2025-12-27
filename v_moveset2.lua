@@ -958,7 +958,7 @@ AddModule(function()
 					local bmr1 = 1 + boomerang / 50
 					local bmr2 = 1 + boomerangsize / 50
 					if movedir ~= nil then
-						movespeed = ((cfr.Position - movedir).Magnitude / ticks) * bmr1
+						movespeed = (cfr.Position - movedir).Magnitude * bmr1
 					end
 					growth = (endsize - size) * (bmr2 + 1)
 					local t = 0
