@@ -915,7 +915,7 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Pose for the fans", m.PoseToTheFans).Changed:Connect(function(val)
 			m.PoseToTheFans = val
 		end)
-		Util_CreateDropdown(parent, "Music Variant", {"Normal", "Christmas"}, m.DifferentTiming and 2 or 1).Changed:Connect(function(val)
+		Util_CreateDropdown(parent, "Music Variant", {"Normal", "Christmas"}, m.MusicVariant).Changed:Connect(function(val)
 			m.MusicVariant = val
 		end)
 	end
