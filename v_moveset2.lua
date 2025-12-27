@@ -977,7 +977,7 @@ AddModule(function()
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = Vector3.zero
 						if movedir ~= nil and movespeed > 0 then
-							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * 20 * ((t2 + 1) - (bmr1 / ticks) * (t2 * (t2 + 1) / 2))))
+							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * (t2 - bmr1 * 0.5 * t2 * t2)))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
