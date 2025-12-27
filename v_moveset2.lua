@@ -532,8 +532,8 @@ AddModule(function()
 		if hum.Sit then
 			-- bored lay down
 			rt = CFrame.new(0, 0, -1) * CFrame.Angles(math.rad(-90), 0, 0)
-			rst = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(-110), 0, 0)
-			lst = CFrame.new(0, -1, 0) * CFrame.Angles(math.rad(-110), 0, 0)
+			rst = CFrame.new(0, 0.5, -0.4) * CFrame.Angles(math.rad(-110), 0, 0)
+			lst = CFrame.new(0, 0.5, -0.4) * CFrame.Angles(math.rad(-110), 0, 0)
 			rht = CFrame.new(0, 0.125, 0) * CFrame.Angles(math.rad(-35), 0, 0)
 			lht = CFrame.new(0, 0.125, 0) * CFrame.Angles(math.rad(-35), 0, 0)
 			isdancing = true
@@ -581,7 +581,7 @@ AddModule(function()
 		lsj.Transform = joints.ls
 		rhj.Transform = joints.rh
 		lhj.Transform = joints.lh
-		if m.NeckSnap and timingsine - necksnap < snaptime then
+		if m.NeckSnap and timingsine - necksnap < snaptime and not hum.Sit then
 			nj.Transform = necksnapcf
 		else
 			nj.Transform = joints.n
@@ -977,7 +977,7 @@ AddModule(function()
 						effect.Transparency = transparency + (endtransparency - transparency) * t2
 						local add = Vector3.zero
 						if movedir ~= nil and movespeed > 0 then
-							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * ((x + 1) - (bmr1 / ticks) * (x * (x + 1) / 2))))
+							add = CFrame.lookAt(cfr.Position, movedir):VectorToWorldSpace(Vector3.new(0, 0, -movespeed * ((t2 + 1) - (bmr1 / ticks) * (t2 * (t2 + 1) / 2))))
 						end
 						if shapetype == "Block" then
 							effect.CFrame = cfr * CFrame.Angles(
