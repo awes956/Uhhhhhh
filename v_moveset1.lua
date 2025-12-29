@@ -787,7 +787,7 @@ AddModule(function()
 				pose = "Standing"
 			elseif state == "GettingUp" then
 				pose = "GettingUp"
-				snd.GettingUp:Play()
+				sndpoint.GettingUp:Play()
 			elseif state == "Ragdoll" then
 				pose = "Running"
 			elseif state == "FallingDown" then
@@ -835,7 +835,9 @@ AddModule(function()
 			return
 		end
 		if justdanced then
-			playAnimation("idle", 0, hum)
+			task.delay(0.1, function()
+				playAnimation("idle", 0, hum)
+			end)
 			justdanced = false
 		end
 
