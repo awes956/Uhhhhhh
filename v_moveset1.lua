@@ -788,6 +788,9 @@ AddModule(function()
 				pose = "FallingDown"
 			elseif state == "Freefall" then
 				pose = "Freefall"
+				if old.Name ~= "Jumping" then
+					playAnimation("fall", 0.3, hum)
+				end
 			elseif state == "Landed" then
 				if verticalSpeed > 75 then
 					sndpoint.Landing.Volume = math.clamp(map(verticalSpeed, 50, 100, 0, 1), 0, 1)
@@ -807,8 +810,6 @@ AddModule(function()
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock()
-
-		rcp.FilterDescendantsInstances = {figure}
 
 		local scale = figure:GetScale()
 
