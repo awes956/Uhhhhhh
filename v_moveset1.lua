@@ -765,7 +765,7 @@ AddModule(function()
 			if state == "Jumping" then
 				pose = "Jumping"
 				playAnimation("jump", 0.1, hum)
-				task.delay(0.85, function()
+				task.delay(0.3, function()
 					if stateid == id then
 						playAnimation("fall", 0.3, hum)
 					end
