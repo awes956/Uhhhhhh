@@ -462,6 +462,7 @@ AddModule(function()
 
 	local hstatechange, hrun = nil
 	local hum = nil
+	local justdanced = false
 
 	local lastpose = ""
 	local pose = "Standing"
@@ -621,6 +622,7 @@ AddModule(function()
 		end
 	end
 	playAnimation = function(animName, transitionTime, humanoid)
+		if justdanced then return end
 		if not animTable[animName] then return end
 		local roll = math.random(1, animTable[animName].totalWeight) 
 		local origRoll = roll
@@ -654,6 +656,7 @@ AddModule(function()
 		end
 	end
 	playToolAnimation = function(animName, transitionTime, humanoid, priority)
+		if justdanced then return end
 		if not animTable[animName] then return end
 		local roll = math.random(1, animTable[animName].totalWeight) 
 		local origRoll = roll
@@ -828,7 +831,12 @@ AddModule(function()
 				v:Stop(0)
 				v:Destroy()
 			end
+			justdanced = true
 			return
+		end
+		if justdanced then
+			playAnimation("idle", 0, hum)
+			justdanced = false
 		end
 
 		local function getTool()
