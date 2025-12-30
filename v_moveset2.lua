@@ -428,7 +428,7 @@ AddModule(function()
 		musictime = mt
 		
 		local scale = figure:GetScale()
-		local isdancing = figure:GetAttribute("IsDancing")
+		local isdancing = not not figure:GetAttribute("IsDancing")
 		
 		-- get vii
 		local hum = figure:FindFirstChild("Humanoid")
@@ -545,9 +545,6 @@ AddModule(function()
 			snaptime = 7
 		end
 		
-		-- store the sword when dancing
-		sword.Disabled = not not isdancing
-		
 		-- apply scaling
 		scale = scale - 1
 		rt += rt.Position * scale
@@ -603,6 +600,7 @@ AddModule(function()
 		
 		-- sword
 		sword.Offset = joints.sw
+		sword.Disable = not not isdancing
 		
 		-- dance reactions
 		if figure:GetAttribute("IsDancing") then
@@ -2439,6 +2437,7 @@ AddModule(function()
 			gun.Group = "Gun"
 		end
 		gun.Offset = joints.sw
+		gun.Disable = not not isdancing
 		
 		-- dance reactions
 		if isdancing then
