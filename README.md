@@ -139,8 +139,8 @@ LimbReanimator
 		-- 3 - RootPart is Torso
 HatReanimator
 	.Running -- is running
-	.Permadeath -- has permadeath?
-	.HatCollide -- hat collde enabled?
+	.HasPermadeath -- has permadeath?
+	.HasHatCollide -- hat collde enabled?
 	.HatCFrameOverride -- array of hat overrides
 ReanimateShowHitboxes() -- function to show hitboxes, laggy for many hats
 ReanimateFling(target, duration) -- fling target

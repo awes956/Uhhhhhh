@@ -188,15 +188,7 @@ AddModule(function()
 		local t = os.clock()
 		if t > lasthitreact then
 			lasthitreact = t + 20
-			if not HatReanimator.Running then
-				if hitamount >= 1 then
-					if math.random(2) == 1 then
-						task.delay(1, notify, "HMMM...")
-					else
-						task.delay(1, notify, "okay what else")
-					end
-				end
-			elseif not HatReanimator.HatCollide then
+			if HatReanimator.Running and HatReanimator.HasPermadeath and not HatReanimator.HasHatCollide then
 				if math.random(2) == 1 then
 					notify("all it takes to KILL ONE is to RESPAWN")
 					task.delay(4, notify, "(why didnt you turn on 'hat collide')")
