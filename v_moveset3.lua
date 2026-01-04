@@ -40,5 +40,24 @@ local function AddModule(m)
 	table.insert(modules, m)
 end
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Nameless Animations"
+	m.Description = "Patchma Hub moveset"
+	m.Assets = {}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	m.Init = function(figure: Model)
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+	end
+	m.Destroy = function(figure: Model?)
+	end
+	return m
+end)
 
 return modules

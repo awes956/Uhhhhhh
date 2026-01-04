@@ -2738,7 +2738,7 @@ AddModule(function()
 				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
 			end
 		elseif torsovelocityy < -1 and not hitfloor then
-				rt = ROOTC0 * CFrame.Angles(math.rad(15), math.rad(0), math.rad(0)), .5 / Animation_Speed)
+				rt = ROOTC0 * CFrame.Angles(math.rad(15), math.rad(0), math.rad(0))
 				Neck.C0 = Clerp(Neck.C0, NECKC0 * CF(0, 0, 0 + ((1.1) - 1)) * ANGLES(math.rad(20), math.rad(0), math.rad(0))
 				RightShoulder.C0 = Clerp(RightShoulder.C0, CF(1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(25)) * RIGHTSHOULDERC0
 				LeftShoulder.C0 = Clerp(LeftShoulder.C0, CF(-1.5, 0.5, 0) * ANGLES(math.rad(-10), math.rad(0), math.rad(-25)) * LEFTSHOULDERC0
@@ -2834,7 +2834,7 @@ AddModule(function()
 		end
 		root, torso, hum = nil, nil, nil
 	end
-	return m
+	--return m
 end)
 
 return modules
