@@ -2813,7 +2813,7 @@ AddModule(function()
 		end
 		root, torso, hum = nil, nil, nil
 	end
-	--return m
+	return m
 end)
 
 return modules
