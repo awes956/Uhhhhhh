@@ -2735,19 +2735,23 @@ AddModule(function()
 				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			elseif torsovelocity > 1 then
 				animationspeed = 18.5
-				local d = (hum:GetMoveVelocity() / scale) / 3
-				local tw1 = d * root.CFrame.LookVector
-				local tw2 = d * root.CFrame.RightVector
+				local d = (hum:GetMoveVelocity().Magnitude / scale) / 3
+				local tw1 = hum.MoveDirection * root.CFrame.LookVector
+				local tw2 = hum.MoveDirection * root.CFrame.RightVector
 				local lv = tw1.X + tw1.Z
 				local rv = tw2.X + tw2.Z
-				local rh = CFrame.new(lv/10 * math.cos(timingsine / 18), 0, 0) * CFrame.Angles(math.sin(rv/5) * math.cos(timingsine / 18), 0, math.sin(-lv/2) * math.cos(timingsine / 18))
-				local lh = CFrame.new(-lv/10 * math.cos(timingsine / 18), 0, 0) * CFrame.Angles(math.sin(rv/5) * math.cos(timingsine / 18), 0, math.sin(-lv/2) * math.cos(timingsine / 18))
-				rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * math.cos(timingsine / 10) + -math.sin(timingsine / 10) / 8) * CFrame.Angles(math.rad((lv - lv/5 * math.cos(timingsine / 10)) * 10), math.rad((-rv + rv/5 * math.sin(timingsine / 10)) * 5), math.rad(-40))
+				local walk = math.cos(timingsine * d / 18)
+				local walk2 = math.sin(timingsine * d / 18)
+				local walk3 = math.cos(timingsine * d / 10)
+				local walk4 = math.sin(timingsine * d / 10)
+				local rh = CFrame.new(lv/10 * , 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+				local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+				rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
 				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
 				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1 + 0.2 * math.sin(timingsine / 18), -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * math.cos(timingsine / 18)))
-				lht = CFrame.new(-1.3, -0.8 - 0.2 * math.sin(timingsine / 18), -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * math.cos(timingsine / 18)))
+				rht = CFrame.new(1, -1 + 0.2 * walk2, -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * walk))
+				lht = CFrame.new(-1.3, -0.8 - 0.2 * walk2, -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * walk))
 				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			end
 		end
