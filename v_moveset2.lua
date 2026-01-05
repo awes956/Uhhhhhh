@@ -2605,6 +2605,7 @@ AddModule(function()
 		lh = CFrame.identity,
 		sw = CFrame.identity,
 	}
+	local gun = {}
 	local mousedown = false
 	local uisbegin, uisend
 	local dancereact = false
@@ -2645,6 +2646,12 @@ AddModule(function()
 				"Thy death is now."
 			})
 		end
+		gun = {
+			Group = "Gun",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, gun)
 		mousedown = false
 		if uisbegin then
 			uisbegin:Disconnect()
@@ -2769,20 +2776,6 @@ AddModule(function()
 		SetC0C1Joint(lsj, joints.ls, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
 		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
 		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
-		
-		-- wings
-		if isdancing then
-			leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15), 0)
-			rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15), 0)
-		else
-			if m.Bee then
-				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine)), 0)
-				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine)), 0)
-			else
-				leftwing.Offset = CFrame.new(-0.15, 0, 0) * CFrame.Angles(0, math.rad(-15 + 25 * math.cos(timingsine / 25)), 0)
-				rightwing.Offset = CFrame.new(0.15, 0, 0) * CFrame.Angles(0, math.rad(15 - 25 * math.cos(timingsine / 25)), 0)
-			end
-		end
 		
 		-- gun
 		if m.UseSword then
