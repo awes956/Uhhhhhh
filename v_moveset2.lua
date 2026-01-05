@@ -2609,6 +2609,9 @@ AddModule(function()
 	local mousedown = false
 	local uisbegin, uisend
 	local dancereact = false
+	local state = 0
+	local statetime = 0
+	local sndshoot, sndspin
 	local ROOTC0 = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
 	local NECKC0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
 	local RIGHTSHOULDERC0 = CFrame.new(-0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
@@ -2617,6 +2620,7 @@ AddModule(function()
 	m.Init = function(figure)
 		start = os.clock()
 		attacking = false
+		state = 0
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
@@ -2656,19 +2660,21 @@ AddModule(function()
 		if uisbegin then
 			uisbegin:Disconnect()
 		end
-		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
-			if gpe then return end
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				--mousedown = true
-			end
-		end)
 		if uisend then
 			uisend:Disconnect()
 		end
-		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+		local currentclick = nil
+		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
 			if gpe then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				mousedown = true
+				currentclick = input
+			end
+		end)
+		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+			if input == currentclick then
 				mousedown = false
+				currentclick = nil
 			end
 		end)
 		if chatconn then
@@ -2698,61 +2704,113 @@ AddModule(function()
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		local gunoff = CFrame.identity
+		local gunoff = CFrame.new(0, 0.5, 0.3) * CFrame.Angles(0, math.rad(90), 0)
 		
-		local timingsine = t * 40 -- timing from original
+		local timingsine = t * 80 -- timing from original
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
 		
 		-- animations
-		local hitfloor = hum.FloorMaterial ~= Enum.Material.Air
 		local torsovelocity = root.Velocity.Magnitude
 		local torsovelocityy = root.Velocity.Y
 		local animationspeed = 11
-		if mousedown then
+		if state == 0 then
+			if onground then
+				if torsovelocity < 1 then
+					rt = ROOTC0 * CFrame.new(0, 0.1, 0.05 * math.cos(timingsine / 60)) * CFrame.Angles(math.rad(-10), math.rad(10), math.rad(-40))
+					nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-5.5 * math.sin(timingsine / 60)), math.rad(10), math.rad(40))
+					rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), 0) * RIGHTSHOULDERC0
+					lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-20), math.rad(87), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+					lht = CFrame.new(-1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-12), math.rad(-75), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+				else
+					animationspeed = 18.5
+					local tw1 = hum.MoveDirection * root.CFrame.LookVector
+					local tw2 = hum.MoveDirection * root.CFrame.RightVector
+					local lv = tw1.X + tw1.Z
+					local rv = tw2.X + tw2.Z
+					local d = (hum:GetMoveVelocity().Magnitude / scale) / 13
+					local walk = math.cos(timingsine * d / 18)
+					local walk2 = math.sin(timingsine * d / 18)
+					local walk3 = math.cos(timingsine * d / 10)
+					local walk4 = math.sin(timingsine * d / 10)
+					local rh = CFrame.new(lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+					local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+					rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
+					nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
+					rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1 + 0.2 * walk2, -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * walk))
+					lht = CFrame.new(-1.3, -0.8 - 0.2 * walk2, -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * walk))
+				end
+			else
+				if torsovelocityy > -1 then
+					rt = ROOTC0
+					nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(-20), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(-15)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(15)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+				else
+					rt = ROOTC0 * CFrame.Angles(math.rad(15), 0, 0)
+					nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(20), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(25)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(-25)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+				end
+			end
+			if mousedown and not isdancing then
+				state = 1
+				statetime = os.clock()
+				CreateSound(4473138327)
+				hum.WalkSpeed = 0
+			end
+		elseif state == 1 then
 			animationspeed = 4
-		else
-			if torsovelocityy > 1 then
-				rt = ROOTC0
-				nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(-20), 0, 0)
-				rst = CFrame.new(1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(-15)) * RIGHTSHOULDERC0
-				lst = CFrame.new(-1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(15)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
-				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
-			elseif torsovelocityy < -1 then
-				rt = ROOTC0 * CFrame.Angles(math.rad(15), 0, 0)
-				nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(20), 0, 0)
-				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(25)) * RIGHTSHOULDERC0
-				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(-25)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
-				lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
-			elseif torsovelocity < 1 then
-				rt = ROOTC0 * CFrame.new(0, 0.1, 0.05 * math.cos(timingsine / 60)) * CFrame.Angles(math.rad(-10), math.rad(10), math.rad(-40))
-				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-5.5 * math.sin(timingsine / 60)), math.rad(10), math.rad(40))
-				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), 0) * RIGHTSHOULDERC0
-				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-20), math.rad(87), 0) * CFrame.Angles(math.rad(-7), 0, 0)
-				lht = CFrame.new(-1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-12), math.rad(-75), 0) * CFrame.Angles(math.rad(-7), 0, 0)
-				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
-			elseif torsovelocity > 1 then
-				animationspeed = 18.5
-				local tw1 = hum.MoveDirection * root.CFrame.LookVector
-				local tw2 = hum.MoveDirection * root.CFrame.RightVector
-				local lv = tw1.X + tw1.Z
-				local rv = tw2.X + tw2.Z
-				local d = (hum:GetMoveVelocity().Magnitude / scale) / 3
-				local walk = math.cos(timingsine * d / 18)
-				local walk2 = math.sin(timingsine * d / 18)
-				local walk3 = math.cos(timingsine * d / 10)
-				local walk4 = math.sin(timingsine * d / 10)
-				local rh = CFrame.new(lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
-				local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
-				rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
-				nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
-				rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
-				lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
-				rht = CFrame.new(1, -1 + 0.2 * walk2, -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * walk))
-				lht = CFrame.new(-1.3, -0.8 - 0.2 * walk2, -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * walk))
-				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
+			AimTowards(MouseHit())
+			rt = ROOTC0 * CFrame.new(0, 0.1, 0.1 * math.cos(timingsine / 35)) * CFrame.Angles(0, 0, math.rad(-40))
+			nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.rad(40))
+			rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(-17), math.rad(40), 0) * RIGHTSHOULDERC0
+			lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(100), math.rad(-70), math.rad(30)) * LEFTSHOULDERC0
+			rht = CFrame.new(1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(87), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			lht = CFrame.new(-1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			if os.clock() - statetime > 0.5 then
+				state = 2
+				if sndshoot then
+					sndshoot:Destroy()
+				end
+				sndshoot = Instance.new("Sound", root)
+				sndshoot.SoundId = "rbxassetid://146830885"
+				sndshoot.Volume = 5
+				sndshoot.Looped = true
+				if sndspin then
+					sndspin:Destroy()
+				end
+				sndspin = Instance.new("Sound", root)
+				sndspin.SoundId = "rbxassetid://2028334518"
+				sndspin.Volume = 2.5
+				sndspin.Looped = true
+			end
+		elseif state == 2 then
+			rt = ROOTC0 * CFrame.new(0, 0.1, 0.1 * math.cos(timingsine / 35)) * CFrame.Angles(0, 0, math.rad(-40))
+			nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.rad(40))
+			rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(-17), math.rad(40), 0) * RIGHTSHOULDERC0
+			lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(100), math.rad(-70), math.rad(30)) * LEFTSHOULDERC0
+			rht = CFrame.new(1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(87), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			lht = CFrame.new(-1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			if not mousedown or isdancing then
+				state = 0
+				CreateSound(4498806901)
+				CreateSound(4473119880)
+				hum.WalkSpeed = 13 * scale
+				if sndshoot then
+					sndshoot:Destroy()
+					sndshoot = nil
+				end
+				if sndspin then
+					sndspin:Destroy()
+					sndspin = nil
+				end
 			end
 		end
 		
