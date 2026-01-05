@@ -2735,8 +2735,8 @@ AddModule(function()
 				gun.Offset = CFrame.new()--CFrame.new(0,0.5,0.3) * CFrame.Angles(math.rad(0), math.rad(90), math.rad(0))
 			elseif torsovelocity > 1 and hitfloor then
 				animationspeed = 79.3
-				local tw1 = Humanoid.MoveDirection * Torso.CFrame.LookVector
-				local tw2 = Humanoid.MoveDirection * Torso.CFrame.RightVector
+				local tw1 = hum.MoveDirection * root.CFrame.LookVector
+				local tw2 = hum.MoveDirection * root.CFrame.RightVector
 				local lv = tw1.X + tw1.Z
 				local rv = tw2.X + tw2.Z
 				local rh = CFrame.new(lv/10 * math.cos(timingsine / 18), 0, 0) * CFrame.Angles(math.sin(rv/5) * math.cos(timingsine / 18), 0, math.sin(-lv/2) * math.cos(timingsine / 18))
