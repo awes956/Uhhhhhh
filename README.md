@@ -1,6 +1,6 @@
 # <p align="center">STEVETHEREALONE (@steve_internal)'s Universal Hierarchical 6 Reanimator</p>
 <p align="center">A really cool, optimised animation program with demo scenes!</p>
-<p align="center"><img src="./images/Showcase.gif" alt="drawing" width="350"/></p>
+<p align="center"><img src="./images/Showcase.gif" alt="drawing" width="600"/></p>
 
 This is the official repository for Uhhhhhh.
 All code is stored in this repository.
@@ -45,10 +45,16 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
 5. Takes advantage of random replicate properties
    
    Serversided Physics glue = very accurate (and fast) fling!
+   
+   <img src="./images/FastestFling.gif" alt="drawing" width="350"/>
 
 6. Modding support
    
-   Infinite Yield lets you make plugins. So why not add it to Uhhhhhh too? The documentation is right below.
+   Infinite Yield lets you make plugins. So why not add it to Uhhhhhh too?
+   
+   <img src="./images/GiantSkipping.gif" alt="drawing" width="350"/>
+   
+   The documentation is right below.
 
 # Uhhhhhh documentation
 Modules are just luau tables that are created by a function.
