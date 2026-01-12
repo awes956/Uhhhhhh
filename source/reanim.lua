@@ -1189,8 +1189,10 @@ do -- homepage
 			local b = 1 / 3
 			local c = math.sqrt(3) / 2
 			local d = {
-				{Vector2.new(0, b + c), Vector2.new(-1, b - c)},
-				{Vector2.new(-1, b - c), Vector2.new(1, b - c)},
+				{Vector2.new(0, b + c), Vector2.new(-0.5, b)},
+				{Vector2.new(-0.5, b), Vector2.new(-1, b - c)},
+				{Vector2.new(-1, b - c), Vector2.new(0, b - c)},
+				{Vector2.new(0, b - c), Vector2.new(1, b - c)},
 				{Vector2.new(1, b - c), Vector2.new(0.5, b)},
 				{Vector2.new(0.5, b), Vector2.new(0, b - c)},
 				{Vector2.new(0, b - c), Vector2.new(-0.5, b)},
