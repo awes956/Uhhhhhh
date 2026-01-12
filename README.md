@@ -1,4 +1,4 @@
-# <p align="center">Universal Hierarchical 6 Reanimator</p>
+# <p align="center">STEVETHEREALONE (@steve_internal)'s Universal Hierarchical 6 Reanimator</p>
 <p align="center">A really cool, optimised animation program with demo scenes!</p>
 <p align="center"><img src="./images/Showcase.gif" alt="drawing" width="350"/></p>
 
