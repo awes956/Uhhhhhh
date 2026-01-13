@@ -2,7 +2,6 @@ if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
 local UhhhhhhVersion = "1.0.0 INIT"
-local GITHUB_PAT_TOKEN = "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"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
@@ -6703,9 +6702,7 @@ xpcall(function()
 	local s, resp = pcall(request, {
 		Method = "GET",
 		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=Assets&v=" .. math.random(0, 2147483647),
-		Headers = {
-			Authorization = "Bearer " .. GITHUB_PAT_TOKEN
-		}
+		Headers = {}
 	})
 	if s and resp and resp.StatusCode == 200 then
 		s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
@@ -6749,8 +6746,7 @@ for _,x in filesofbuiltins_d do
 			Method = "GET",
 			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
 			Headers = {
-				Accept = "application/vnd.github.VERSION.raw",
-				Authorization = "Bearer " .. GITHUB_PAT_TOKEN
+				Accept = "application/vnd.github.VERSION.raw"
 			}
 		})
 		if s then
@@ -6782,8 +6778,7 @@ for _,x in filesofbuiltins_m do
 			Method = "GET",
 			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
 			Headers = {
-				Accept = "application/vnd.github.VERSION.raw",
-				Authorization = "Bearer " .. GITHUB_PAT_TOKEN
+				Accept = "application/vnd.github.VERSION.raw"
 			}
 		})
 		if s then
