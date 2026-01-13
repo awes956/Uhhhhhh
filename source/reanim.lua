@@ -6701,8 +6701,7 @@ SaveData.ContentHash = SaveData.ContentHash or {}
 xpcall(function()
 	local s, resp = pcall(request, {
 		Method = "GET",
-		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=Assets&v=" .. math.random(0, 2147483647),
-		Headers = {}
+		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=Assets",
 	})
 	if s and resp and resp.StatusCode == 200 then
 		s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
@@ -6744,7 +6743,7 @@ for _,x in filesofbuiltins_d do
 	if not exist then
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets",
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
@@ -6776,7 +6775,7 @@ for _,x in filesofbuiltins_m do
 	else
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets",
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
