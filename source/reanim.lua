@@ -2556,6 +2556,13 @@ FallenPartsDestroyHeight = workspace.FallenPartsDestroyHeight
 if FallenPartsDestroyHeight ~= FallenPartsDestroyHeight then
 	FallenPartsDestroyHeight = -500
 end
+local RejectCharacterDeletionsDisabled = false
+pcall(function()
+	local rcd, _ = gethiddenproperty(workspace, "RejectCharacterDeletions")
+	if rcd.Name == "Disabled" then
+		RejectCharacterDeletionsDisabled = true
+	end
+end)
 
 local function CreateHumanoidCharacter()
 	local char = Util.Instance("Model")
@@ -3607,6 +3614,7 @@ function HatReanimator.Fling(target, duration)
 	end
 	return true
 end
+HatReanimator.DontFireCharAddOnThisChar = nil
 function HatReanimator.Config(parent)
 	UI.CreateSwitch(parent, "Permadeath", HatReanimator.Permadeath).Changed:Connect(function(val)
 		HatReanimator.Permadeath = val
@@ -3677,8 +3685,19 @@ function HatReanimator.Config(parent)
 	end)
 	UI.CreateText(parent, "^^^ if ur rig built wrong or u switched to a new rig ^^^\nthis button is for you", 10, Enum.TextXAlignment.Center)
 	UI.CreateButton(parent, "Respawn", 20).Activated:Connect(function()
-		HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
-		replicatesignal(Player.ConnectDiedSignalBackend)
+		if RejectCharacterDeletionsDisabled then
+			HatReanimator.Status.Permadeath = "RCDless mode, did old technique!"
+			local old = Player.Character
+			local new = Util.Instance("Model", workspace)
+			HatReanimator.DontFireCharAddOnThisChar = new
+			Player.Character = new
+			task.wait()
+			HatReanimator.DontFireCharAddOnThisChar = old
+			Player.Character = old
+		else
+			HatReanimator.Status.Permadeath = "Fired CDSB Signal!"
+			replicatesignal(Player.ConnectDiedSignalBackend)
+		end
 	end)
 end
 HatReanimator.GetHatMap = function() end
@@ -4205,7 +4224,17 @@ function HatReanimator.Start()
 	local function Respawn()
 		if IsRespawning then return end
 		IsRespawning = true
-		replicatesignal(Player.ConnectDiedSignalBackend)
+		if RejectCharacterDeletionsDisabled then
+			local old = Player.Character
+			local new = Util.Instance("Model", workspace)
+			HatReanimator.DontFireCharAddOnThisChar = new
+			Player.Character = new
+			task.wait()
+			HatReanimator.DontFireCharAddOnThisChar = old
+			Player.Character = old
+		else
+			replicatesignal(Player.ConnectDiedSignalBackend)
+		end
 	end
 
 	local function SetUACFrameNetless(handle, dt, newcf, tvel, fling, spin)
@@ -4583,9 +4612,8 @@ function HatReanimator.Start()
 	}
 	local NumHats = 0
 	local IsRespawning = false
-	local dontfireifthischar = nil
 	local function OnCharacter(character)
-		if dontfireifthischar == character then return end
+		if HatReanimator.DontFireCharAddOnThisChar == character then return end
 		local camcfr = Camera.CFrame
 		RunService.PreRender:Once(function()
 			RunService.PreAnimation:Wait()
@@ -4607,14 +4635,7 @@ function HatReanimator.Start()
 		local hatcolmeth = HatReanimator.HatCollideMethod
 		if not replicatesignal then perma = false end
 		if not hatcols then hatcolmeth = -1 end
-		local rcddisabled = false
-		pcall(function()
-			local rcd, _ = gethiddenproperty(workspace, "RejectCharacterDeletions")
-			if rcd.Name == "Disabled" then
-				rcddisabled = true
-			end
-		end)
-		if hatcols and rcddisabled then
+		if hatcols and RejectCharacterDeletionsDisabled then
 			hatcolmeth = -2
 		end
 		local selhatcol = HatCollideMethods[hatcolmeth]
@@ -4677,7 +4698,7 @@ function HatReanimator.Start()
 		local cdsbeffect = os.clock()
 		local cdsbtime = os.clock()
 		if perma then
-			if rcddisabled then
+			if RejectCharacterDeletionsDisabled then
 				HatReanimator.Status.Permadeath = "RCDless mode. Not yet."
 			else
 				replicatesignal(Player.ConnectDiedSignalBackend)
@@ -4766,7 +4787,7 @@ function HatReanimator.Start()
 		end)
 		HatReanimator.Status.ReanimState = "Loading Permadeath."
 		if perma then
-			if rcddisabled then
+			if RejectCharacterDeletionsDisabled then
 				cdsbeffect = os.clock() + Players.RespawnTime + 0.05
 				local oldperma = Util.Instance("Model", workspace)
 				Instance.new("Part", oldperma).Name = "Torso"
@@ -4774,14 +4795,14 @@ function HatReanimator.Start()
 				Instance.new("Humanoid", oldperma).Name = "Humanoid"
 				oldperma.PrimaryPart = oldperma.Torso
 				oldperma:PivotTo(CFrame.new(0, 99999, 0))
-				dontfireifthischar = oldperma
+				HatReanimator.DontFireCharAddOnThisChar = oldperma
 				Player.Character = oldperma
 				task.wait(3)
 				if not character:IsDescendantOf(workspace) then
 					lgloop:Disconnect()
 					return
 				end
-				dontfireifthischar = character
+				HatReanimator.DontFireCharAddOnThisChar = character
 				Player.Character = character
 				while Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and character:IsDescendantOf(workspace) do
 					if os.clock() > cdsbeffect then break end
