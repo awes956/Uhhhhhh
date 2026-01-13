@@ -5934,7 +5934,7 @@ local function AssetGetPathFromFilename(filename)
 end
 local _Assetdownloading = {}
 local function AssetDownload(filename)
-	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/" .. filename
+	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/Assets/" .. filename
 	local split = string.split(filename, "@")
 	if #split > 1 then
 		filename = table.remove(split, 1)
@@ -6702,7 +6702,7 @@ SaveData.ContentHash = SaveData.ContentHash or {}
 xpcall(function()
 	local s, resp = pcall(request, {
 		Method = "GET",
-		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?v=" .. math.random(0, 2147483647),
+		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=Assets&v=" .. math.random(0, 2147483647),
 		Headers = {
 			Authorization = "Bearer " .. GITHUB_PAT_TOKEN
 		}
@@ -6747,7 +6747,7 @@ for _,x in filesofbuiltins_d do
 	if not exist then
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?v=" .. math.random(0, 2147483647),
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw",
 				Authorization = "Bearer " .. GITHUB_PAT_TOKEN
@@ -6780,7 +6780,7 @@ for _,x in filesofbuiltins_m do
 	else
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?v=" .. math.random(0, 2147483647),
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets&v=" .. math.random(0, 2147483647),
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw",
 				Authorization = "Bearer " .. GITHUB_PAT_TOKEN
