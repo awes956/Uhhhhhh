@@ -924,12 +924,12 @@ local UIMainWindow, WindowContent do
 				"kaboom? yes rico, kaboom.",
 			}
 		end
-		local aprilfools = os.date("%m") == "04 01" or true
+		local aprilfools = os.date("%m") == "04 01"
 		if aprilfools then
 			local troll = math.random(3)
 			if troll == 1 then
 				CracktroFrameText = "Oxide Reanimation V67"
-				quotes = {" <font color=\"#00DDFF\">Oxide</font>  Reanimation"}
+				quotes = {"<font color=\"#00DDFF\">Oxide</font>   Reanimation"}
 				ForceUIColor = Color3.fromHex("00DDFF")
 			end
 			if troll == 2 then
