@@ -6724,6 +6724,7 @@ UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT REDISTRIBUTE WITH RENUMERATIVE INTENT!!", 15, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#0000FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://github.com/STEVE-916-create/Uhhhhhh/")
 	end
 end)
@@ -6786,9 +6787,9 @@ task.spawn(function()
 		content.Text = "Rendering error."
 		for _,v in string.split(logs, "\n") do
 			if v:sub(1, 2) == "# " then
-				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
+				UI.CreateText(ChangelogsPage, "<font weight=\"heavy\">" .. v:sub(3) .. "</font>", 15, Enum.TextXAlignment.Left)
 			else
-				UI.CreateText(ChangelogsPage, v, 12, Enum.TextXAlignment.Center)
+				UI.CreateText(ChangelogsPage, v, 12, Enum.TextXAlignment.Left)
 			end
 		end
 		content.Parent:Destroy()
