@@ -3709,6 +3709,10 @@ function HatReanimator.Config(parent)
 		if RejectCharacterDeletionsDisabled then
 			HatReanimator.Status.Permadeath = "RCDless mode, did old technique!"
 			local old = Player.Character
+			for _,v in old:GetChildren() do
+				if v:IsA("Accoutrement") then continue end
+				v:Destroy()
+			end
 			local new = Util.Instance("Model", workspace)
 			HatReanimator.DontFireCharAddOnThisChar = new
 			Player.Character = new
@@ -4247,6 +4251,10 @@ function HatReanimator.Start()
 		IsRespawning = true
 		if RejectCharacterDeletionsDisabled then
 			local old = Player.Character
+			for _,v in old:GetChildren() do
+				if v:IsA("Accoutrement") then continue end
+				v:Destroy()
+			end
 			local new = Util.Instance("Model", workspace)
 			HatReanimator.DontFireCharAddOnThisChar = new
 			Player.Character = new
