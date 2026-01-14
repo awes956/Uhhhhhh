@@ -6714,6 +6714,7 @@ do
 		"i was in fencing, then someone said \"its the genesis killer\"",
 		"STEVE, THE DANCING IMMORTALITY LORD!",
 		"\"kid im filipino\" - " .. (math.random() < 0.67 and "Tatsuki" or "Kaylie"),
+		"imagine getting ur script mogged by a script written and tested mostly on a mobile phone LOL",
 	}
 	for _=1, 15 do
 		local idx = math.random(1, #quotes)
