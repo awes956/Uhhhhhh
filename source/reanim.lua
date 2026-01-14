@@ -6749,6 +6749,52 @@ UI.CreateText(CreditsPage, "<font color=\"#0000FF\">[ Discord invite ]</font>", 
 		})
 	end
 end)
+local ChangelogsPage = UI.CreatePage()
+ChangelogsPage.ZIndex = 1
+ChangelogsPage.Position = UDim2.new(0.5, 360, 0.5, 0)
+ChangelogsPage.Interactable = false
+ChangelogsPage.Visible = false
+UI.CreateButton(MainPage, "Changelogs", 15).Activated:Connect(function()
+	ChangelogsPage.Interactable = false
+	ChangelogsPage.Visible = true
+	MainPage.Interactable = false
+	local tween = TweenService:Create(ChangelogsPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		ChangelogsPage.Interactable = true
+	end)
+end)
+UI.CreateButton(ChangelogsPage, "&lt; Hurry back", 20).Activated:Connect(function()
+	ChangelogsPage.Interactable = false
+	MainPage.Interactable = false
+	local tween = TweenService:Create(ChangelogsPage, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 360, 0.5, 0),
+	})
+	tween:Play()
+	tween.Completed:Connect(function()
+		MainPage.Interactable = true
+		ChangelogsPage.Visible = false
+	end)
+end)
+task.spawn(function()
+	UI.CreateText(ChangelogsPage, "Changelogs", 30, Enum.TextXAlignment.Center)
+	local content = UI.CreateText(ChangelogsPage, "Loading...", 12, Enum.TextXAlignment.Left)
+	xpcall(function()
+		content.Text:Destroy()
+		local logs = game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/CHANGELOGS")
+		for _,v in string.split(logs, "\n") do
+			if v:sub(1, 2) == "# " then
+				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
+			else
+				UI.CreateText(ChangelogsPage, "* " .. v:sub(3) .. " *", 15, Enum.TextXAlignment.Center)
+			end
+		end
+	end, function()
+		content.Text = "ERROR: Could not fetch"
+	end)
+end)
 task.wait()
 
 Util.Notify("Checking SHA1 Hashes...")
