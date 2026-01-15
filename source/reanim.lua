@@ -3814,7 +3814,8 @@ function HatReanimator.Start()
 				C1 = CFrame.identity,
 				Scale = 1,
 				Limb = "HumanoidRootPart",
-				Group = "RIG"
+				Group = "RIG",
+				Attachments = nil,
 			}
 			local originalsize = handle:FindFirstChild("OriginalSize")
 			if originalsize and originalsize:IsA("Vector3Value") then
@@ -3831,6 +3832,7 @@ function HatReanimator.Start()
 					mapdata.C1 = data.C1
 					mapdata.Limb = data.Limb
 					mapdata.Group = data.Group
+					mapdata.Attachments = data.Attachments
 					return mapdata, "Accessories", 0
 				end
 			end
@@ -4167,8 +4169,6 @@ function HatReanimator.Start()
 		local ReanimCharacter = Reanimate.Character
 		if not ReanimCharacter then return end
 		local scale = ReanimCharacter:GetScale()
-		local handle = hat:FindFirstChild("Handle")
-		if not handle or not handle:IsA("BasePart") then return end
 		local hatmapped = nil
 		-- find hat mapping
 		for _,data in HatMap do
@@ -4396,6 +4396,9 @@ function HatReanimator.Start()
 		HatReanimator.Status.HatCollide = exists .. " hats, " .. collidable .. " has collide."
 		return collidable
 	end
+	local function calculatepartdestroytime(height, velocity, gravity)
+		return (velocity + math.sqrt(velocity * velocity + 2 * gravity * height)) / gravity
+	end
 	local HatCollideMethods = {}
 	HatCollideMethods[-2] = {
 		NoAnim = true,
@@ -4615,6 +4618,7 @@ function HatReanimator.Start()
 			end
 		end,
 		State1 = function(character, Humanoid, hats)
+			HatReanimator.Status.HatCollide = "Hat states set."
 			local head = character:FindFirstChild("Head")
 			for _,v in hats do
 				local handle = v:FindFirstChild("Handle")
@@ -4630,8 +4634,13 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
+<<<<<<< HEAD
 			task.wait(0.45)
 			HatReanimator.Status.HatCollide = "Torso removed."
+=======
+			task.wait(calculatepartdestroytime(4, 30, workspace.Gravity) + 0.01)
+			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
+>>>>>>> refs/remotes/origin/main
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
@@ -4866,15 +4875,13 @@ function HatReanimator.Start()
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, RootPart.CFrame.Y + 4), claimarea.Z)
 		local bringconns = {}
-		if hatcols then
-			for _,hat in CharHats do
-				local handle = hat:FindFirstChild("Handle")
-				if handle and handle:IsA("BasePart") then
-					table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-						SetUACFrameNetless(handle, dt, CFrame.new(claimarea), Vector3.zero, false, false)
-					end))
-					handle:SetAttribute("_Uhhhhhh_HasCollide", false)
-				end
+		for _,hat in CharHats do
+			local handle = hat:FindFirstChild("Handle")
+			if handle and handle:IsA("BasePart") then
+				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
+					SetUACFrameNetless(handle, dt, CFrame.new(claimarea), Vector3.zero, false, false)
+				end))
+				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
 		task.wait(0.15)
