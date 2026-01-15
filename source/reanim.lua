@@ -6843,12 +6843,12 @@ if SaveData.VanillaModuleCache then
 	wasold = true
 	SaveData.VanillaModuleCache = nil
 end
+Util.Notify("Loading maps...")
 for _,x in filesofbuiltins_d do
 	local path = "UhhhhhhReanim/BuiltinModules/" .. x
 	local exist = false
 	local s, a = pcall(isfile, path)
 	if s and a then exist = true end
-	Util.Notify("Data: " .. x)
 	if not exist then
 		local s, resp = pcall(request, {
 			Method = "GET",
@@ -6870,13 +6870,13 @@ for _,x in filesofbuiltins_d do
 		end
 	end
 end
+Util.Notify("Loading builtin modules...")
 for _,x in filesofbuiltins_m do
 	local path = "UhhhhhhReanim/BuiltinModules/" .. x
 	local exist = false
 	local s, a = pcall(isfile, path)
 	if s and a then exist = true end
 	if wasold then exist = false end
-	Util.Notify("Vanilla: " .. x)
 	local data = ""
 	if exist then
 		data = readfile(path)
@@ -6916,9 +6916,10 @@ for _,x in filesofbuiltins_m do
 	end)
 end
 -- user
+Util.Notify("Loading user modules...")
 for _,path in listfiles("UhhhhhhReanim/Modules/") do
 	if isfile(path) then
-		Util.Notify("User: " .. path:sub(23))
+		--Util.Notify("User: " .. path:sub(23))
 		xpcall(function()
 			local func, comperr = loadstring(readfile(path), RandomString())
 			if func then
