@@ -4194,7 +4194,7 @@ function HatReanimator.Start()
 		end
 		return
 	end
-	HatReanimator.GetHatMap = function() return table.clone(HatMap) end
+	HatReanimator.GetHatMap = function() return Util.DeepcopyTable(HatMap) end
 	HatReanimator.GetHatCFrameMeshAndTexture = GetHatCFrameMeshAndTexture
 	HatReanimator.GetAttachmentCFrame = GetAttachmentCFrame
 

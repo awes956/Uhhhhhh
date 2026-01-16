@@ -216,9 +216,9 @@ local HatKnownAccessoriesDatabase = {
 	-- Bullets
 	{ -- 
 		MeshId = "4307568890", TextureId = "",
-		C0 = CFrame.identity,
+		C0 = CFrame.new(0, 1, 0),
 		C1 = CFrame.identity,
-		Limb = "Torso", Group = "Bullet"
+		Limb = "Left Arm", Group = "Bullet"
 	},
 }
 

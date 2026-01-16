@@ -192,7 +192,7 @@ Uhhhhhh gives modules whatever it can. Here are all of it!
 RandomString(length) -- Random String function
 
 -- UI Util functions, used for config UI
--- refer to line ~58 for usage
+-- refer to line ~131 for usage
 Util_CreateText
 Util_CreateButton
 Util_CreateSwitch
