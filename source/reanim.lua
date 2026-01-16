@@ -348,7 +348,7 @@ do
 			Size = UDim2.new(1, 0, 0, 32)
 		}):Play()
 		task.wait(0.5)
-		local s, assetsof = pcall(game.HttpGet, game, "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=UI-Music")
+		local s, assetsof = pcall(game.HttpGet, game, "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/uimusic/")
 		if s and assetsof then
 			s, assetsof = pcall(HttpService.JSONDecode, HttpService, assetsof)
 			if s and assetsof then
@@ -5965,7 +5965,7 @@ local function AssetGetPathFromFilename(filename)
 end
 local _Assetdownloading = {}
 local function AssetDownload(filename)
-	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/Assets/" .. filename
+	local source = "https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/content/" .. filename
 	local split = string.split(filename, "@")
 	if #split > 1 then
 		filename = table.remove(split, 1)
@@ -6812,7 +6812,7 @@ SaveData.ContentHash = SaveData.ContentHash or {}
 xpcall(function()
 	local s, resp = pcall(request, {
 		Method = "GET",
-		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/?ref=Assets",
+		Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/",
 	})
 	if s and resp and resp.StatusCode == 200 then
 		s, resp = pcall(HttpService.JSONDecode, HttpService, resp.Body)
@@ -6854,7 +6854,7 @@ for _,x in filesofbuiltins_d do
 	if not exist then
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets",
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
@@ -6886,7 +6886,7 @@ for _,x in filesofbuiltins_m do
 	else
 		local s, resp = pcall(request, {
 			Method = "GET",
-			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/" .. x .. "?ref=Assets",
+			Url = "https://api.github.com/repos/STEVE-916-create/Uhhhhhh/contents/content/" .. x,
 			Headers = {
 				Accept = "application/vnd.github.VERSION.raw"
 			}
