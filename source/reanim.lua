@@ -4873,11 +4873,11 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
+		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
+		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
 		task.wait(0.1)
 		readystate = 2
 		HatReanimator.Status.ReanimState = "Reanimate State: 2"
-		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
-		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, RootPart.CFrame.Y + 4), claimarea.Z)
 		local bringconns = {}
 		for _,hat in CharHats do
 			local handle = hat:FindFirstChild("Handle")
