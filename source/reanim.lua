@@ -4890,6 +4890,7 @@ function HatReanimator.Start()
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					SetUACFrameNetless(handle, dt, CFrame.new(claimarea), Vector3.zero, false, false)
 				end))
+				handle:BreakJoints()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
