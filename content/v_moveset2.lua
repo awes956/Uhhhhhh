@@ -1293,7 +1293,7 @@ AddModule(function()
 					task.wait(0.15)
 					if not rootu:IsDescendantOf(workspace) then return end
 					local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * scale)
-					hole = HatReanimator.GetAttachmentCFrame("GunAttachment") or hole
+					hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 					EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
 					animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 						nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(20), 0, 0)
@@ -1354,7 +1354,7 @@ AddModule(function()
 			task.wait(0.15)
 			if not rootu:IsDescendantOf(workspace) then return end
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 0.5, -5) * scale)
-			hole = HatReanimator.GetAttachmentCFrame("GunAttachment") or hole
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 			local raycast = PhysicsRaycast(hole.Position, target - hole.Position)
 			if raycast then
 				target = raycast.Position
@@ -1540,7 +1540,7 @@ AddModule(function()
 			task.wait(0.1)
 			if not rootu:IsDescendantOf(workspace) then return end
 			local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * scale)
-			hole = HatReanimator.GetAttachmentCFrame("GunAttachment") or hole
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 			local sky = root.CFrame * Vector3.new(0, 300, -50)
 			EffectCannon(hole.Position, sky)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
@@ -1635,7 +1635,7 @@ AddModule(function()
 			local s = os.clock()
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
-				hole = HatReanimator.GetAttachmentCFrame("GunAttachment") or hole
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 				core.CFrame = hole
 				core.Size = Vector3.one * 2.5 * (os.clock() - s) / m.BeamCharge
 				task.wait()
@@ -1690,7 +1690,7 @@ AddModule(function()
 			local dt = 0
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
-				hole = HatReanimator.GetAttachmentCFrame("GunAttachment") or hole
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 				root.CFrame *= CFrame.new(0, 0, dt * 6 * scale)
 				core.CFrame = hole
 				core.Size = Vector3.one * 2.5
