@@ -2712,6 +2712,7 @@ SaveData.NoclipEnabled = not not SaveData.NoclipEnabled
 SaveData.CtrlClickEnabled = not not SaveData.CtrlClickEnabled
 SaveData.ClickFlingEnabled = not not SaveData.ClickFlingEnabled
 SaveData.NoSmoothCam = not not SaveData.NoSmoothCam
+SaveData.NoSeatSitEnabled = not SaveData.NoSeatSitEnabled
 SaveData.ToolGrabEnabled = not not SaveData.ToolGrabEnabled
 SaveData.CharacterScale = SaveData.CharacterScale or 1
 SaveData.P2PCollision = not not SaveData.P2PCollision
@@ -2737,6 +2738,7 @@ local Reanimate = {
 	CtrlClick = SaveData.CtrlClickEnabled,
 	ClickFling = SaveData.ClickFlingEnabled,
 	SmoothCam = not SaveData.NoSmoothCam,
+	SeatSit = not SaveData.NoSeatSitEnabled,
 	ToolGrab = SaveData.ToolGrabEnabled,
 	AntiExplosions = true,
 	CharacterScale = SaveData.CharacterScale,
@@ -2778,7 +2780,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 	local SeatWeld = nil
 	local LastJumpOffSeat = 0
 	RCHumanoid.Touched:Connect(function(part, limb)
-		if part:IsA("Seat") and not RCHumanoid.Sit and os.clock() - LastJumpOffSeat > 2 then
+		if Reanimate.SeatSit and part:IsA("Seat") and not RCHumanoid.Sit and os.clock() - LastJumpOffSeat > 2 then
 			RCHumanoid.Sit = true
 			if SeatWeld ~= nil then
 				SeatWeld = SeatWeld:Destroy()
@@ -2790,6 +2792,12 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			SeatWeld.Part1 = RCRootPart
 			SeatWeld.C0 = CFrame.new(0, part.Size.Y / 2, 0)
 			SeatWeld.C1 = CFrame.new(0, -1.5 * RC:GetScale(), 0)
+			LinkDestroyI2C(SeatWeld, RCHumanoid:GetPropertyChangedSignal("Jump"):Connect(function()
+				if RCHumanoid.Jump then
+					RCHumanoid.Sit = false
+					SeatWeld:Destroy()
+				end
+			end)
 		end
 		if part.Name == "Handle" and part.Parent:IsA("Tool") and not part.Parent.Parent:FindFirstChildOfClass("Humanoid") then
 			if Reanimate.ToolGrab then
@@ -5484,6 +5492,10 @@ do
 	UI.CreateSwitch(MainPage, "Smooth Camera", Reanimate.SmoothCam).Changed:Connect(function(val)
 		Reanimate.SmoothCam = val
 		SaveData.NoSmoothCam = not val
+	end)
+	UI.CreateSwitch(MainPage, "Can Sit on Seats", Reanimate.SeatSit).Changed:Connect(function(val)
+		Reanimate.SeatSit = val
+		SaveData.NoSeatSitEnabled = not val
 	end)
 	UI.CreateSwitch(MainPage, "Can Pickup Tools", Reanimate.ToolGrab).Changed:Connect(function(val)
 		Reanimate.ToolGrab = val
