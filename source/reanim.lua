@@ -4615,9 +4615,9 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 8, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 20, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 40, 0))
 						elseif v.Name:find("Shoulder") or v.Name:find("Hip") then
 							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
 						else
