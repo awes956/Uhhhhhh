@@ -4647,12 +4647,14 @@ function HatReanimator.Start()
 			local torso = character:FindFirstChild("Torso")
 			if torso then
 				task.wait(0.1)
-				--torso.AncestryChanged:Wait()
 				--task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+			end
+			if torso and torso.Parent == character then
+				torso.AncestryChanged:Wait()
 			end
 			task.wait(1.5)
 			return _counthats(hats)
