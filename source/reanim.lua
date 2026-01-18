@@ -4640,7 +4640,7 @@ function HatReanimator.Start()
 						end
 					end
 				end
-				--SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
 			end
 		end,
 		State2 = function(character, hats)
@@ -4651,7 +4651,7 @@ function HatReanimator.Start()
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InCharacter)
+				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
 			if torso and torso.Parent == character then
 				torso.AncestryChanged:Wait()
@@ -4891,7 +4891,11 @@ function HatReanimator.Start()
 			local handle = hat:FindFirstChild("Handle")
 			if handle and handle:IsA("BasePart") then
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
-					SetUACFrameNetless(handle, dt, CFrame.new(claimarea), Vector3.zero, false, false)
+					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
+						handle.CFrame = CFrame.new(claimarea)
+						handle.Velocity = CFrame.new(0, 250, 0)
+						handle.RotVelocity = CFrame.new(0, 0, 0)
+					end
 				end))
 				handle:BreakJoints()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
