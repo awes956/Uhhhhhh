@@ -4670,7 +4670,7 @@ function HatReanimator.Start()
 			return _counthats(hats)
 		end,
 	}
-	HatCollideMethods[8] = {
+	HatCollideMethods[8] = { -- VERY EXPERIMENTAL, do NOT use.
 		NoAnim = true,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 67, 0))
@@ -4707,7 +4707,7 @@ function HatReanimator.Start()
 			local root = character:FindFirstChild("HumanoidRootPart")
 			local head = character:FindFirstChild("Head")
 			if head then
-				task.wait(0.2)
+				task.wait(0.3)
 			end
 			HatReanimator.Status.HatCollide = "We remain the HumanoidRootPart"
 			for _,v in hats do
@@ -4951,7 +4951,7 @@ function HatReanimator.Start()
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
 						handle.CFrame = CFrame.new(claimarea)
-						handle.Velocity = CFrame.new(0, 250, 0)
+						handle.Velocity = CFrame.new(0, 32.67, 0)
 						handle.RotVelocity = CFrame.new(0, 0, 0)
 					end
 				end))
