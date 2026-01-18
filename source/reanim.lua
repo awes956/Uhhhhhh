@@ -4143,7 +4143,10 @@ function HatReanimator.Start()
 							Limb = data.Limb,
 						}
 					else
-						overriden = data
+						overriden = {
+							C0 = data.C0 or data.CFrame or CFrame.identity,
+							C1 = overriden.C1 * (data.C1 or CFrame.identity),
+						}
 					end
 					break
 				end
@@ -4170,10 +4173,11 @@ function HatReanimator.Start()
 						return limb.CFrame * overriden.Offset, limb.Velocity
 					end
 				end
-			end
-			-- world coords
-			if overriden.CFrame then
-				return overriden.CFrame, Vector3.zero
+			else
+				-- world coords
+				if overriden.C0 and overriden.C1 then
+					return Util.ScaleCFrame(overriden.C0, scale) * Util.ScaleCFrame(overriden.C1, hatscale):Inverse(), Vector3.zero
+				end
 			end
 		end
 		return
