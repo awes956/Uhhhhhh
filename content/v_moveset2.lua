@@ -802,6 +802,10 @@ AddModule(function()
 	local leftwing = {}
 	local rightwing = {}
 	local gun = {}
+	local bullet = {}
+	local bulletstate = {Vector3.zero, Vector3.zero, 0}
+	local gunaura = {}
+	local gunaurastate = {Vector3.zero, 0}
 	local flyv, flyg = nil, nil
 	local walkingwheel = nil
 	local chatconn = nil
@@ -902,6 +906,20 @@ AddModule(function()
 	end
 	local function randomdialog(arr, glitchy)
 		notify(arr[math.random(1, #arr)], glitchy)
+	end
+	local function SetBulletState(hole, target)
+		local dist = (target - hole).Magnitude
+		bulletstate[1] = hole
+		if dist > 128 then
+			bulletstate[2] = hole + (target - hole).Unit * 128
+		else
+			bulletstate[2] = target
+		end
+		bulletstate[3] = os.clock()
+	end
+	local function SetGunauraState(hole)
+		gunaurastate[1] = hole
+		gunaurastate[2] = 3
 	end
 	local function Effect(params)
 		if not torso then return end
@@ -1311,7 +1329,9 @@ AddModule(function()
 					if not rootu:IsDescendantOf(workspace) then return end
 					local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, -1) * scale)
 					hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
-					EffectCannon(hole.Position, root.CFrame * Vector3.new(0, 300, -50))
+					local sky = root.CFrame * Vector3.new(0, 300, -50)
+					EffectCannon(hole.Position, sky)
+					SetBulletState(hole.Position, sky)
 					animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 						nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(20), 0, 0)
 						return rt, nt, rst, lst, rht, lht, gunoff
@@ -1377,6 +1397,7 @@ AddModule(function()
 				target = raycast.Position
 			end
 			EffectCannon(hole.Position, target)
+			SetBulletState(hole.Position, target)
 			if math.random(2) == 1 then
 				randomdialog({
 					"BOOM",
@@ -1560,6 +1581,7 @@ AddModule(function()
 			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 			local sky = root.CFrame * Vector3.new(0, 300, -50)
 			EffectCannon(hole.Position, sky)
+			SetBulletState(hole.Position, sky)
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt = ROOTC0 * CFrame.Angles(0, 0, math.rad(-10))
 				nt = NECKC0 * CFrame.Angles(math.rad(25), 0, math.rad(-20))
@@ -1587,8 +1609,12 @@ AddModule(function()
 			for _=1, m.RainAmount do
 				local hit = target + Vector3.new(math.random(-18, 18), 0, math.random(-18, 18))
 				EffectCannon(sky, hit, false)
+				if (rootu.Position - hit).Magnitude < 256 then
+					SetBulletState(hit, sky) -- yes
+				end
 				Attack(hit, 12)
 				task.wait(1.25 / m.RainAmount)
+				if not rootu:IsDescendantOf(workspace) then return end
 			end
 		end)
 	end
@@ -1655,6 +1681,7 @@ AddModule(function()
 				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
 				core.CFrame = hole
 				core.Size = Vector3.one * 2.5 * (os.clock() - s) / m.BeamCharge
+				SetGunauraState(hole.Position)
 				task.wait()
 			until os.clock() - s > m.BeamCharge or not SingularityBeam_ischarging or not rootu:IsDescendantOf(workspace)
 			if not rootu:IsDescendantOf(workspace) then
@@ -1716,6 +1743,8 @@ AddModule(function()
 				if raycast then
 					target = raycast.Position
 				end
+				SetGunauraState(hole.Position)
+				SetBulletState(hole.Position, target)
 				local dist = (target - hole.Position).Magnitude
 				beam.Size = Vector3.new(dist, 2.5, 2.5)
 				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
@@ -1774,9 +1803,21 @@ AddModule(function()
 			Limb = "Right Arm",
 			Offset = CFrame.identity
 		}
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		gunaura = {
+			Group = "GunAura",
+			CFrame = CFrame.identity
+		}
 		table.insert(HatReanimator.HatCFrameOverride, leftwing)
 		table.insert(HatReanimator.HatCFrameOverride, rightwing)
 		table.insert(HatReanimator.HatCFrameOverride, gun)
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		table.insert(HatReanimator.HatCFrameOverride, gunaura)
+		bulletstate = {Vector3.zero, Vector3.zero, 0}
+		gunaurastate = {Vector3.zero, 0}
 		flyv = Instance.new("BodyVelocity")
 		flyv.Name = "FlightBodyMover"
 		flyv.P = 90000
@@ -2442,6 +2483,24 @@ AddModule(function()
 		end
 		gun.Offset = joints.sw
 		gun.Disable = not not isdancing
+
+		-- bullet and aura
+		if bulletstate[3] < os.clock() - 0.5 then
+			bullet.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+		else
+			local pos = (os.clock() // 0.05) % 2
+			if pos == 0 then
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[1]
+			else
+				bullet.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + bulletstate[2]
+			end
+		end
+		if gunaurastate[2] > 0 then
+			gunaurastate[2] -= 1
+			gunaura.CFrame = CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2) + gunaurastate[1]
+		else
+			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+		end
 		
 		-- dance reactions
 		if isdancing then
