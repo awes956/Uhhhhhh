@@ -2665,7 +2665,7 @@ AddModule(function()
 		text.TextScaled = true
 		text.TextStrokeTransparency = 0
 		text.Size = UDim2.new(1, 0, 1, 0)
-		text.TextColor3 = Color3.new(255, 50, 50)
+		text.TextColor3 = Color3.fromRGB(255, 50, 50)
 		text.TextStrokeColor3 = Color3.new(0, 0, 0)
 		task.spawn(function()
 			local function update()
@@ -3026,7 +3026,7 @@ AddModule(function()
 					shell.CanCollide = false
 					shell.CanTouch = false
 					shell.CanQuery = false
-					shell.Color = Color3.new(1, 0.25, 0.25)
+					shell.Color = Color3.new(1, 0.5, 0.5)
 					shell.CastShadow = false
 					shell.Material = "Neon"
 					shell.Size = Vector3.new(0.1, 0.1, 0.1)
