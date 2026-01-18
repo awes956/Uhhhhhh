@@ -43,11 +43,12 @@ end
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Nameless Animations"
-	m.Description = "Patchma Hub moveset"
+	m.Name = "Patchma Hub"
+	m.Description = "see the configurations to set ur anims"
 	m.Assets = {}
 
 	m.Config = function(parent: GuiBase2d)
+		
 	end
 
 	m.Init = function(figure: Model)

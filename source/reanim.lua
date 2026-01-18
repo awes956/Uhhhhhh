@@ -4511,10 +4511,10 @@ function HatReanimator.Start()
 			local rootcf = CFrame.new(RootPosition + Vector3.new(8, -0.25 - torsooffset.Z, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)
 			if readystate > 0 then
 				RootPart.CFrame = rootcf
-				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25.01, 0), Vector3.zero
+				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
 			else
 				RootPart.CFrame = rootcf + Vector3.new(0, 141, 0) -- CFrame.new(RootPosition + Vector3.new(8, 141, 0))
-				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 25.01, 0), Vector3.zero
+				RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
 			end
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
 				for _,v in character:GetDescendants() do
@@ -4602,13 +4602,12 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[7] = {
 		NoAnim = true,
+		Wait1 = 0.1,
+		Wait2 = 0.15,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
 			local rootcf = CFrame.new(RootPosition + Vector3.new(0, -4, 0))
-			if readystate < 3 then
-				Humanoid:ChangeState(16)
-			end
 			RootPart.CFrame = rootcf
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
@@ -4676,18 +4675,19 @@ function HatReanimator.Start()
 	}
 	HatCollideMethods[8] = { -- VERY EXPERIMENTAL, do NOT use.
 		NoAnim = true,
+		Wait1 = 0.1,
+		Wait2 = 0.35,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 67, 0))
-			if readystate < 3 then
-				Humanoid:ChangeState(16)
-			end
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 37, 0))
 			RootPart.CFrame = rootcf
-			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 30, 0), Vector3.zero
+			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "Root" then
-							Util.SetMotor6DTransform(v, CFrame.new(0, -60, 0))
+							Util.SetMotor6DTransform(v, CFrame.new(0, -30, 0))
+						elseif v.Name == "Neck" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 67, 0))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -4697,7 +4697,9 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, CFrame.new(0, -60, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(0, -30, 0))
+						elseif v.Name == "Neck" then
+							Util.SetMotor6DOffset(v, CFrame.new(0, 67, 0))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -4710,20 +4712,22 @@ function HatReanimator.Start()
 		State2 = function(character, hats)
 			local root = character:FindFirstChild("HumanoidRootPart")
 			local head = character:FindFirstChild("Head")
-			if head then
-				task.wait(0.3)
+			local torso = character:FindFirstChild("Torso")
+			local hum = character:FindFirstChild("Humanoid")
+			if torso then
+				task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "We remain the HumanoidRootPart"
 			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
+				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
 			root.AncestryChanged:Wait()
+			if hum then replicatesignal(hum.ServerBreakJoints) end
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
 	}
 	local NumHats = 0
-	local IsRespawning = false
 	local function OnCharacter(character)
 		if HatReanimator.DontFireCharAddOnThisChar == character then return end
 		local camcfr = Camera.CFrame
@@ -4943,9 +4947,10 @@ function HatReanimator.Start()
 		HatReanimator.Status.ReanimState = "Reanimate State: 1"
 		NumHats = #CharHats
 		selhatcol.State1(character, Humanoid, CharHats)
+		Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 		local claimarea = RootPart.CFrame.Position + RootPart.CFrame.LookVector * 8
 		claimarea = Vector3.new(claimarea.X, math.max(FallenPartsDestroyHeight + 16, claimarea.Y + 4), claimarea.Z)
-		task.wait(0.1)
+		task.wait(selhatcol.Wait1 or 0.1)
 		readystate = 2
 		HatReanimator.Status.ReanimState = "Reanimate State: 2"
 		local bringconns = {}
@@ -4963,7 +4968,8 @@ function HatReanimator.Start()
 				handle:SetAttribute("_Uhhhhhh_HasCollide", false)
 			end
 		end
-		task.wait(0.15)
+		Humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+		task.wait(selhatcol.Wait2 or 0.15)
 		replicatesignal(Humanoid.ServerBreakJoints)
 		Humanoid.BreakJointsOnDeath = true
 		Humanoid.Health = 0
