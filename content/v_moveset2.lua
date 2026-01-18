@@ -3029,7 +3029,7 @@ AddModule(function()
 			local newpos, newvel = pos + vel * dt + (grav * dt * dt * 0.5), vel + grav * dt
 			local hit = PhysicsRaycast(pos, newpos - pos)
 			if hit then
-				newpos = hit.Position
+				newpos = hit.Position + hit.Normal * 0.01
 				newvel += hit.Normal * hit.Normal:Dot(newvel) * -2
 				newvel += rng:NextUnitVector() * newvel.Magnitude * Vector3.new(1, 0, 1)
 				newvel *= 0.5
