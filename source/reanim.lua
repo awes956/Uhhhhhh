@@ -6823,8 +6823,13 @@ task.spawn(function()
 		content.Text = "ERROR: Could not fetch"
 	end)
 end)
+UI.CreateText(ChangelogsPage, "\n\n\n<font weight=\"heavy\">DANGER ZONE</font>", 15, Enum.TextXAlignment.CENTER)
+local clearcontenthash, clearcontenthashtext = UI.CreateButton(MainPage, "CLEAR ALL DOWNLOADED CONTENT", 15)
+clearcontenthash.Activated:Connect(function()
+	SaveData.ContentHash = nil
+	clearcontenthashtext.Text = "Cleared, now rejoin to apply"
+end)
 task.wait()
-
 Util.Notify("Checking SHA1 Hashes...")
 local filesofbuiltins = {"v_moveset1.lua", "v_moveset2.lua", "v_dance1.lua", "v_dance2.lua", "d_limbmap.lua", "d_hatsmap.lua"}
 local filesofbuiltins_m = {"v_moveset1.lua", "v_moveset2.lua", "v_dance1.lua", "v_dance2.lua"}
