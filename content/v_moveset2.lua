@@ -1468,6 +1468,7 @@ AddModule(function()
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(-1.5, 0.5, -2.25) * scale)
 				hole = HatReanimator.GetAttachmentCFrame("LeftGripAttachment") or hole
+				SetGunauraState(hole.Position)
 				if throt > 0.02 then
 					Effect({Time = math.random(35, 55), EffectType = "Sphere", Size = Vector3.new(0.5, 0.5, 0.5), SizeEnd = Vector3.new(1, 1, 1), Transparency = 0, TransparencyEnd = 1, CFrame = hole, MoveToPos = hole.Position + Vector3.new(math.random(-10, 10), math.random(-10, 10), math.random(-10, 10)), Boomerang = 50, BoomerangSize = 50})
 				end
