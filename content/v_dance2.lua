@@ -292,7 +292,7 @@ AddModule(function()
 
 	local animator = nil
 	m.Init = function(figure: Model)
-		SetOverrideDanceMusic(AssetGetContentId("Lux.mp3"), "idk this one", 1)
+		SetOverrideDanceMusic(AssetGetContentId("Lux.mp3"), "idk this one", 1, NumberRange.new(0, 5.7))
 		animator = AnimLib.Animator.new()
 		animator.rig = figure
 		animator.looped = false
