@@ -1288,6 +1288,7 @@ AddModule(function()
 		local btn = function(txt, f)
 			local i1 = Instance.new("TextLabel") 
 			local i2 = Instance.new("TextButton")
+			i1.BackgroundTransparency = 1
 			i1.Font = Enum.Font.SourceSans
 			i1.TextSize = 18
 			i1.Text = txt
@@ -1309,6 +1310,7 @@ AddModule(function()
 		local lbl = function(txt)
 			local i1 = Instance.new("TextLabel") 
 			local i2 = Instance.new("Frame")
+			i1.BackgroundTransparency = 1
 			i1.Font = Enum.Font.SourceSans
 			i1.TextSize = 18
 			i1.Text = txt
