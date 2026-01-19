@@ -1433,11 +1433,11 @@ AddModule(function()
 				button.Image = "https://www.roblox.com/asset/?id=97166444"
 				button.BackgroundTransparency = 1
 				local txt = Instance.new("TextLabel", button)
-				txt.Position = UDim2.new(0, 0, 0.25, 0)
-				txt.Size = UDim2.new(1, 0, 0.5, 0)
+				txt.Position = UDim2.new(0, 0, 0, 0)
+				txt.Size = UDim2.new(1, 0, 1, 0)
 				txt.BackgroundTransparency = 1
 				txt.Font = Enum.Font.SourceSansBold
-				txt.TextScaled = true
+				txt.TextSize = 18
 				txt.TextColor3 = Color3.new(1, 1, 1)
 				txt.TextStrokeTransparency = 0
 				txt.TextStrokeColor3 = Color3.new(0, 0, 0)
