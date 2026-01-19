@@ -29,8 +29,10 @@ local function ResetC0C1Joints(rj, nj, rsj, lsj, rhj, lhj)
 	rhj.C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0)
 end
 local function SetC0C1Joint(j, c0, c1, scale)
-	local t = j.C0:Inverse() * c0 * c1:Inverse() * j.C1
-	j.Transform = t + t.Position * (scale - 1)
+	local t = c0 * c1:Inverse()
+	t += t.Position * (scale - 1)
+	t = j.C0:Inverse() * t * j.C1
+	j.Transform = t
 end
 
 local modules = {}
