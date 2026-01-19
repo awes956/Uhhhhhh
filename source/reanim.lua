@@ -4960,8 +4960,8 @@ function HatReanimator.Start()
 				table.insert(bringconns, RunService.Heartbeat:Connect(function(dt)
 					if handle:IsDescendantOf(workspace) and IsNetworkOwner(handle) then
 						handle.CFrame = CFrame.new(claimarea)
-						handle.Velocity = CFrame.new(0, 32.67, 0)
-						handle.RotVelocity = CFrame.new(0, 0, 0)
+						handle.Velocity = Vector3.new(0, 32.67, 0)
+						handle.RotVelocity = Vector3.new(0, 0, 0)
 					end
 				end))
 				handle:BreakJoints()
