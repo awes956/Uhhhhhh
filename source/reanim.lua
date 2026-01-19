@@ -2647,6 +2647,21 @@ local function CreateHumanoidCharacter()
 		motor.Part1 = p1
 		motor.C0 = c0
 		motor.C1 = c1
+		local iskeeping = false
+		motor:GetPropertyChangedSignal("Transform"):Connect(function()
+			if iskeeping then return end
+			iskeeping = true
+			local tran = motor.Transform
+			RunService.PreRender:Wait()
+			motor.Transform = tran
+			RunService.RenderStepped:Wait()
+			motor.Transform = tran
+			RunService.PreAnimation:Wait()
+			motor.Transform = tran
+			RunService.PreSimulation:Wait()
+			motor.Transform = tran
+			iskeeping = false
+		end)
 	end
 
 	makeMotor(
