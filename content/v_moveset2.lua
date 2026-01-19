@@ -1531,7 +1531,12 @@ AddModule(function()
 					end
 					task.wait(0.1)
 					death.Transparency = 1
-					if rootu:IsDescendantOf(workspace) then Attack(toward, 10) end
+					if rootu:IsDescendantOf(workspace) then
+						Attack(toward, 10)
+						if (rootu.Position - toward).Magnitude < 256 then
+							SetGunauraState(toward)
+						end
+					end
 					task.wait(3)
 					death:Destroy()
 				end)
