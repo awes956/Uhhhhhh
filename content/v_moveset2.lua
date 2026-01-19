@@ -916,8 +916,8 @@ AddModule(function()
 	local function SetBulletState(hole, target)
 		local dist = (target - hole).Magnitude
 		bulletstate[1] = hole
-		if dist > 128 then
-			bulletstate[2] = hole + (target - hole).Unit * 128
+		if dist > 256 then
+			bulletstate[2] = hole + (target - hole).Unit * 256
 		else
 			bulletstate[2] = target
 		end
