@@ -5445,12 +5445,13 @@ local function ReanimateFling(target, duration)
 end
 do
 	SaveData.SelectedReanimator = SaveData.SelectedReanimator or 1
+	local ReanimateMethodSelect = UI.CreateDropdown(MainPage, "Reanimator", {"Limb Reanimator", "Hats Reanimator"}, SaveData.SelectedReanimator)
+	local ReanimatorConfigTitle = UI.CreateText(MainPage, "-=+ Limb Reanimator Config +=-", 15, Enum.TextXAlignment.Center)
 	local SelectedReanimator = LimbReanimator
 	if SaveData.SelectedReanimator == 2 then
 		SelectedReanimator = HatReanimator
+		ReanimatorConfigTitle.Text = "-=+ Hats Reanimator Config +=-"
 	end
-	local ReanimateMethodSelect = UI.CreateDropdown(MainPage, "Reanimator", {"Limb Reanimator", "Hats Reanimator"}, SaveData.SelectedReanimator)
-	local ReanimatorConfigTitle = UI.CreateText(MainPage, "-=+ Limb Reanimator Config +=-", 15, Enum.TextXAlignment.Center)
 	local ReanimatorConfigCanvas = UI.CreateCanvas(MainPage)
 	ReanimateMethodSelect.Changed:Connect(function(value)
 		SaveData.SelectedReanimator = value
