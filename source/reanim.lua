@@ -2437,6 +2437,45 @@ end)
 UI.CreateSwitch(MainPage, "Skip Intro", SaveData.SkipIntro).Changed:Connect(function(value)
 	SaveData.SkipIntro = value
 end)
+do
+	SaveData.UITheme = SaveData.UITheme or 1
+	local function updatetheme()
+		if SaveData.UITheme == 1 then
+			ForceUIColor = nil
+		elseif SaveData.UITheme == 2 then
+			ForceUIColor = Color3.new(1, 1, 1)
+		elseif SaveData.UITheme == 3 then
+			ForceUIColor = Color3.fromHex("00DDFF")
+		elseif SaveData.UITheme == 4 then
+			ForceUIColor = Color3.fromHex("0000FF")
+		elseif SaveData.UITheme == 5 then
+			ForceUIColor = Color3.fromHex("7733FF")
+		elseif SaveData.UITheme == 6 then
+			ForceUIColor = Color3.new(0.9, 0, 0)
+		elseif SaveData.UITheme == 7 then
+			ForceUIColor = Color3.new(0, 1, 0)
+		elseif SaveData.UITheme == 8 then
+			ForceUIColor = Color3.new(1, 0.95, 0)
+		elseif SaveData.UITheme == 9 then
+			ForceUIColor = Color3.new(0, 0, 0)
+		end
+	end
+	UI.CreateDropdown(MainPage, "UI Color", {
+		"RGB/Default",
+		"ALONE",
+		"Oxide",
+		"Patchma Hub",
+		"Genesis V4",
+		"Crimson",
+		"r/masterhacker",
+		"Homer Simpson",
+		"Immortality Lord",
+	}, SaveData.UITheme).Changed:Connect(function(val)
+		SaveData.UITheme = val
+		updatetheme()
+	end)
+	updatetheme()
+end
 UI.CreateSeparator(MainPage)
 
 local MusicName = UI.CreateText(MainPage, "", 15, Enum.TextXAlignment.Center)
