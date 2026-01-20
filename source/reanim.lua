@@ -812,7 +812,7 @@ local function GetUIColor(t)
 		if s < 0.2 then
 			v *= 0.8 + si * 0.2
 		else
-			h += si * 0.05
+			h += si * 0.01
 		end
 		return Util.LoopedHSV(h, s, v)
 	end
@@ -829,7 +829,7 @@ local function GetUIBGColor(t)
 				v *= 1.25 + si * 0.25
 			end
 		else
-			h += si * 0.05
+			h += si * 0.01
 		end
 		return Util.LoopedHSV(h, s, v)
 	end
@@ -860,16 +860,21 @@ local function UpdateGrads(t)
 	local bgc = GetUIBGColor(t)
 	local h, s, v = bgc:ToHSV()
 	local bgcd = Color3.fromHSV(h, s, v * 0.7)
+	local h2, s2, v2 = c:ToHSV()
+	local glc = c
+	if v > v2 then
+		glc = bgc
+	end
 	for _,grad in StylizedObjs do
 		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, grad.options
 		Out.Color = c
 		if options.Depthed then
-			obj.BackgroundColor3 = bgc
-		else
 			obj.BackgroundColor3 = bgcd
+		else
+			obj.BackgroundColor3 = bgc
 		end
 		for _,v in Glos do
-			v.ImageColor3 = c
+			v.ImageColor3 = glc
 		end
 	end
 end
