@@ -1829,7 +1829,7 @@ function UI.CreateDropdown(parent, text, array, value)
 	Text.TextYAlignment = Enum.TextYAlignment.Center
 	Text.TextWrapped = true
 	Text.TextSize = 20
-	RegisterTextLabel(ButtonText)
+	RegisterTextLabel(Text)
 	local Dropdown = Util.Instance("TextButton", Container)
 	Dropdown.AnchorPoint = Vector2.new(1, 0.5)
 	Dropdown.Position = UDim2.new(1, -margin, 0.5, 0)
