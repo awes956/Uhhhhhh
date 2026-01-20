@@ -908,6 +908,8 @@ local function SetUITheme(index)
 		{Color3.fromHex("75284B"), Color3.fromHex("F7ABE8"), Color3.fromHex("75284B")},
 		-- Cherry Blossom Inverted
 		{Color3.fromHex("F7ABE8"), Color3.fromHex("75284B"), Color3.new(1, 1, 1)},
+		-- Tommorow Night 80s
+		{Color3.fromHex("272727"), Color3.fromHex("2D2D2D"), Color3.fromHex("BEBEBE")},
 	}
 	local theme = UIThemes[index]
 	if index == #UIThemes + 1 then
@@ -2600,6 +2602,7 @@ do
 		"FastTracker II Blue",
 		"Cherry Blossom",
 		"Sakura",
+		"Tommorow Night 80s", -- my personal IDE theme
 		"User Defined (see README)",
 	}, SaveData.UITheme).Changed:Connect(function(val)
 		SaveData.UITheme = val
