@@ -65,10 +65,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhh
 
    You hate the colors? Change them! Do you want black? Do you want white? Do you want your own? The choice is yours.
 
-   <img src="./images/Theme1.jpg" alt="drawing" width="30%"/>
-   <img src="./images/Theme2.jpg" alt="drawing" width="30%"/>
-   <img src="./images/Theme3.jpg" alt="drawing" width="30%"/>
-   <img src="./images/Theme4.jpg" alt="drawing" width="30%"/>
+   <img src="./images/Theme1.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme2.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme3.jpg" alt="drawing" width="40%"/>
+   <img src="./images/Theme4.jpg" alt="drawing" width="40%"/>
 
 ```lua
 -- example theme
