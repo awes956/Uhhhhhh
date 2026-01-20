@@ -903,11 +903,11 @@ local function SetUITheme(index)
 		-- ROSR
 		{Color3.new(1, 0.7, 0), Color3.new(0.8, 0.5, 0), Color3.new(1, 1, 1)},
 		-- FastTracker II Blue
-		{Color3.fromHex("364780"), Color3.fromHex("698CFF"), Color3.new(1, 1, 1)},
+		{Color3.fromHex("333780"), Color3.fromHex("666EFF"), Color3.new(1, 1, 1)},
 		-- Cherry Blossom
-		{Color3.fromHex("7A4980"), Color3.fromHex("F491FF"), Color3.new(0.1, 0.1, 0.1)},
+		{Color3.fromHex("75284B"), Color3.fromHex("F7ABE8"), Color3.new(0.1, 0.1, 0.1)},
 		-- Cherry Blossom Inverted
-		{Color3.fromHex("F491FF"), Color3.fromHex("7A4980"), Color3.new(1, 1, 1)},
+		{Color3.fromHex("F7ABE8"), Color3.fromHex("75284B"), Color3.new(1, 1, 1)},
 	}
 	local theme = UIThemes[index]
 	if index == #UIThemes + 1 then
@@ -2599,7 +2599,7 @@ do
 		"Roserika",
 		"FastTracker II Blue",
 		"Cherry Blossom",
-		"Cherry Blossom Inverted",
+		"Sakura",
 		"User Defined (see README)",
 	}, SaveData.UITheme).Changed:Connect(function(val)
 		SaveData.UITheme = val
