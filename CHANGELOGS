@@ -1,4 +1,9 @@
 * Note: This does not include movesets and dances.
+# Version 1.0.2
+ - Added themes: ALONE, Oxide, Patchma, Genesis V4, Crimson, r/masterhacker, etc...
+ - Added option to disable sitting on Seats
+ - Added option to remove downloaded content (to fix your caching issues)
+ - New hat maps
 # Version 1.0.0
 INITIAL RELEASE!
  - Probably the most stable hat collide
