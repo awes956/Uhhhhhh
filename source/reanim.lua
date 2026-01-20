@@ -40,6 +40,9 @@ do
 		_G.UhhhhhhLoaded = nil
 		error("fatal error cant start")
 	end
+	if not request then
+		diefatal()
+	end
 	if not getcustomasset then
 		diefatal()
 	end
