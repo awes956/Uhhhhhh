@@ -1672,7 +1672,7 @@ function UI.CreateSlider(parent, text, value, min, max, step)
 	Text.TextWrapped = true
 	Text.TextSize = 20
 	Text.Text = text
-	RegisterTextLabel(ButtonText)
+	RegisterTextLabel(Text)
 	local Box = Util.Instance("Frame", Container)
 	Box.AnchorPoint = Vector2.new(1, 0)
 	Box.Position = UDim2.new(1, -margin, 0, margin)
