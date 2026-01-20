@@ -802,7 +802,9 @@ end
 local ForceUIColor = nil
 local function GetUIColor(t)
 	if ForceUIColor then
-		return ForceUIColor * (0.95 + math.sin(t / 10) * 0.05)
+		local h, s, v = ForceUIColor:ToHSV()
+		v *= 0.95 + math.sin(t / 10) * 0.05
+		return Color3.fromHSV(h, s, b)
 	end
 	return Util.LoopedHSV(t / 10, 0.8, 1)
 end
