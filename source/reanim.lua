@@ -898,8 +898,10 @@ local function SetUITheme(index)
 		{Color3.new(0, 0, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
 		-- Immortality Lord
 		{Color3.new(0.1, 0.1, 0.1), nil, Color3.new(1, 1, 1)},
-		-- ALONE LIGHT
+		-- RGB LIGHT
 		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
+		-- ALONE LIGHT
+		{Color3.new(0, 0, 0), Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
 		{Color3.new(0.85, 0.55, 0), Color3.new(0.9, 0.65, 0), Color3.new(1, 1, 1)},
 		-- FastTracker II Blue
@@ -2597,6 +2599,7 @@ do
 		"r/masterhacker",
 		"Homer Simpson",
 		"Immortality Lord",
+		"LIGHT RGB",
 		"LIGHT ALONE",
 		"Roserika",
 		"FastTracker II Blue",
