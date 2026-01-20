@@ -861,7 +861,7 @@ local function UpdateGrads(t)
 	local h, s, v = bgc:ToHSV()
 	local bgcd = Color3.fromHSV(h, s, v * 0.7)
 	for _,grad in StylizedObjs do
-		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, options
+		local obj, Out, Glos, options = grad.obj, grad.Out, grad.Glos, grad.options
 		Out.Color = c
 		if options.Depthed then
 			obj.Color = bgc
