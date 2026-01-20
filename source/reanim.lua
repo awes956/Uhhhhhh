@@ -1969,8 +1969,8 @@ function UI.CreateDropdown(parent, text, array, value)
 		else
 			Droplist.Visible = false
 		end
-		local i1 = GetUIBGColor()
-		local i2 = Color3.new(1, 1, 1):Lerp(GetUIBGColor(), 0.1)
+		local i1 = GetUIBGColor(t)
+		local i2 = i1:Lerp(Color3.new(1, 1, 1), 0.1)
 		for i,v in items do
 			if i == Select.Value then
 				v.BackgroundColor3 = i2
