@@ -890,13 +890,13 @@ local function SetUITheme(index)
 		-- r/masterhacker
 		{Color3.new(0, 1, 0), nil, Color3.new(1, 1, 1)},
 		-- Homer simpson
-		{Color3.new(1, 0.95, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
+		{Color3.new(0, 0, 0), Color3.new(1, 0.95, 0), Color3.new(0, 0, 0)},
 		-- Immortality Lord
 		{Color3.new(0.1, 0.1, 0.1), nil, Color3.new(1, 1, 1)},
 		-- ALONE LIGHT
 		{nil, Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
-		{Color3.new(1, 0.7, 0), Color3.new(1, 0.7, 0), Color3.new(1, 1, 1)},
+		{Color3.new(1, 0.7, 0), Color3.new(0.8, 0.5, 0), Color3.new(1, 1, 1)},
 	}
 	if UIThemes[index] then
 		ForceUIColor = UIThemes[index][1]
@@ -1062,9 +1062,6 @@ local UIMainWindow, WindowContent do
 		A.BackgroundColor3 = UITextColor.Value
 		A.BorderSizePixel = 0
 		A.Name = "A"
-		UITextColor.Changed:Connect(function(val)
-			A.BackgroundColor3 = val
-		end)
 		A = Util.Instance("Frame", A)
 		A.AnchorPoint = Vector2.new(0.5, 0.5)
 		A.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -1076,6 +1073,7 @@ local UIMainWindow, WindowContent do
 		A.Name = "B"
 		UITextColor.Changed:Connect(function(val)
 			A.BackgroundColor3 = val
+			A.B.BackgroundColor3 = val
 		end)
 	end
 	
@@ -1918,17 +1916,10 @@ function UI.CreateDropdown(parent, text, array, value)
 		Item.TextYAlignment = Enum.TextYAlignment.Center
 		Item.TextWrapped = false
 		RegisterTextLabel(Item)
-		if i == value then
-			Item.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-		end
 		table.insert(items, Item)
 		local size = TextService:GetTextSize(itemname, Item.TextSize, Item.Font, Vector2.new(math.huge, math.huge))
 		sizex = math.max(sizex, size.X + 12)
 		Item.Activated:Connect(function()
-			for _,v in items do
-				v.BackgroundColor3 = Color3.new(0, 0, 0)
-			end
-			Item.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 			Select.Value = i
 			opened = false
 			interact = true
@@ -1977,6 +1968,15 @@ function UI.CreateDropdown(parent, text, array, value)
 			Droplist.Visible = true
 		else
 			Droplist.Visible = false
+		end
+		local i1 = GetUIBGColor()
+		local i2 = Color3.new(1, 1, 1):Lerp(GetUIBGColor(), 0.1)
+		for i,v in items do
+			if i == Select.Value then
+				v.BackgroundColor3 = i2
+			else
+				v.BackgroundColor3 = i1
+			end
 		end
 	end, Droplist)
 	Util.LinkDestroyI2I(Dropdown, Select)
@@ -2569,6 +2569,8 @@ do
 		"r/masterhacker",
 		"Homer Simpson",
 		"Immortality Lord",
+		"LIGHT ALONE",
+		"Roserika",
 	}, SaveData.UITheme).Changed:Connect(function(val)
 		SaveData.UITheme = val
 		SetUITheme(SaveData.UITheme)
