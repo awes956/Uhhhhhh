@@ -859,7 +859,7 @@ local function UpdateGrads(t)
 	local c = GetUIColor(t)
 	local bgc = GetUIBGColor(t)
 	local h, s, v = bgc:ToHSV()
-	local bgcd = Color3.fromHSV(h, s, v * 0.7)
+	local bgcd = Color3.fromHSV(h, s, v * 0.9)
 	local h2, s2, v2 = c:ToHSV()
 	local glc = c
 	if v > v2 then
@@ -1098,8 +1098,8 @@ local UIMainWindow, WindowContent do
 		A.BorderSizePixel = 0
 		A.Name = "B"
 		UITextColor.Changed:Connect(function(val)
-			A.BackgroundColor3 = val
-			A.B.BackgroundColor3 = val
+			TopBarClose.A.BackgroundColor3 = val
+			TopBarClose.A.B.BackgroundColor3 = val
 		end)
 	end
 	
