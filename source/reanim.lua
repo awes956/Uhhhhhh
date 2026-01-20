@@ -2474,7 +2474,7 @@ do
 		SaveData.UITheme = val
 		updatetheme()
 	end)
-	updatetheme()
+	if ForceUIColor == nil then updatetheme() end
 end
 UI.CreateSeparator(MainPage)
 
