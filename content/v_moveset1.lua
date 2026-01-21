@@ -982,19 +982,26 @@ AddModule(function()
 	local animatorwalk = nil
 	local animatorspri = nil
 	local animationtime = 0
-	local laststate = "idle"
+	local hasmovedsinceinit = false -- simulate noanim bug
+	local isfinisheddoingfedora = false
+	local laststate = "none"
 	local sprinting = false
-	local persistentloadnotif = false
+	local persistentloadnotif = false -- simulate loadstring sprint load notif
 	m.Init = function(figure: Model)
 		SetOverrideMovesetMusic("", "Level Up sound effect", 1)
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
 		local root = figure:FindFirstChild("HumanoidRootPart")
 		if not root then return end
+		-- intro sound
 		local introsound = Instance.new("Sound", figure)
 		introsound.SoundId = "rbxassetid://236146895"
 		introsound.Volume = 1
 		introsound:Play()
 		introsound.Ended:Connect(function()
 			if figure:IsDescendantOf(workspace) then
+				-- unlike the original kdv3, theo's mod breaks the main theme
+				-- shouldve done an Ended fix here...
 				SetOverrideMovesetMusic(AssetGetContentId("CreoSphere.mp3"), "Creo - Sphere", 1)
 			end
 		end)
@@ -1027,6 +1034,17 @@ AddModule(function()
 				task.wait(1 / 60)
 			end
 			bigfedora:Destroy()
+			-- move to force hasmovedsinceinit
+			-- (very bad fix from whoever implemented this in original kdv3)
+			for i=1, 3 do
+				hum:Move(Vector3.new(0, 0, -1))
+				task.wait()
+			end
+			if figure:IsDescendantOf(workspace) then
+				-- at this point in time we have already moved anyway
+				hasmovedsinceinit = true
+				isfinisheddoingfedora = true
+			end
 		end)
 		animatoridle = AnimLib.Animator.new()
 		animatoridle.rig = figure
@@ -1040,8 +1058,10 @@ AddModule(function()
 		animatorspri.rig = figure
 		animatorspri.looped = true
 		animatorspri.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Sprint.anim"))
+		hasmovedsinceinit = false
+		isfinisheddoingfedora = false
 		animationtime = 0
-		laststate = "idle"
+		laststate = "none"
 		sprinting = false
 		ContextActionService:BindAction("Uhhhhhh_KDRV3Sprint", function(actName, state, input)
 			if state == Enum.UserInputState.Begin then
@@ -1068,12 +1088,16 @@ AddModule(function()
 		if not hum then return end
 
 		local state = "idle"
+		if not hasmovedsinceinit then
+			state = "none"
+		end
 		if hum.MoveDirection.Magnitude > 0.1 then
 			if sprinting then
 				state = "spri"
 			else
 				state = "walk"
 			end
+			hasmovedsinceinit = true
 		end
 		if laststate ~= state then
 			animationtime = 0
@@ -1098,27 +1122,28 @@ AddModule(function()
 		if not torso then return end
 		local neck = torso:FindFirstChild("Neck")
 		if not neck then return end
-
-		if figure:GetAttribute("IsDancing") then
-			neck.C0 = NeckC0
-		else
+		local neckC0 = NeckC0
+		if not figure:GetAttribute("IsDancing") then
 			if sprinting then
 				hum.WalkSpeed = 24 * scale
 			else
 				hum.WalkSpeed = 14 * scale
 			end
-			local HeadPosition = head.Position
-			local MousePos = Player:GetMouse().Hit.Position
-			if UserInputService.TouchEnabled then
-				MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, 0, -10000)
+			-- only turn head when the fedora animation is done
+			if isfinisheddoingfedora then
+				local HeadPosition = head.Position
+				local MousePos = Player:GetMouse().Hit.Position
+				if UserInputService.TouchEnabled then
+					MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, 0, -10000)
+				end
+				local TranslationVector = (HeadPosition - MousePos).Unit
+				local Pitch = math.atan(TranslationVector.Y)
+				local Yaw = TranslationVector:Cross(torso.CFrame.LookVector).Y
+				local Roll = math.atan(Yaw)
+				neckC0 = NeckC0 * CFrame.Angles(Pitch, 0, Yaw)
 			end
-			local TranslationVector = (HeadPosition - MousePos).Unit
-			local Pitch = math.atan(TranslationVector.Y)
-			local Yaw = TranslationVector:Cross(torso.CFrame.LookVector).Y
-			local Roll = math.atan(Yaw)
-			local NeckCFrame = NeckC0 * CFrame.Angles(Pitch, 0, Yaw)
-			neck.C0 = neck.C0:Lerp(NeckCFrame + NeckCFrame.Position * (scale - 1), dt * 10)
 		end
+		neck.C0 = neck.C0:Lerp(neckC0 + neckC0.Position * (scale - 1), dt * 10)
 	end
 	m.Destroy = function(figure: Model?)
 		animatoridle = nil

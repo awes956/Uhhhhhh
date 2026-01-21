@@ -23,551 +23,621 @@ end
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Super Mario 64"
-	m.InternalName = "SM64.Z64"
-	m.Description = "itsumi mario! press start to play!\nmost of the code were copied from maximum_adhd's sm64-roblox\n\nhere are some wierd ways to defeat enemies in super mario 64\nwe can make chain chomp fall out of bounds\nwe can throw king bob-omb out of bounds\nwe can knock the chill bully off this platform and move him around, though he ends up dying elsewhere\nwe can get eye-rock to fall off the edge and then he doesnt come back up\nwe can get bowser to fall off the edge and then he doesnt come back up\nwe can drop mips into other levels\nwe can drop the 2 ukikis off the edge\nwe can drop the baby penguin off the edge\nwe can make the mama penguin fall off the edge\nwe can make the racing penguin fall off the edge\nwe can make koopa the quick fall off the edge\nwe can send koopa the quick to a parallel universe\nwe can get a bully stuck underground\nwe can get a bully stuck in a corner\nwe can make klepto lunge at us and then stuck in a pillar\nwe can throw a bob-omb buddy out of bounds\nwe can push a heave ho out of bounds using a block\nwe can make bubba fall off the edge\nand we can make yoshi fall off the castle roof"
+	m.Name = "Minigun"
+	m.InternalName = "IAMBULLETPROOF"
+	m.Description = "now in the latest color: AKAI!!\nLet's Go! Goodbye!\nM1 - Shoot"
 	m.Assets = {}
 
-	m.FPS30 = false
-	m.ModeCap = 2
-	m.EmulationSpeed = 1
-	m.AutofireJump = true
+	m.Notifications = true
+	m.Sounds = true
+	m.UseSword = false
+	m.BooletsPerSec = 60
+	m.NoShells = false
+	m.HowBadIsAim = 1
+	m.ShakeValue = 1
 	m.Config = function(parent: GuiBase2d)
-		Util_CreateDropdown(parent, "Cap", {
-			"Capless Mario",
-			"Mario",
-			"Wing Cap Mario",
-			"Metal Mario",
-			"Vanish Cap Mario",
-		}, m.ModeCap).Changed:Connect(function(val)
-			m.ModeCap = val
+		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
+			m.Notifications = val
 		end)
-		Util_CreateSlider(parent, "Emulation Speed", m.EmulationSpeed, 0.25, 2, 0.25).Changed:Connect(function(val)
-			m.EmulationSpeed = val
+		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
+			m.Sounds = val
 		end)
-		Util_CreateSwitch(parent, "Autofire Jump", m.AutofireJump).Changed:Connect(function(val)
-			m.AutofireJump = val
+		Util_CreateText(parent, "Use the sword instead of the gun!", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Gun = Sword", m.UseSword).Changed:Connect(function(val)
+			m.UseSword = val
+		end)
+		Util_CreateText(parent, "for optimisation reasons, you can only fire max 20 bullets in a frame", 12, Enum.TextXAlignment.Center)
+		Util_CreateSlider(parent, "Bullets Per Second", m.BooletsPerSec, 5, 240, 1).Changed:Connect(function(val)
+			m.BooletsPerSec = val
+		end)
+		Util_CreateSwitch(parent, "Fire the whole bullet", m.NoShells).Changed:Connect(function(val)
+			m.NoShells = val
+		end)
+		Util_CreateSlider(parent, "Fire Spread", m.HowBadIsAim, 0, 1, 0).Changed:Connect(function(val)
+			m.HowBadIsAim = val
+		end)
+		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
+			m.ShakeValue = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
-		m.FPS30 = not not save.FPS30
-		m.ModeCap = save.ModeCap or m.ModeCap
-		m.EmulationSpeed = save.EmulationSpeed or m.EmulationSpeed
-		m.AutofireJump = not save.ManualDrive
+		m.Notifications = not save.NoTextType
+		m.Sounds = not save.Muted
+		m.UseSword = not not save.UseSword
+		m.BooletsPerSec = save.BooletsPerSec or m.BooletsPerSec
+		m.NoShells = not not save.NoShells
+		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
+		m.ShakeValue = save.ShakeValue or m.ShakeValue
 	end
 	m.SaveConfig = function()
 		return {
-			FPS30 = m.FPS30,
-			ModeCap = m.ModeCap,
-			EmulationSpeed = m.EmulationSpeed,
-			ManualDrive = not m.AutofireJump,
+			NoTextType = not m.Notifications,
+			Muted = not m.Sounds,
+			UseSword = m.UseSword,
+			BooletsPerSec = m.BooletsPerSec,
+			NoShells = m.NoShells,
+			HowBadIsAim = m.HowBadIsAim,
+			ShakeValue = m.ShakeValue,
 		}
 	end
 
-	local hierarch = {
-		GetAttribute = function(self, name)
-			return nil
-		end,
-		WaitForChild = function(self, name)
-			return self[name]
-		end,
-	}
-	local SM64RobloxUrl = "https://raw.githubusercontent.com/MaximumADHD/sm64-roblox/refs/heads/main"
-	local SM64Hierarchy = setmetatable({}, hierarch)
-	SM64Hierarchy.Parent = SM64Hierarchy
-	local function CreateHierarch(name, pathe, parent)
-		local h = setmetatable({}, hierarch)
-		local hash = 0
-		for i=1, #pathe do
-			hash += string.byte(pathe:sub(i, i)) + i
-		end
-		hash = hash:rep(16):sub(1, 16)
-		hash = "SM64_" .. hash .. ".lua"
-		table.insert(m.Assets, hash .. "@" .. SM64RobloxUrl .. "/client/" .. pathe)
-		h.Source = hash
-		h.Parent = parent
-		parent[name] = h
+	local start = 0
+	local hum, root, torso
+	local scale = 1
+	local rcp = RaycastParams.new()
+	rcp.FilterType = Enum.RaycastFilterType.Exclude
+	rcp.IgnoreWater = true
+	local function PhysicsRaycast(origin, direction)
+		rcp.RespectCanCollide = true
+		return workspace:Raycast(origin, direction, rcp)
 	end
-	CreateHierarch("Enums", "Enums/init.lua", SM64Hierarchy)
-	CreateHierarch("Buttons", "Enums/Buttons.lua", SM64Hierarchy.Enums)
-	CreateHierarch("FloorType", "Enums/FloorType.lua", SM64Hierarchy.Enums)
-	CreateHierarch("InputFlags", "Enums/InputFlags.lua", SM64Hierarchy.Enums)
-	CreateHierarch("ModelFlags", "Enums/ModelFlags.lua", SM64Hierarchy.Enums)
-	CreateHierarch("ParticleFlags", "Enums/ParticleFlags.lua", SM64Hierarchy.Enums)
-	CreateHierarch("SurfaceClass", "Enums/SurfaceClass.lua", SM64Hierarchy.Enums)
-	CreateHierarch("Action", "Enums/Action/init.lua", SM64Hierarchy.Enums)
-	CreateHierarch("Groups", "Enums/Action/Groups.lua", SM64Hierarchy.Enums.Action)
-	CreateHierarch("Flags", "Enums/Action/Flags.lua", SM64Hierarchy.Enums.Action)
-	CreateHierarch("Mario", "", SM64Hierarchy.Enums)
-	CreateHierarch("Cap", "Enums/Mario/Cap.lua", SM64Hierarchy.Enums.Mario)
-	CreateHierarch("Eyes", "Enums/Mario/Eyes.lua", SM64Hierarchy.Enums.Mario)
-	CreateHierarch("Flags", "Enums/Mario/Flags.lua", SM64Hierarchy.Enums.Mario)
-	CreateHierarch("Hands", "Enums/Mario/Hands.lua", SM64Hierarchy.Enums.Mario)
-	CreateHierarch("Input", "Enums/Mario/Input.lua", SM64Hierarchy.Enums.Mario)
-	CreateHierarch("Steps", "", SM64Hierarchy.Enums)
-	CreateHierarch("Air", "Enums/Steps/Air.lua", SM64Hierarchy.Enums.Steps)
-	CreateHierarch("Ground", "Enums/Steps/Ground.lua", SM64Hierarchy.Enums.Steps)
-	CreateHierarch("Water", "Enums/Steps/Water.lua", SM64Hierarchy.Enums.Steps)
-	CreateHierarch("Mario", "Mario/init.lua", SM64Hierarchy)
-	CreateHierarch("Airborne", "Mario/Airborne/init.server.lua", SM64Hierarchy.Mario)
-	CreateHierarch("Automatic", "Mario/Automatic/init.server.lua", SM64Hierarchy.Mario)
-	CreateHierarch("Moving", "Mario/Moving/init.server.lua", SM64Hierarchy.Mario)
-	CreateHierarch("Stationary", "Mario/Stationary/init.server.lua", SM64Hierarchy.Mario)
-	CreateHierarch("Submerged", "Mario/Submerged/init.server.lua", SM64Hierarchy.Mario)
-	CreateHierarch("Types", "Types/init.lua", SM64Hierarchy)
-	CreateHierarch("Flags", "Types/Flags.lua", SM64Hierarchy)
-	CreateHierarch("Util", "Util/init.lua", SM64Hierarchy)
-	local cache = {}
-	local newrequire = nil
-	newrequire = function(m)
-		if m.Source then
-			if not cache[m] then
-				local f = loadstring(readfile(AssetGetPathFromFilename(m.Source)))
-				local env = loadstring("return getfenv")()(f)
-				env.require = newrequire
-				env.script = m
-				cache[m] = f()
+	local function ShootRaycast(origin, direction)
+		rcp.RespectCanCollide = false
+		return workspace:Raycast(origin, direction, rcp)
+	end
+	local mouse = Player:GetMouse()
+	local mouselock = false
+	local function MouseHit()
+		local Camera = workspace.CurrentCamera
+		local ray = mouse.UnitRay
+		if mouselock and Camera then
+			local pos = Camera.ViewportSize * Vector2.new(0.5, 0.3)
+			ray = Camera:ViewportPointToRay(pos.X, pos.Y, 1e-6)
+		end
+		local dist = 2000
+		local raycast = ShootRaycast(ray.Origin, ray.Direction * dist)
+		if raycast then
+			return raycast.Position
+		end
+		return ray.Origin + ray.Direction * dist
+	end
+	local function notify(message)
+		if not m.Notifications then return end
+		if not root or not torso then return end
+		local dialog = torso:FindFirstChild("NOTIFICATION")
+		if dialog then
+			dialog:Destroy()
+		end
+		dialog = Instance.new("BillboardGui", torso)
+		dialog.Size = UDim2.new(50 * scale, 0, 2 * scale, 0)
+		dialog.StudsOffset = Vector3.new(0, 5 * scale, 0)
+		dialog.Adornee = torso
+		dialog.Name = "NOTIFICATION"
+		local text = Instance.new("TextLabel", dialog)
+		text.BackgroundTransparency = 1
+		text.BorderSizePixel = 0
+		text.Text = ""
+		text.Font = Enum.Font.Fantasy
+		text.TextScaled = true
+		text.TextStrokeTransparency = 0
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.TextColor3 = Color3.fromRGB(255, 50, 50)
+		text.TextStrokeColor3 = Color3.new(0, 0, 0)
+		task.spawn(function()
+			local function update()
+				text.Position = UDim2.new(math.random() * 0.05 * (2 / 50), 0, 0, math.random() * 0.05)
 			end
-			return cache[m]
-		end
-		error("Invalid argument.")
-	end
-	local Sounds = {}
-	local Enums = newrequire(SM64Hierarchy.Enums)
-	local Mario = newrequire(SM64Hierarchy.Mario)
-	local Types = newrequire(SM64Hierarchy.Types)
-	local Util = newrequire(SM64Hierarchy.Util)
-	local Action = Enums.Action
-	local Buttons = Enums.Buttons
-	local MarioFlags = Enums.MarioFlags
-	local ParticleFlags = Enums.ParticleFlags
-	local mario = Mario.new()
-	local STEP_RATE = 30
-	local NULL_TEXT = '<font color="#FF0000">NULL</font>'
-	local FLIP = CFrame.Angles(0, math.pi, 0)
-	local PARTICLE_CLASSES = {
-		Fire = true,
-		Smoke = true,
-		Sparkles = true,
-		ParticleEmitter = true,
-	}
-	local AUTO_STATS = {
-		"Position",
-		"Velocity",
-		"AnimFrame",
-		"FaceAngle",
-		"ActionState",
-		"ActionTimer",
-		"ActionArg",
-		"ForwardVel",
-		"SlideVelX",
-		"SlideVelZ",
-		"CeilHeight",
-		"FloorHeight",
-		"WaterLevel",
-	}
-	local BUTTON_FEED = {}
-	local BUTTON_BINDS = {}
-	local function toStrictNumber(str)
-		local result = tonumber(str)
-		return assert(result, "Invalid number!")
-	end
-	local function processAction(id, state, input)
-		local button = toStrictNumber(id:sub(5))
-		BUTTON_FEED[button] = state
-	end
-	local function processInput(input, gameProcessedEvent)
-		if gameProcessedEvent then return end
-		if BUTTON_BINDS[input.UserInputType] ~= nil then
-			processAction(BUTTON_BINDS[input.UserInputType], input.UserInputState, input)
-		end
-		if BUTTON_BINDS[input.KeyCode] ~= nil then
-			processAction(BUTTON_BINDS[input.KeyCode], input.UserInputState, input)
-		end
-	end
-	local uisb, uisc, uise
-	local function bindInput(button, label, ...)
-		local id = "BTN_" .. button
-		if UserInputService.TouchEnabled then
-			ContextActionService:BindAction(id, processAction, true)
-			ContextActionService:SetTitle(id, label)
-		end
-		for i, input in { ... } do
-			BUTTON_BINDS[input] = id
-		end
-	end
-	local function updateController(controller, humanoid)
-		if not humanoid then
-			return
-		end
-		local moveDir = Vector3.zero
-		if workspace.CurrentCamera then
-			local _,angle,_ = workspace.CurrentCamera.CFrame:ToEulerAngles(Enum.RotationOrder.YXZ)
-			moveDir = CFrame.Angles(0, angle, 0):VectorToObjectSpace(humanoid:GetMoveVelocity() / humanoid.WalkSpeed)
-			moveDir *= Vector3.new(1, -1)
-		end
-		local pos = Vector2.new(moveDir.X, -moveDir.Z)
-		local mag = 0
-		if pos.Magnitude > 0 then
-			if pos.Magnitude > 1 then
-				pos = pos.Unit
-			end
-			mag = pos.Magnitude
-		end
-		controller.StickMag = mag * 64
-		controller.StickX = pos.X * 64
-		controller.StickY = pos.Y * 64
-		humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-		controller.ButtonPressed:Clear()
-		if humanoid.Jump then
-			BUTTON_FEED[Buttons.A_BUTTON] = Enum.UserInputState.Begin
-		elseif controller.ButtonDown:Has(Buttons.A_BUTTON) then
-			BUTTON_FEED[Buttons.A_BUTTON] = Enum.UserInputState.End
-		end
-		local lastButtonValue = controller.ButtonDown()
-		for button, state in pairs(BUTTON_FEED) do
-			if state == Enum.UserInputState.Begin then
-				controller.ButtonDown:Add(button)
-			elseif state == Enum.UserInputState.End then
-				controller.ButtonDown:Remove(button)
-			end
-		end
-		table.clear(BUTTON_FEED)
-		local buttonValue = controller.ButtonDown()
-		controller.ButtonPressed:Set(buttonValue)
-		controller.ButtonPressed:Band(bit32.bxor(buttonValue, lastButtonValue))
-		local character = humanoid.Parent
-		if m.AutofireJump then
-			if not mario.Action:Has(Enums.ActionFlags.SWIMMING) then
-				if controller.ButtonDown:Has(Buttons.A_BUTTON) then
-					controller.ButtonPressed:Set(Buttons.A_BUTTON)
+			local cps = 30
+			local t = os.clock()
+			local ll = 0
+			repeat
+				task.wait()
+				local l = math.floor((os.clock() - t) * cps)
+				if l > ll then
+					ll = l
 				end
-			end
-		end
+				update()
+				text.Text = string.sub(message, 1, l)
+			until ll >= #message
+			text.Text = message
+			t = os.clock()
+			repeat
+				task.wait()
+				update()
+			until os.clock() - t > 1
+			t = os.clock()
+			repeat
+				task.wait()
+				local a = os.clock() - t
+				text.Position = UDim2.new(0, math.random(-45, 45) + math.random(-a, a) * 100, 0, math.random(-5, 5) + math.random(-a, a) * 40)
+				text.TextTransparency = a
+				text.TextStrokeTransparency = a
+			until os.clock() - t > 1
+			dialog:Destroy()
+		end)
 	end
-	bindInput(Buttons.B_BUTTON, "B", Enum.UserInputType.MouseButton1, Enum.KeyCode.ButtonX)
-	bindInput(Buttons.Z_TRIG, "Z", Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift, Enum.KeyCode.ButtonL2, Enum.KeyCode.ButtonR2)
-	local Commands = {}
-	local soundDecay = {}
-	local function stepDecay(sound)
-		local decay = soundDecay[sound]
-		if decay then
-			task.cancel(decay)
+	local function randomdialog(arr)
+		notify(arr[math.random(1, #arr)])
+	end
+	local function CreateSound(id, pitch, extra)
+		if not m.Sounds then return end
+		if not torso then return end
+		local parent = torso
+		if typeof(id) == "Instance" then
+			parent = id
+			id, pitch = pitch, extra
 		end
-		soundDecay[sound] = task.delay(0.1, function()
-			sound:Stop()
+		pitch = pitch or 1
+		local sound = Instance.new("Sound")
+		sound.Name = tostring(id)
+		sound.SoundId = "rbxassetid://" .. id
+		sound.Volume = 1
+		sound.Pitch = pitch
+		sound.EmitterSize = 100
+		sound.Parent = parent
+		sound:Play()
+		sound.Ended:Connect(function()
 			sound:Destroy()
-			soundDecay[sound] = nil
 		end)
-		sound.Playing = true
 	end
-	function Commands.PlaySound(character, name)
-		local sound = Sounds[name]
-		local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-		if rootPart and sound then
-			local oldSound = rootPart:FindFirstChild(name)
-			local canPlay = true
-			if oldSound and oldSound:IsA("Sound") then
-				canPlay = false
-				if name:sub(1, 6) == "MOVING" or sound:GetAttribute("Decay") then
-					stepDecay(oldSound)
-				elseif name:sub(1, 5) == "MARIO" then
-					local now = os.clock()
-					local lastPlay = oldSound:GetAttribute("LastPlay") or 0
-					if now - lastPlay >= 2 / STEP_RATE then
-						oldSound.TimePosition = 0
-						oldSound:SetAttribute("LastPlay", now)
-					end
-				else
-					canPlay = true
-				end
-			end
-			if canPlay then
-				local newSound = sound:Clone()
-				newSound.Parent = rootPart
-				newSound:Play()
-				if name:find("MOVING") then
-					stepDecay(newSound)
-				end
-				newSound.Ended:Connect(function()
-					newSound:Destroy()
-				end)
-				newSound:SetAttribute("LastPlay", os.clock())
-			end
-		end
+	local function AimTowards(target)
+		if not root then return end
+		if flight then return end
+		local tcf = CFrame.lookAt(root.Position, target)
+		local _,off,_ = root.CFrame:ToObjectSpace(tcf):ToEulerAngles(Enum.RotationOrder.YXZ)
+		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
 	end
-	function Commands.SetParticle(character, name, set)
-		local character = player.Character
-		local rootPart = character and character.PrimaryPart
-		if rootPart then
-			local particles = rootPart:FindFirstChild("Particles")
-			local inst = particles and particles:FindFirstChild(name, true)
-			if inst and PARTICLE_CLASSES[inst.ClassName] then
-				local particle = inst :: ParticleEmitter
-				local emit = particle:GetAttribute("Emit")
-				if typeof(emit) == "number" then
-					particle:Emit(emit)
-				elseif set ~= nil then
-					particle.Enabled = set
-				end
-			else
-				warn("particle not found:", name)
-			end
-		end
-	end
-	local function networkDispatch(character, cmd, ...)
-		local command = Commands[cmd]
-		if command then
-			task.spawn(command, character, ...)
-		else
-			warn("Unknown Command:", cmd, ...)
-		end
-	end
-	local lastUpdate = os.clock()
-	local lastHeadAngle
-	local lastTorsoAngle
-	local activeScale = 1
-	local subframe = 0 -- 30hz subframe
-	local emptyId = ""
-	local goalCF, prevCF, activeTrack
-	local debugStats = {}
-	local function setDebugStat(key, value)
-		if typeof(value) == "Vector3" then
-			value = string.format("%.3f, %.3f, %.3f", value.X, value.Y, value.Z)
-		elseif typeof(value) == "Vector3int16" then
-			value = string.format("%i, %i, %i", value.X, value.Y, value.Z)
-		elseif type(value) == "number" then
-			value = string.format("%.3f", value)
-		end
-		debugStats[key] = value
-	end
-	local isTeleTravel = false
-	local teleConn = nil
+	local chatconn
+	local attacking = false
+	local joints = {
+		r = CFrame.identity,
+		n = CFrame.identity,
+		rs = CFrame.identity,
+		ls = CFrame.identity,
+		rh = CFrame.identity,
+		lh = CFrame.identity,
+		sw = CFrame.identity,
+	}
+	local gun = {}
+	local bullet = {}
+	local mousedown = false
+	local uisbegin, uisend
+	local dancereact = false
+	local state = 0
+	local statetime = 0
+	local sndshoot, sndspin
+	local ROOTC0 = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
+	local NECKC0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
+	local RIGHTSHOULDERC0 = CFrame.new(-0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
+	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
+	local rng = Random.new(math.random(-65536, 65536))
+	local shells = {}
+	local timingwalk1, timingwalk2 = 0, 0
+
 	m.Init = function(figure)
-		local root = figure:FindFirstChild("HumanoidRootPart")
-		uisb = UserInputService.InputBegan:Connect(processInput)
-		uisc = UserInputService.InputChanged:Connect(processInput)
-		uise = UserInputService.InputEnded:Connect(processInput)
-		mario.SlideVelX = 0
-		mario.SlideVelZ = 0
-		mario.ForwardVel = 0
-		mario.IntendedYaw = 0
-		local pivot = root.CFrame
-		goalCF = pivot
-		prevCF = pivot
-		mario.Position = Util.ToSM64(pivot.Position)
-		mario.Velocity = Vector3.zero
-		mario.FaceAngle = Vector3int16.new()
-		mario.Health = 0x880
-		mario:SetAction(Enums.Action.SPAWN_SPIN_AIRBORNE)
-		teleConn = root:GetPropertyChangedSignal("CFrame"):Connect(function()
-			if isTeleTravel then
-				local pivot = root.CFrame
-				goalCF = pivot
-				prevCF = pivot
-				mario.Position = Util.ToSM64(pivot.Position)
+		start = os.clock()
+		attacking = false
+		state = 0
+		timingwalk1, timingwalk2 = 0, 0
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		SetOverrideMovesetMusic("rbxassetid://1843497734", "CHAOS: INTENSE HYBRID ROCK", 1)
+		randomdialog({
+			"I have arrived.",
+			"Order is restored.",
+			"The anomaly will be corrected.",
+		})
+		if math.random(5) == 1 then
+			task.delay(2, function()
+				for _=1, 3 do
+					notify("AUGUST 12TH 2036.")
+					task.wait(2)
+					notify("THE HEAT DEATH OF THE UNIVERSE.")
+					task.wait(1.5)
+				end
+			end)
+		else
+			task.delay(2, randomdialog, {
+				"Your time ends now.",
+				"Your existence will be denied.",
+				"You dare delay me?",
+				"Thy death is now."
+			})
+		end
+		gun = {
+			Group = "Gun",
+			Limb = "Right Arm",
+			Offset = CFrame.identity
+		}
+		bullet = {
+			Group = "Bullet",
+			CFrame = CFrame.identity
+		}
+		table.insert(HatReanimator.HatCFrameOverride, gun)
+		table.insert(HatReanimator.HatCFrameOverride, bullet)
+		shells = {}
+		mousedown = false
+		if uisbegin then
+			uisbegin:Disconnect()
+		end
+		if uisend then
+			uisend:Disconnect()
+		end
+		local currentclick = nil
+		uisbegin = UserInputService.InputBegan:Connect(function(input, gpe)
+			if gpe then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				mousedown = true
+				mouselock = false
+				currentclick = input
 			end
 		end)
+		ContextActionService:BindAction("Uhhhhhh_MGShoot", function(_, state, input)
+			if state == Enum.UserInputState.Begin then
+				mousedown = true
+				mouselock = true
+				currentclick = input
+			end
+		end, true)
+		ContextActionService:SetTitle("Uhhhhhh_MGShoot", "M1")
+		ContextActionService:SetPosition("Uhhhhhh_MGShoot", UDim2.new(1, -130, 1, -130))
+		uisend = UserInputService.InputEnded:Connect(function(input, gpe)
+			if input == currentclick then
+				mousedown = false
+				currentclick = nil
+			end
+		end)
+		if chatconn then
+			chatconn:Disconnect()
+		end
+		chatconn = OnPlayerChatted.Event:Connect(function(plr, msg)
+			if plr == Player then
+				notify(msg)
+			end
+		end)
+		hum.WalkSpeed = 13 * figure:GetScale()
 	end
 	m.Update = function(dt: number, figure: Model)
-		local now = os.clock()
-		local gfxRot = CFrame.identity
-		local scale = figure:GetScale()
-		if scale ~= activeScale then
-			local marioPos = Util.ToRoblox(mario.Position)
-			Util.Scale = scale / 20 -- HACK! Should this be instanced?
-			mario.Position = Util.ToSM64(marioPos)
-			activeScale = scale
-		end
-		local humanoid = figure:FindFirstChildOfClass("Humanoid")
-		local neck = pcall(function() return figure.Torso.Neck end)
-		local simSpeed = m.EmulationSpeed
-		local robloxPos = Util.ToRoblox(mario.Position)
-		mario.WaterLevel = getWaterLevel(robloxPos)
-		Util.DebugWater(mario.WaterLevel)
-		subframe += (now - lastUpdate) * (STEP_RATE * simSpeed)
-		lastUpdate = now
-		if m.ModeCap == 1 then
-			mario.Flags:Remove(MarioFlags.NORMAL_CAP)
-			mario.Flags:Remove(MarioFlags.WING_CAP)
-			mario.Flags:Remove(MarioFlags.METAL_CAP)
-			mario.Flags:Remove(MarioFlags.VANISH_CAP)
-			mario.Flags:Remove(MarioFlags.CAP_ON_HEAD)
-		end
-		if m.ModeCap == 2 then
-			mario.Flags:Add(MarioFlags.NORMAL_CAP)
-			mario.Flags:Remove(MarioFlags.WING_CAP)
-			mario.Flags:Remove(MarioFlags.METAL_CAP)
-			mario.Flags:Remove(MarioFlags.VANISH_CAP)
-			mario.Flags:Add(MarioFlags.CAP_ON_HEAD)
-		end
-		if m.ModeCap == 3 then
-			mario.Flags:Remove(MarioFlags.NORMAL_CAP)
-			mario.Flags:Add(MarioFlags.WING_CAP)
-			mario.Flags:Remove(MarioFlags.METAL_CAP)
-			mario.Flags:Remove(MarioFlags.VANISH_CAP)
-			mario.Flags:Add(MarioFlags.CAP_ON_HEAD)
-		end
-		if m.ModeCap == 4 then
-			mario.Flags:Remove(MarioFlags.NORMAL_CAP)
-			mario.Flags:Remove(MarioFlags.WING_CAP)
-			mario.Flags:Add(MarioFlags.METAL_CAP)
-			mario.Flags:Remove(MarioFlags.VANISH_CAP)
-			mario.Flags:Add(MarioFlags.CAP_ON_HEAD)
-		end
-		if m.ModeCap == 5 then
-			mario.Flags:Remove(MarioFlags.NORMAL_CAP)
-			mario.Flags:Remove(MarioFlags.WING_CAP)
-			mario.Flags:Remove(MarioFlags.METAL_CAP)
-			mario.Flags:Add(MarioFlags.VANISH_CAP)
-			mario.Flags:Add(MarioFlags.CAP_ON_HEAD)
-		end
-		subframe = math.min(subframe, 4)
-		while subframe >= 1 do
-			subframe -= 1
-			updateController(mario.Controller, humanoid)
-			mario:ExecuteAction()
-			local gfxPos = Util.ToRoblox(mario.Position)
-			gfxRot = Util.ToRotation(mario.GfxAngle)
-			prevCF = goalCF
-			goalCF = CFrame.new(gfxPos) * FLIP * gfxRot
-		end
-		if figure and goalCF then
-			local cf = figure:GetPivot()
-			local rootPart = figure.PrimaryPart
-			local animator = figure:FindFirstChildWhichIsA("Animator", true)
-			if animator and (mario.AnimDirty or mario.AnimReset) and mario.AnimFrame >= 0 then
-				local anim = mario.AnimCurrent
-				local animSpeed = 0.1 / simSpeed
-				if activeTrack and (activeTrack.Animation ~= anim or mario.AnimReset) then
-					if tostring(activeTrack.Animation) == "TURNING_PART1" then
-						if anim and anim.Name == "TURNING_PART2" then
-							mario.AnimSkipInterp = 2
-							animSpeed *= 2
-						end
-					end
-					activeTrack:Stop(animSpeed)
-					activeTrack = nil
+		local t = os.clock() - start
+		scale = figure:GetScale()
+		isdancing = not not figure:GetAttribute("IsDancing")
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
+		
+		-- get vii
+		hum = figure:FindFirstChild("Humanoid")
+		root = figure:FindFirstChild("HumanoidRootPart")
+		torso = figure:FindFirstChild("Torso")
+		if not hum then return end
+		if not root then return end
+		if not torso then return end
+		
+		-- joints
+		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
+		local gunoff = CFrame.new(0, -0.5, 0.3) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+		
+		local timingsine = t * 80 -- timing from original
+		local onground = hum:GetState() == Enum.HumanoidStateType.Running
+		
+		-- animations
+		local torsovelocity = root.Velocity.Magnitude
+		local torsovelocityy = root.Velocity.Y
+		local animationspeed = 11
+		if state == 0 then
+			if onground then
+				if torsovelocity < 1 then
+					rt = ROOTC0 * CFrame.new(0, 0.1, 0.05 * math.cos(timingsine / 60)) * CFrame.Angles(math.rad(-10), math.rad(10), math.rad(-40))
+					nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-5.5 * math.sin(timingsine / 60)), math.rad(10), math.rad(40))
+					rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), 0) * RIGHTSHOULDERC0
+					lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-20), math.rad(87), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+					lht = CFrame.new(-1, -1 - 0.05 * math.cos(timingsine / 60), -0.01) * CFrame.Angles(math.rad(-12), math.rad(-75), 0) * CFrame.Angles(math.rad(-7), 0, 0)
+				else
+					animationspeed = 18.5
+					local tw1 = hum.MoveDirection * root.CFrame.LookVector
+					local tw2 = hum.MoveDirection * root.CFrame.RightVector
+					local lv = tw1.X + tw1.Z
+					local rv = tw2.X + tw2.Z
+					local d = (hum:GetMoveVelocity().Magnitude / scale) / 8
+					timingwalk1 += dt * 80 * d / 18
+					timingwalk2 += dt * 80 * d / 10
+					local walk = math.cos(timingwalk1)
+					local walk2 = math.sin(timingwalk1)
+					local walk3 = math.cos(timingwalk2)
+					local walk4 = math.sin(timingwalk2)
+					local rh = CFrame.new(lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+					local lh = CFrame.new(-lv/10 * walk, 0, 0) * CFrame.Angles(math.sin(rv/5) * walk, 0, math.sin(-lv/2) * walk)
+					rt = ROOTC0 * CFrame.new(0, 0.1, -0.185 + 0.055 * walk3 + -walk4 / 8) * CFrame.Angles(math.rad((lv - lv/5 * walk3) * 10), math.rad((-rv + rv/5 * walk4) * 5), math.rad(-40))
+					nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-2 * math.sin(timingsine / 10)), 0, math.rad(40))
+					rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(30), math.rad(40), math.rad(0)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(150), math.rad(-70), math.rad(40)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -1 + 0.2 * walk2, -0.5) * CFrame.Angles(0, math.rad(120), 0) * rh * CFrame.Angles(0, 0, math.rad(-5 * walk))
+					lht = CFrame.new(-1.3, -0.8 - 0.2 * walk2, -0.05) * CFrame.Angles(0, math.rad(-50), 0) * lh * CFrame.Angles(math.rad(-5), 0, math.rad(-5 * walk))
 				end
-				if not activeTrack and anim then
-					if anim.AnimationId == "" then
-						if RunService:IsStudio() then
-							warn("!! FIXME: Empty AnimationId for", anim.Name, "will break in live games!")
-						end
-						anim.AnimationId = emptyId
-					end
-					local track = animator:LoadAnimation(anim)
-					track:Play(animSpeed, 1, 0)
-					activeTrack = track
+			else
+				if torsovelocityy > -1 then
+					rt = ROOTC0
+					nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(-20), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(-15)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0.2) * CFrame.Angles(math.rad(-20), 0, math.rad(15)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+				else
+					rt = ROOTC0 * CFrame.Angles(math.rad(15), 0, 0)
+					nt = NECKC0 * CFrame.new(0, 0, 0.1) * CFrame.Angles(math.rad(20), 0, 0)
+					rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(25)) * RIGHTSHOULDERC0
+					lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), 0, math.rad(-25)) * LEFTSHOULDERC0
+					rht = CFrame.new(1, -.5, -0.5) * CFrame.Angles(math.rad(-15), math.rad(80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
 				end
-				if activeTrack then
-					local speed = mario.AnimAccel / 0x10000
-					if speed > 0 then
-						activeTrack:AdjustSpeed(speed * simSpeed)
-					else
-						activeTrack:AdjustSpeed(simSpeed)
-					end
-				end
-				mario.AnimDirty = false
-				mario.AnimReset = false
 			end
-			if activeTrack and mario.AnimSetFrame > -1 then
-				activeTrack.TimePosition = mario.AnimSetFrame / STEP_RATE
-				mario.AnimSetFrame = -1
+			bullet.CFrame = root.CFrame + Vector3.new(0, -12, 0)
+			if mousedown and not isdancing then
+				state = 1
+				statetime = os.clock()
+				CreateSound(4473138327)
+				hum.WalkSpeed = 0
+				randomdialog({
+					"Order is restored.",
+					"The anomaly will be corrected.",
+					"Your existence will be no more.",
+					"You dare delay me?",
+					"Your time ends now.",
+					"I am bulletproof.",
+				})
 			end
-			if rootPart then
-				local particles = rootPart:FindFirstChild("Particles")
-				local alignPos = rootPart:FindFirstChildOfClass("AlignPosition")
-				local alignCF = rootPart:FindFirstChildOfClass("AlignOrientation")
-				local actionId = mario.Action()
-				local throw = mario.ThrowMatrix
-				if throw then
-					local throwPos = Util.ToRoblox(throw.Position)
-					goalCF = throw.Rotation * FLIP + throwPos
+		elseif state == 1 then
+			animationspeed = 4
+			AimTowards(MouseHit())
+			rt = ROOTC0 * CFrame.new(0, 0.1, 0.1 * math.cos(timingsine / 35)) * CFrame.Angles(0, 0, math.rad(-40))
+			nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.rad(40))
+			rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(-17), math.rad(40), 0) * RIGHTSHOULDERC0
+			lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(100), math.rad(-70), math.rad(30)) * LEFTSHOULDERC0
+			rht = CFrame.new(1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(87), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			lht = CFrame.new(-1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			local hole = root.CFrame * CFrame.new(1.5, -1, -3)
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+			bullet.CFrame = hole
+			if os.clock() - statetime > 0.5 then
+				state = 2
+				statetime = os.clock()
+				if sndshoot then
+					sndshoot:Destroy()
 				end
-				if alignCF then
-					local nextCF = prevCF:Lerp(goalCF, subframe)
-					cf = if mario.AnimSkipInterp > 0 then cf.Rotation + nextCF.Position else nextCF
-					alignCF.CFrame = cf.Rotation
+				sndshoot = Instance.new("Sound", root)
+				sndshoot.SoundId = "rbxassetid://146830885"
+				sndshoot.Volume = 5
+				sndshoot.Looped = true
+				sndshoot.Playing = true
+				if sndspin then
+					sndspin:Destroy()
 				end
-				if limits ~= nil then
-					Core:SetAttribute("TruncateBounds", false)
+				sndspin = Instance.new("Sound", root)
+				sndspin.SoundId = "rbxassetid://2028334518"
+				sndspin.Volume = 2.5
+				sndspin.Looped = true
+				sndspin.Playing = true
+			end
+		elseif state == 2 then
+			local hit = MouseHit()
+			AimTowards(hit)
+			rt = ROOTC0 * CFrame.new(0, 0.1, 0.1 * math.cos(timingsine / 35)) * CFrame.Angles(0, 0, math.rad(-40))
+			nt = NECKC0 * CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.rad(40))
+			rst = CFrame.new(1.5, 0.4, 0) * CFrame.Angles(math.rad(-17), math.rad(40), 0) * RIGHTSHOULDERC0
+			lst = CFrame.new(-0.3, 0.3, -0.8) * CFrame.Angles(math.rad(100), math.rad(-70), math.rad(30)) * LEFTSHOULDERC0
+			rht = CFrame.new(1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(87), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			lht = CFrame.new(-1, -1 - 0.1 * math.cos(timingsine / 35), -0.01) * CFrame.Angles(0, math.rad(-75), 0) * CFrame.Angles(math.rad(-4), 0, 0)
+			local hole = root.CFrame * CFrame.new(1.5, -1, -3)
+			hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+			local shots = math.min((os.clock() - statetime) * m.BooletsPerSec, 24)
+			while shots > 1 do
+				shots -= 1
+				local dir = (hit - hole.Position).Unit
+				if dir == dir then
+					dir *= 45
+					dir += rng:NextUnitVector() * m.HowBadIsAim * math.random(5, 75) / 10
+					dir = dir.Unit
+				else
+					dir = Vector3.zAxis
 				end
-				if isDebug then
-					local animName = activeTrack and tostring(activeTrack.Animation)
-					setDebugStat("Animation", animName)
-					local actionName = Enums.GetName(Action, actionId)
-					setDebugStat("Action", actionName)
-					local wall = mario.Wall
-					setDebugStat("Wall", wall and wall.Instance.Name or NULL_TEXT)
-					local floor = mario.Floor
-					setDebugStat("Floor", floor and floor.Instance.Name or NULL_TEXT)
-					local ceil = mario.Ceil
-					setDebugStat("Ceiling", ceil and ceil.Instance.Name or NULL_TEXT)
+				local cast = ShootRaycast(hole.Position, dir * 4096)
+				if cast then
+					hit = cast.Position
+					local part = cast.Instance
+					if part and part.Parent and part.Parent.Parent then
+						local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent.Parent:FindFirstChildOfClass("Humanoid")
+						if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+							ReanimateFling(part.Parent)
+						end
+					end
+				else
+					hit = hole.Position + dir * 4096
 				end
-				for _, name in AUTO_STATS do
-					local value = rawget(mario, name)
-					setDebugStat(name, value)
-				end
-				if alignPos then
-					alignPos.Position = cf.Position
-				end
-				local bodyState = mario.BodyState
-				local headAngle = bodyState.HeadAngle
-				local torsoAngle = bodyState.TorsoAngle
-				if actionId ~= Action.BUTT_SLIDE and actionId ~= Action.WALKING then
-					bodyState.TorsoAngle *= 0
-				end
-				if torsoAngle ~= lastTorsoAngle then
-					--waist.C1 = Util.ToRotation(-angle) + waist.C1.Position
-					lastTorsoAngle = torsoAngle
-				end
-				if headAngle ~= lastHeadAngle then
-					neck.C1 = (Util.ToRotation(-headAngle) * CFrame.Angles(math.pi * -0.5, 0, 0)) + neck.C1.Position
-					lastHeadAngle = headAngle
-				end
-				if particles then
-					for name, flag in pairs(ParticleFlags) do
-						local inst = particles:FindFirstChild(name, true)
-						if inst and PARTICLE_CLASSES[inst.ClassName] then
-							local particle = inst
-							local emit = particle:GetAttribute("Emit")
-							local hasFlag = mario.ParticleFlags:Has(flag)
-							if hasFlag then
-								--print("SetParticle", name)
-							end
-							if emit then
-								if hasFlag then
-									networkDispatch(figure, "SetParticle", name)
-								end
-							elseif particle.Enabled ~= hasFlag then
-								networkDispatch(figure, "SetParticle", name, hasFlag)
-							end
+				local shootfx = Instance.new("Part", workspace)
+				shootfx.Name = RandomString()
+				shootfx.Anchored = true
+				shootfx.CanCollide = false
+				shootfx.CanTouch = false
+				shootfx.CanQuery = false
+				shootfx.Color = Color3.new(1, 0, 0)
+				shootfx.CastShadow = false
+				shootfx.Material = "Neon"
+				shootfx.Size = Vector3.new(1, 1, 1)
+				shootfx.Transparency = 0
+				shootfx.CFrame = CFrame.lookAt(hole.Position:Lerp(hit, 0.5), hit)
+				local shootfxm = Instance.new("SpecialMesh", shootfx)
+				shootfxm.MeshType = "Brick"
+				shootfxm.Scale = Vector3.new(0.1, 0.1, (hit - hole.Position).Magnitude)
+				local ti = TweenInfo.new(5 / 60, Enum.EasingStyle.Linear)
+				TweenService:Create(shootfx, ti, {Transparency = 1}):Play()
+				TweenService:Create(shootfxm, ti, {Scale = Vector3.new(0.05, 0.05, (hit - hole.Position).Magnitude)}):Play()
+				Debris:AddItem(shootfx, 0.5)
+				if not m.NoShells then
+					local shell = Instance.new("Part", workspace)
+					shell.Name = RandomString()
+					shell.Anchored = true
+					shell.CanCollide = false
+					shell.CanTouch = false
+					shell.CanQuery = false
+					shell.Color = Color3.new(1, 0.5, 0.5)
+					shell.CastShadow = false
+					shell.Material = "Neon"
+					shell.Size = Vector3.new(0.1, 0.1, 0.1)
+					shell.Shape = Enum.PartType.Ball
+					shell.Transparency = 0.5
+					shell.CFrame = HatReanimator.GetAttachmentCFrame("RightGripAttachment") or (root.CFrame * CFrame.new(1.5, -1, 0))
+					shell.Velocity = root.Velocity + root.CFrame.RightVector * 30 + Vector3.new(math.random(-5, 5), 15, math.random(-5, 5))
+					local a0 = Instance.new("Attachment", shell)
+					a0.CFrame = CFrame.new(0, 0.05, 0)
+					local a1 = Instance.new("Attachment", shell)
+					a1.CFrame = CFrame.new(0, -0.05, 0)
+					local b = Instance.new("Trail", shell)
+					b.Attachment0 = a0
+					b.Attachment1 = a1
+					b.Brightness = 1
+					b.LightEmission = 0.8
+					b.LightInfluence = 0
+					b.Color = ColorSequence.new(Color3.new(1, 0.25, 0.25))
+					b.Transparency = NumberSequence.new(0.5)
+					b.Lifetime = 5
+					b.FaceCamera = true
+					Debris:AddItem(shell, 10)
+					table.insert(shells, {shell, 4})
+					if #shells > 96 then
+						local removed = table.remove(shells, 1)
+						if removed and removed[1] then
+							removed[1].Transparency = 1
 						end
 					end
 				end
-				for name, sound in pairs(Sounds) do
-					local looped = false
-					if sound:IsA("Sound") then
-						if sound.TimeLength == 0 then
-							continue
-						end
-						looped = sound.Looped
+				hum.CameraOffset += rng:NextUnitVector() * 0.1 * m.ShakeValue
+			end
+			local bulletstate = (os.clock() // 0.05) % 2
+			if bulletstate == 0 then
+				bullet.CFrame = hole
+				bullet.LastHit = nil
+			else
+				if not bullet.LastHit then
+					local dir = hit - hole.Position
+					if dir.Magnitude > 256 then
+						dir = dir.Unit * 256
 					end
-					if sound:GetAttribute("Play") then
-						networkDispatch(figure, "PlaySound", sound.Name)
-						if not looped then
-							sound:SetAttribute("Play", false)
-						end
-					elseif looped then
-						sound:Stop()
-					end
+					bullet.LastHit = hole.Position + dir
 				end
-				figure:PivotTo(cf)
+				bullet.CFrame = CFrame.new(bullet.LastHit) * CFrame.Angles(math.random() * math.pi * 2, math.random() * math.pi * 2, math.random() * math.pi * 2)
+			end
+			statetime = os.clock() - shots / m.BooletsPerSec
+			if not mousedown or isdancing then
+				state = 0
+				CreateSound(4498806901)
+				CreateSound(4473119880)
+				hum.WalkSpeed = 13 * scale
+				if sndshoot then
+					sndshoot:Destroy()
+					sndshoot = nil
+				end
+				if sndspin then
+					sndspin:Destroy()
+					sndspin = nil
+				end
+				randomdialog({
+					"Obstacle neutralized.",
+					"Your time stops here.",
+					"The anomaly has been corrected.",
+					"Goodbye, mere mortal.",
+				})
 			end
 		end
+		
+		-- shells
+		local grav = Vector3.new(0, -workspace.Gravity, 0)
+		for i,v in shells do
+			local pos, vel = v[1].Position, v[1].Velocity
+			local newpos, newvel = pos + vel * dt + (grav * dt * dt * 0.5), vel + grav * dt
+			local hit = PhysicsRaycast(pos, newpos - pos)
+			if hit then
+				newpos = hit.Position + hit.Normal * 0.01
+				newvel += hit.Normal * hit.Normal:Dot(newvel) * -2
+				newvel += rng:NextUnitVector() * newvel.Magnitude * Vector3.new(1, 0, 1)
+				newvel *= 0.5
+			end
+			v[1].Position, v[1].Velocity = newpos, newvel
+			v[2] -= dt
+			if v[2] <= 0 then
+				v[1].Transparency = 1
+				table.remove(shells, i)
+			end
+		end
+		
+		-- joints
+		local rj = root:FindFirstChild("RootJoint")
+		local nj = torso:FindFirstChild("Neck")
+		local rsj = torso:FindFirstChild("Right Shoulder")
+		local lsj = torso:FindFirstChild("Left Shoulder")
+		local rhj = torso:FindFirstChild("Right Hip")
+		local lhj = torso:FindFirstChild("Left Hip")
+		
+		-- interpolation
+		local alpha = math.exp(-animationspeed * dt)
+		joints.r = rt:Lerp(joints.r, alpha)
+		joints.n = nt:Lerp(joints.n, alpha)
+		joints.rs = rst:Lerp(joints.rs, alpha)
+		joints.ls = lst:Lerp(joints.ls, alpha)
+		joints.rh = rht:Lerp(joints.rh, alpha)
+		joints.lh = lht:Lerp(joints.lh, alpha)
+		joints.sw = gunoff:Lerp(joints.sw, alpha)
+		
+		-- apply transforms
+		SetC0C1Joint(rj, joints.r, ROOTC0, scale)
+		SetC0C1Joint(nj, joints.n, CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180)), scale)
+		SetC0C1Joint(rsj, joints.rs, CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		SetC0C1Joint(lsj, joints.ls, CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(rhj, joints.rh, CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0), scale)
+		SetC0C1Joint(lhj, joints.lh, CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0), scale)
+		
+		-- gun
+		if m.UseSword then
+			gun.Group = "Sword"
+		else
+			gun.Group = "Gun"
+		end
+		gun.Offset = joints.sw
+		gun.Disable = not not isdancing
+		
+		-- dance reactions
+		if isdancing and not dancereact then
+			notify("Let's Go!")
+		end
+		dancereact = isdancing
 	end
 	m.Destroy = function(figure: Model?)
+		ContextActionService:UnbindAction("Uhhhhhh_MGShoot")
+		if uisbegin then
+			uisbegin:Disconnect()
+			uisbegin = nil
+		end
+		if uisend then
+			uisend:Disconnect()
+			uisbegin = nil
+		end
+		if chatconn then
+			chatconn:Disconnect()
+			chatconn = nil
+		end
+		root, torso, hum = nil, nil, nil
 	end
 	return m
 end)
