@@ -916,16 +916,22 @@ local function SetUITheme(index)
 	local theme = UIThemes[index]
 	if index == #UIThemes + 1 then
 		theme = {nil, nil, Color3.new(1, 1, 1)}
-		if type(_G.UhhhhhhTheme) == "table" then
-			if typeof(_G.UhhhhhhTheme.Fore) == "Color3" then
-				theme[1] = _G.UhhhhhhTheme.Fore
+		local function processtable(t)
+			if typeof(t.Fore) == "Color3" then
+				theme[1] = t.Fore
 			end
-			if typeof(_G.UhhhhhhTheme.Back) == "Color3" then
-				theme[2] = _G.UhhhhhhTheme.Back
+			if typeof(t.Back) == "Color3" then
+				theme[2] = t.Back
 			end
-			if typeof(_G.UhhhhhhTheme.Text) == "Color3" then
-				theme[3] = _G.UhhhhhhTheme.Text
+			if typeof(t.Text) == "Color3" then
+				theme[3] = t.Text
 			end
+		end
+		if type(_G.UhhhhhhTheme) == "table" and getmetatable(_G.UhhhhhhTheme) == nil then
+			processtable(_G.UhhhhhhTheme)
+			SaveData.UIThemeUserDefined = _G.UhhhhhhTheme
+		elseif type(SaveData.UIThemeUserDefined) == "table" then
+			processtable(SaveData.UIThemeUserDefined)
 		end
 	end
 	if theme then
@@ -934,6 +940,8 @@ local function SetUITheme(index)
 		UITextColor.Value = theme[3]
 	end
 end
+SaveData.UITheme = SaveData.UITheme or 1
+SetUITheme(SaveData.UITheme)
 
 UISound.Click = Util.Instance("Sound", UIMainFrame)
 UISound.Click.SoundId = "rbxassetid://6324790483"
@@ -1960,6 +1968,7 @@ function UI.CreateDropdown(parent, text, array, value)
 		Item.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 				interact = true
+				UISound.Click:Play()
 			end
 		end)
 	end
@@ -2590,32 +2599,28 @@ end)
 UI.CreateSwitch(MainPage, "Skip Intro", SaveData.SkipIntro).Changed:Connect(function(value)
 	SaveData.SkipIntro = value
 end)
-do
-	SaveData.UITheme = SaveData.UITheme or 1
-	UI.CreateDropdown(MainPage, "UI Theme", {
-		"RGB/Default",
-		"ALONE",
-		"Oxide",
-		"Patchma Hub",
-		"Genesis V4",
-		"Crimson",
-		"r/masterhacker",
-		"Homer Simpson",
-		"Immortality Lord",
-		"LIGHT RGB",
-		"LIGHT ALONE",
-		"Roserika",
-		"FastTracker II Blue",
-		"Cherry Blossom",
-		"Sakura",
-		"Tommorow Night 80s", -- my personal IDE theme
-		"User Defined (see README)",
-	}, SaveData.UITheme).Changed:Connect(function(val)
-		SaveData.UITheme = val
-		SetUITheme(SaveData.UITheme)
-	end)
-	if ForceUIColor == nil then SetUITheme(SaveData.UITheme) end
-end
+UI.CreateDropdown(MainPage, "UI Theme", {
+	"RGB/Default",
+	"ALONE",
+	"Oxide",
+	"Patchma Hub",
+	"Genesis V4",
+	"Crimson",
+	"r/masterhacker",
+	"Homer Simpson",
+	"Immortality Lord",
+	"LIGHT RGB",
+	"LIGHT ALONE",
+	"Roserika",
+	"FastTracker II Blue",
+	"Cherry Blossom",
+	"Sakura",
+	"Tommorow Night 80s", -- my personal IDE theme
+	"User Defined (see README)",
+}, SaveData.UITheme).Changed:Connect(function(val)
+	SaveData.UITheme = val
+	SetUITheme(SaveData.UITheme)
+end)
 UI.CreateSeparator(MainPage)
 
 local MusicName = UI.CreateText(MainPage, "", 15, Enum.TextXAlignment.Center)
