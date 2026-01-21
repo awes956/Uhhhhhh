@@ -970,21 +970,64 @@ AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
 	m.Name = "Krystal Dance V3"
-	m.Description = "Creo - Sphere"
+	m.Description = "Very lazy moveset\nthis is from the theo mod, so no furry run here"
 	m.InternalName = "KDRV3"
-	m.Assets = {"KDRV3Idle.anim", "KDRV3Walk.anim", "CreoSphere.mp3"}
+	m.Assets = {"KDRV3Idle.anim", "KDRV3Walk.anim", "KDRV3Sprint.anim", "CreoSphere.mp3"}
 
 	m.Config = function(parent: GuiBase2d)
 	end
 
+	local NeckC0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, 0)
 	local animatoridle = nil
 	local animatorwalk = nil
 	local animatorspri = nil
 	local animationtime = 0
 	local laststate = "idle"
 	local sprinting = false
+	local persistentloadnotif = false
 	m.Init = function(figure: Model)
-		SetOverrideMovesetMusic(AssetGetContentId("CreoSphere.mp3"), "Creo - Sphere", 1)
+		SetOverrideMovesetMusic("", "Level Up sound effect", 1)
+		local root = figure:FindFirstChild("HumanoidRootPart")
+		if not root then return end
+		local introsound = Instance.new("Sound", figure)
+		introsound.SoundId = "rbxassetid://236146895"
+		introsound.Volume = 1
+		introsound:Play()
+		introsound.Ended:Connect(function()
+			if figure:IsDescendantOf(workspace) then
+				SetOverrideMovesetMusic(AssetGetContentId("CreoSphere.mp3"), "Creo - Sphere", 1)
+			end
+		end)
+		task.spawn(function()
+			local bigfedora = Instance.new("Part", figure)
+			bigfedora.Size = Vector3.new(2, 2, 2)
+			bigfedora.CFrame = root.CFrame * CFrame.new(math.random(-60, 60), -0.2, math.random(-60, 60)) * CFrame.Angles(0, math.rad(math.random(-180, 180)), 0)
+			bigfedora.Anchored = true
+			bigfedora.CanCollide = false
+			bigfedora.Name = "bigemofedora"
+			local mbigfedora = Instance.new("SpecialMesh", bigfedora)
+			mbigfedora.MeshType = "FileMesh"
+			mbigfedora.Scale = Vector3.new(5, 5, 5)
+			mbigfedora.MeshId = "http://www.roblox.com/asset/?id=1125478"
+			mbigfedora.TextureId = "http://www.roblox.com/asset/?id=1125479"
+			for i=1, 60 do
+				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, -0.1, 0) + root.Position, 0.09)
+				task.wait(1 / 60)
+			end
+			task.wait(0.25)
+			for i=1, 50 do
+				bigfedora.CFrame = bigfedora.CFrame:Lerp(CFrame.new(0, 1.5, 0) + root.Position, 0.05)
+				task.wait(1 / 60)
+			end
+			local zmc = 0
+			for i=1, 29 do
+				zmc = zmc + 2
+				mbigfedora.Scale = mbigfedora.Scale - Vector3.new(0.25, 0.25, 0.25)
+				bigfedora.CFrame = bigfedora.CFrame * CFrame.Angles(0, math.rad(zmc), 0)
+				task.wait(1 / 60)
+			end
+			bigfedora:Destroy()
+		end)
 		animatoridle = AnimLib.Animator.new()
 		animatoridle.rig = figure
 		animatoridle.looped = true
@@ -993,14 +1036,37 @@ AddModule(function()
 		animatorwalk.rig = figure
 		animatorwalk.looped = true
 		animatorwalk.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Walk.anim"))
+		animatorspri = AnimLib.Animator.new()
+		animatorspri.rig = figure
+		animatorspri.looped = true
+		animatorspri.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Sprint.anim"))
 		animationtime = 0
 		laststate = "idle"
 		sprinting = false
+		ContextActionService:BindAction("Uhhhhhh_KDRV3Sprint", function(actName, state, input)
+			if state == Enum.UserInputState.Begin then
+				sprinting = not sprinting
+				if sprinting and not persistentloadnotif then
+					persistentloadnotif = true
+					StarterGui:SetCore("SendNotification", {
+						Title = "Uhhhhhh",
+						Text = "Loaded: Sprint",
+						Duration = 5
+					})
+				end
+			end
+		end, true, Enum.KeyCode.LeftControl)
+		ContextActionService:SetTitle("Uhhhhhh_KDRV3Sprint", "Ctrl")
+		ContextActionService:SetPosition("Uhhhhhh_KDRV3Sprint", UDim2.new(1, -130, 1, -130))
 	end
 	m.Update = function(dt: number, figure: Model)
 		local t = os.clock()
+
+		local scale = figure:GetScale()
+
 		local hum = figure:FindFirstChild("Humanoid")
 		if not hum then return end
+
 		local state = "idle"
 		if hum.MoveDirection.Magnitude > 0.1 then
 			if sprinting then
@@ -1015,17 +1081,50 @@ AddModule(function()
 		else
 			animationtime += dt
 		end
+
 		if state == "idle" then
 			animatoridle:Step(animationtime)
 		end
 		if state == "walk" then
 			animatorwalk:Step(animationtime)
 		end
+		if state == "spri" then
+			animatorspri:Step(animationtime)
+		end
+
+		local head = figure:FindFirstChild("Head")
+		if not head then return end
+		local torso = figure:FindFirstChild("Torso")
+		if not torso then return end
+		local neck = torso:FindFirstChild("Neck")
+		if not neck then return end
+
+		if figure:GetAttribute("IsDancing") then
+			neck.C0 = NeckC0
+		else
+			if sprinting then
+				hum.WalkSpeed = 24 * scale
+			else
+				hum.WalkSpeed = 14 * scale
+			end
+			local HeadPosition = head.Position
+			local MousePos = Player:GetMouse().Hit.Position
+			if UserInputService.TouchEnabled then
+				MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, -10000, 0)
+			end
+			local TranslationVector = (HeadPosition - MousePos).Unit
+			local Pitch = atan(TranslationVector.Y)
+			local Yaw = TranslationVector:Cross(Torso.CFrame.LookVector).Y
+			local Roll = atan(Yaw)
+			local NeckCFrame = CFrame.Angles(Pitch, 0, Yaw)
+			neck.C0 = neck.C0:Lerp(NeckC0 * NeckCFrame, dt * 10)
+		end
 	end
 	m.Destroy = function(figure: Model?)
 		animatoridle = nil
 		animatorwalk = nil
 		animatorspri = nil
+		ContextActionService:UnbindAction("Uhhhhhh_KDRV3Sprint")
 	end
 	return m
 end)
