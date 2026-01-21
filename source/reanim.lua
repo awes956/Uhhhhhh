@@ -3084,7 +3084,7 @@ Reanimate.CreateCharacter = function(InitCFrame)
 			RCHumanoid:Move(MoveCF:VectorToWorldSpace(CMove))
 		end
 		RCHumanoid.Jump = CJump
-		if RCRootPart.Position.Y + RCRootPart.Velocity.Y < FallenPartsDestroyHeight then
+		if RCRootPart.Position.Y < FallenPartsDestroyHeight + 3 * Reanimate.CharacterScale then
 			RCRootPart.CFrame = LastSafest
 			RCRootPart.Velocity = Vector3.new(0, 50, 0)
 			RCRootPart.RotVelocity = Vector3.zero
