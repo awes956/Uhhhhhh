@@ -988,7 +988,7 @@ AddModule(function()
 		animatoridle = AnimLib.Animator.new()
 		animatoridle.rig = figure
 		animatoridle.looped = true
-		animatoridle.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Walk.anim"))
+		animatoridle.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Idle.anim"))
 		animatorwalk = AnimLib.Animator.new()
 		animatorwalk.rig = figure
 		animatorwalk.looped = true
@@ -1011,6 +1011,7 @@ AddModule(function()
 		end
 		if laststate ~= state then
 			animationtime = 0
+			laststate = state
 		else
 			animationtime += dt
 		end
