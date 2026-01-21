@@ -229,6 +229,7 @@ UIMainFrame.Size = UDim2.new(1, 0, 1, 0)
 UIMainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
 UIMainFrame.BackgroundTransparency = 1
 UIMainFrame.BorderSizePixel = 0
+UIMainFrame.ZIndex = 2147483647
 
 local SaveData = {}
 do
@@ -4936,7 +4937,7 @@ function HatReanimator.Start()
 		Wait1 = 0.1,
 		Wait2 = 0.15,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 4, 0))
+			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 3, 0))
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4957,6 +4958,8 @@ function HatReanimator.Start()
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
+						elseif v.Name == "Head" then
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -40))
 						elseif v.Name == "Right Hip" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
