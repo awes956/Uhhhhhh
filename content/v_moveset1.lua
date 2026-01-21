@@ -1110,7 +1110,7 @@ AddModule(function()
 			local HeadPosition = head.Position
 			local MousePos = Player:GetMouse().Hit.Position
 			if UserInputService.TouchEnabled then
-				MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, -10000, 0)
+				MousePos = workspace.CurrentCamera.CFrame * Vector3.new(0, 0, -10000)
 			end
 			local TranslationVector = (HeadPosition - MousePos).Unit
 			local Pitch = math.atan(TranslationVector.Y)
