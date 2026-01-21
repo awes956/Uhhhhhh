@@ -14,8 +14,16 @@ Join the [DISCORD](https://discord.gg/NASNUKRBVM) of all my programming shenanig
 **NOTICE:** This is still in development, so things are subject to change and stuff are expected to be missing.
 
 ## Loadstring
+Pick from one of these:
+
+1. raw loadstring (cached by github)
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/STEVE-916-create/Uhhhhhh/main/source/reanim.lua"))()
+```
+
+2. api loadstring (bypasses github cache)
+```lua
+local a,b,c,g="/STEVE-916-create/Uhhhhhh/","/source/reanim.lua",".github","https://"local d=request({Url=`{g}api{c}.com/repos{a}contents{b}`,Headers={Accept=`application/vnd{c}.VERSION.raw`}})if d.StatusCode~=200 then d.Body=game:HttpGet(`{g}raw{c}usercontent.com{a}main{b}`)end local e,f=loadstring(d.Body)if not e then warn(f)else e()end
 ```
 
 ## Features:
