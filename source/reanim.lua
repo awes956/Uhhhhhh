@@ -1316,11 +1316,16 @@ do -- homepage
 		"Written mostly on a mobile phone.",
 		"I am pretty new in this community! :D",
 	}
-	local text3 = Util.MakeText(quotes[math.random(1, #quotes)])
-	text3.AnchorPoint = Vector2.new(0.5, 1)
-	text3.Position = UDim2.new(0.5, 0, 1, -17)
-	text3.ZIndex = 3
-	text3.Parent = CracktroFrame
+	local text3 = nil
+	local function changequote()
+		text3 = Util.MakeText(quotes[math.random(1, #quotes)])
+		text3.AnchorPoint = Vector2.new(0.5, 1)
+		text3.Position = UDim2.new(0.5, 0, 1, -17)
+		text3.ZIndex = 3
+		text3.Parent = CracktroFrame
+		task.delay(15, changequote)
+	end
+	changequote()
 	Util.SetTextColor(text, UITextColor.Value, 0)
 	Util.SetTextColor(text1, UITextColor.Value, 0)
 	Util.SetTextColor(text2, UITextColor.Value, 0)
