@@ -1334,6 +1334,7 @@ do -- homepage
 	}
 	local text3 = nil
 	local function changequote()
+		if text3 then text3:Destroy() end
 		text3 = Util.MakeText(quotes[math.random(1, #quotes)])
 		text3.AnchorPoint = Vector2.new(0.5, 1)
 		text3.Position = UDim2.new(0.5, 0, 1, -17)
