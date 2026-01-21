@@ -23,9 +23,9 @@ end
 AddModule(function()
 	local m = {}
 	m.ModuleType = "MOVESET"
-	m.Name = "Minigun"
-	m.InternalName = "IAMBULLETPROOF"
-	m.Description = "now in the latest color: AKAI!!\nLet's Go! Goodbye!\nM1 - Shoot"
+	m.Name = "Sin Dragon"
+	m.InternalName = "SINEWAVETREXDINOSAR"
+	m.Description = "sin dragon if he was sinful\nnow in the latest color: MURASAKI!!\nWelcome to JURASSIC PARK!\nokay that was too random, sorry about that\nM1 - Shoot"
 	m.Assets = {}
 
 	m.Notifications = true

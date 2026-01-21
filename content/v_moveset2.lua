@@ -2498,7 +2498,7 @@ AddModule(function()
 
 		-- bullet and aura
 		if bulletstate[3] < os.clock() - 0.5 then
-			bullet.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+			bullet.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
 		else
 			local pos = (os.clock() // 0.05) % 2
 			if pos == 0 then
@@ -2512,7 +2512,7 @@ AddModule(function()
 			local angle = (timingsine * m.GunAuraSpinSpeed) % (math.pi * 2)
 			gunaura.CFrame = (root.CFrame.Rotation * CFrame.Angles(-math.pi / 2, angle, 0)) + gunaurastate[1]
 		else
-			gunaura.CFrame = root.CFrame + Vector3.new(0, -24, 0)
+			gunaura.CFrame = root.CFrame + Vector3.new(0, -12 * scale, 0)
 		end
 		
 		-- dance reactions
@@ -2926,7 +2926,7 @@ AddModule(function()
 					lht = CFrame.new(-1, -1, 0) * CFrame.Angles(math.rad(-10), math.rad(-80), 0) * CFrame.Angles(math.rad(-4), 0, 0)
 				end
 			end
-			bullet.CFrame = root.CFrame + Vector3.new(0, -12, 0)
+			bullet.CFrame = root.CFrame + Vector3.new(0, -8, 0) * scale
 			if mousedown and not isdancing then
 				state = 1
 				statetime = os.clock()
