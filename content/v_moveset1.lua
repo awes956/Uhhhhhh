@@ -966,4 +966,67 @@ AddModule(function()
 	return m
 end)
 
+AddModule(function()
+	local m = {}
+	m.ModuleType = "MOVESET"
+	m.Name = "Krystal Dance V3"
+	m.Description = "Creo - Sphere"
+	m.InternalName = "KDRV3"
+	m.Assets = {"KDRV3Idle.anim", "KDRV3Walk.anim", "CreoSphere.mp3"}
+
+	m.Config = function(parent: GuiBase2d)
+	end
+
+	local animatoridle = nil
+	local animatorwalk = nil
+	local animatorspri = nil
+	local animationtime = 0
+	local laststate = "idle"
+	local sprinting = false
+	m.Init = function(figure: Model)
+		SetOverrideMovesetMusic(AssetGetContentId("CreoSphere.mp3"), "Creo - Sphere", 1)
+		animatoridle = AnimLib.Animator.new()
+		animatoridle.rig = figure
+		animatoridle.looped = true
+		animatoridle.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Walk.anim"))
+		animatorwalk = AnimLib.Animator.new()
+		animatorwalk.rig = figure
+		animatorwalk.looped = true
+		animatorwalk.track = AnimLib.Track.fromfile(AssetGetPathFromFilename("KDRV3Walk.anim"))
+		animationtime = 0
+		laststate = "idle"
+		sprinting = false
+	end
+	m.Update = function(dt: number, figure: Model)
+		local t = os.clock()
+		local hum = figure:FindFirstChild("Humanoid")
+		if not hum then return end
+		local state = "idle"
+		if hum.MoveDirection.Magnitude > 0.1 then
+			if sprinting then
+				state = "spri"
+			else
+				state = "walk"
+			end
+		end
+		if laststate ~= state then
+			animationtime = 0
+		else
+			animationtime += dt
+		end
+		if state == "idle" then
+			animatoridle:Step(animationtime)
+		end
+		if state == "walk" then
+			animatorwalk:Step(animationtime)
+		end
+	end
+	m.Destroy = function(figure: Model?)
+		animatoridle = nil
+		animatorwalk = nil
+		animatorspri = nil
+	end
+	return m
+end)
+
 return modules
