@@ -6532,8 +6532,8 @@ KeybindsPage.Back.Activated:Connect(function()
 end)
 
 SaveData.KeybindsEnabled = not not SaveData.KeybindsEnabled
-UI.CreateSwitch(MainPage, "Dance Keybinds Enabled", false).Changed:Connect(function(val)
-	CtrlClickEnabled = val
+UI.CreateSwitch(MainPage, "Dance Keybinds Enabled", SaveData.KeybindsEnabled).Changed:Connect(function(val)
+	SaveData.KeybindsEnabled = val
 end)
 local Keybinds = {}
 local KeybindsPerPage = {"Z", "X", "C", "V", "B", "N", "G", "H", "J", "K", "L", "R", "T", "U", "P"}

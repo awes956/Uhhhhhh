@@ -30,11 +30,8 @@ AddModule(function()
 
 	m.Notifications = true
 	m.Sounds = true
-	m.UseSword = false
-	m.BooletsPerSec = 60
-	m.NoShells = false
-	m.HowBadIsAim = 1
 	m.ShakeValue = 1
+	m.SkipIntro = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Text thing", m.Notifications).Changed:Connect(function(val)
 			m.Notifications = val
@@ -42,42 +39,25 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Sounds", m.Sounds).Changed:Connect(function(val)
 			m.Sounds = val
 		end)
-		Util_CreateText(parent, "Use the sword instead of the gun!", 12, Enum.TextXAlignment.Center)
-		Util_CreateSwitch(parent, "Gun = Sword", m.UseSword).Changed:Connect(function(val)
-			m.UseSword = val
-		end)
-		Util_CreateText(parent, "for optimisation reasons, you can only fire max 20 bullets in a frame", 12, Enum.TextXAlignment.Center)
-		Util_CreateSlider(parent, "Bullets Per Second", m.BooletsPerSec, 5, 240, 1).Changed:Connect(function(val)
-			m.BooletsPerSec = val
-		end)
-		Util_CreateSwitch(parent, "Fire the whole bullet", m.NoShells).Changed:Connect(function(val)
-			m.NoShells = val
-		end)
-		Util_CreateSlider(parent, "Fire Spread", m.HowBadIsAim, 0, 1, 0).Changed:Connect(function(val)
-			m.HowBadIsAim = val
-		end)
 		Util_CreateSlider(parent, "Shake Amount", m.ShakeValue, 0, 1, 0).Changed:Connect(function(val)
 			m.ShakeValue = val
+		end)
+		Util_CreateSwitch(parent, "Skip Intro", m.SkipIntro).Changed:Connect(function(val)
+			m.SkipIntro = val
 		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Notifications = not save.NoTextType
 		m.Sounds = not save.Muted
-		m.UseSword = not not save.UseSword
-		m.BooletsPerSec = save.BooletsPerSec or m.BooletsPerSec
-		m.NoShells = not not save.NoShells
-		m.HowBadIsAim = save.HowBadIsAim or m.HowBadIsAim
 		m.ShakeValue = save.ShakeValue or m.ShakeValue
+		m.SkipIntro = not not save.SkipIntro
 	end
 	m.SaveConfig = function()
 		return {
 			NoTextType = not m.Notifications,
 			Muted = not m.Sounds,
-			UseSword = m.UseSword,
-			BooletsPerSec = m.BooletsPerSec,
-			NoShells = m.NoShells,
-			HowBadIsAim = m.HowBadIsAim,
 			ShakeValue = m.ShakeValue,
+			SkipIntro = m.SkipIntro,
 		}
 	end
 
@@ -198,7 +178,6 @@ AddModule(function()
 		root.AssemblyAngularVelocity = Vector3.new(0, off, 0) * 60
 	end
 	local chatconn
-	local attacking = false
 	local joints = {
 		r = CFrame.identity,
 		n = CFrame.identity,
@@ -208,27 +187,16 @@ AddModule(function()
 		lh = CFrame.identity,
 		sw = CFrame.identity,
 	}
-	local gun = {}
-	local bullet = {}
-	local mousedown = false
-	local uisbegin, uisend
-	local dancereact = false
-	local state = 0
-	local statetime = 0
-	local sndshoot, sndspin
-	local ROOTC0 = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
-	local NECKC0 = CFrame.new(0, 1, 0) * CFrame.Angles(math.rad(-90), 0, math.rad(180))
-	local RIGHTSHOULDERC0 = CFrame.new(-0.5, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
-	local LEFTSHOULDERC0 = CFrame.new(0.5, 0, 0) * CFrame.Angles(0, math.rad(-90), 0)
 	local rng = Random.new(math.random(-65536, 65536))
-	local shells = {}
-	local timingwalk1, timingwalk2 = 0, 0
+	local attacking = false
+	local dragonhead = {}
+	local dragonclawl = {}
+	local dragonclawr = {}
 
 	m.Init = function(figure)
 		start = os.clock()
 		attacking = false
 		state = 0
-		timingwalk1, timingwalk2 = 0, 0
 		hum = figure:FindFirstChild("Humanoid")
 		root = figure:FindFirstChild("HumanoidRootPart")
 		torso = figure:FindFirstChild("Torso")
