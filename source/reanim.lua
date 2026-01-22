@@ -4952,7 +4952,7 @@ function HatReanimator.Start()
 		Wait1 = 0.1,
 		Wait2 = 0.15,
 		HRPTP = function(dt, character, Humanoid, RootPosition, RootPart, readystate)
-			local rootcf = CFrame.new(RootPosition + Vector3.new(0, 8, 0))
+			local rootcf = CFrame.new(RootPosition + Vector3.new(8, 8, 0))
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 30), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
@@ -4972,7 +4972,7 @@ function HatReanimator.Start()
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
-							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
+							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, 8, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
 						elseif v.Name == "Neck" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
