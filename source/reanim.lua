@@ -6886,7 +6886,7 @@ task.spawn(function()
 		_oldcharacterreference = ReanimCharacter
 	end, function(m)
 		warn(debug.traceback("ANIMATION LOOP ERROR :: " .. m))
-	end, dt)
+	end, dt) end
 end)
 UI.CreateSeparator(MainPage)
 task.wait()
