@@ -4990,10 +4990,14 @@ function HatReanimator.Start()
 			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
+			task.wait(0.2)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			rightleg.AncestryChanged:Wait()
+			replicatesignal(Humanoid.ServerBreakJoints)
+			if rightleg and rightleg:IsDescendantOf(workspace) then
+				rightleg.AncestryChanged:Wait()
+			end
 			task.wait(1.5)
 			return _counthats(hats)
 		end,
