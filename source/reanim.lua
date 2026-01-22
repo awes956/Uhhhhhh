@@ -4975,7 +4975,7 @@ function HatReanimator.Start()
 							Util.SetMotor6DOffset(v, rootcf:ToObjectSpace(CFrame.new(RootPosition + Vector3.new(0, -0.25, 0)) * CFrame.Angles(math.pi * 0.5, 0, 0)))
 						elseif v.Name == "Neck" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -40))
-						elseif v.Name == "Right Hip" then
+						elseif v.Name == "Right Shoulder" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 1.5, -20))
 						else
 							Util.SetMotor6DOffset(v, CFrame.new(i * -3, math.random() * 0.05, -2))
@@ -4991,7 +4991,7 @@ function HatReanimator.Start()
 			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
-			task.wait(0.15)
+			task.wait(0.3)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
