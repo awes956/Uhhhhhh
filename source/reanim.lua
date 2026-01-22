@@ -4991,7 +4991,7 @@ function HatReanimator.Start()
 			local rightleg = character:FindFirstChild("Right Leg")
 			local hum = character:FindFirstChild("Humanoid")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
-			task.wait(0.3)
+			task.wait(0.15)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
