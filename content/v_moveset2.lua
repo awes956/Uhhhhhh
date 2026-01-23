@@ -2006,7 +2006,7 @@ AddModule(function()
 		scale = figure:GetScale()
 		curcolor = Color3.fromHSV(os.clock() % 1, 1, 1)
 		isdancing = not not figure:GetAttribute("IsDancing")
-		rcp.FilterDescendantsInstances = {figure}
+		rcp.FilterDescendantsInstances = {figure, Player.Character}
 		
 		-- get vii
 		hum = figure:FindFirstChild("Humanoid")
@@ -3004,7 +3004,7 @@ AddModule(function()
 					if part and part.Parent and part.Parent.Parent then
 						local hum = part.Parent:FindFirstChildOfClass("Humanoid") or part.Parent.Parent:FindFirstChildOfClass("Humanoid")
 						if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
-							ReanimateFling(part.Parent)
+							ReanimateFling(hum.Parent)
 						end
 					end
 				else
