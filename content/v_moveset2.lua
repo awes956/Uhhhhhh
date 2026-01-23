@@ -2869,7 +2869,7 @@ AddModule(function()
 		
 		-- joints
 		local rt, nt, rst, lst, rht, lht = CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity, CFrame.identity
-		local gunoff = CFrame.new(0, -0.5, 0.3) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+		local gunoff = CFrame.new(0, -0.5, 0.3) * CFrame.Angles(math.rad(90), 0, 0)
 		
 		local timingsine = t * 80 -- timing from original
 		local onground = hum:GetState() == Enum.HumanoidStateType.Running
@@ -2956,22 +2956,24 @@ AddModule(function()
 			if os.clock() - statetime > 0.5 then
 				state = 2
 				statetime = os.clock()
-				if sndshoot then
-					sndshoot:Destroy()
+				if m.Sounds then
+					if sndshoot then
+						sndshoot:Destroy()
+					end
+					sndshoot = Instance.new("Sound", root)
+					sndshoot.SoundId = "rbxassetid://146830885"
+					sndshoot.Volume = 5
+					sndshoot.Looped = true
+					sndshoot.Playing = true
+					if sndspin then
+						sndspin:Destroy()
+					end
+					sndspin = Instance.new("Sound", root)
+					sndspin.SoundId = "rbxassetid://2028334518"
+					sndspin.Volume = 2.5
+					sndspin.Looped = true
+					sndspin.Playing = true
 				end
-				sndshoot = Instance.new("Sound", root)
-				sndshoot.SoundId = "rbxassetid://146830885"
-				sndshoot.Volume = 5
-				sndshoot.Looped = true
-				sndshoot.Playing = true
-				if sndspin then
-					sndspin:Destroy()
-				end
-				sndspin = Instance.new("Sound", root)
-				sndspin.SoundId = "rbxassetid://2028334518"
-				sndspin.Volume = 2.5
-				sndspin.Looped = true
-				sndspin.Playing = true
 			end
 		elseif state == 2 then
 			local hit = MouseHit()

@@ -922,7 +922,7 @@ local function SetUITheme(index)
 		-- ALONE LIGHT
 		{Color3.new(0, 0, 0), Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
-		{Color3.new(0, 0, 0), Color3.new(1, 0.8, 0), Color3.new(1, 1, 1)},
+		{Color3.new(0, 0, 0), Color3.new(1, 0.6, 0), Color3.new(1, 1, 1)},
 		-- FastTracker II Blue
 		{Color3.fromHex("333780"), Color3.fromHex("666EFF"), Color3.new(1, 1, 1)},
 		-- Cherry Blossom
@@ -1327,6 +1327,11 @@ do -- homepage
 	text.Position = UDim2.new(0.5, 0, 1, -25)
 	text.ZIndex = 3
 	text.Parent = CracktroFrame
+	local text0 = Util.MakeText("Discord: discord.gg/NASNUKRBVM")
+	text0.AnchorPoint = Vector2.new(0.5, 1)
+	text0.Position = UDim2.new(0.5, 0, 1, -17)
+	text0.ZIndex = 3
+	text0.Parent = CracktroFrame
 	local text1 = Util.MakeText("Made by STEVETHEREALONE :" .. (math.random() < 0.333 and "3" or (math.random() < 0.5 and "D" or "P")))
 	text1.AnchorPoint = Vector2.new(0.5, 1)
 	text1.Position = UDim2.new(0.5, 0, 1, -17)
@@ -1337,6 +1342,10 @@ do -- homepage
 	text2.Position = UDim2.new(0.5, 0, 1, -17)
 	text2.ZIndex = 3
 	text2.Parent = CracktroFrame
+	Util.SetTextColor(text, UITextColor.Value, 0)
+	Util.SetTextColor(text0, UITextColor.Value, 0)
+	Util.SetTextColor(text1, UITextColor.Value, 0)
+	Util.SetTextColor(text2, UITextColor.Value, 0)
 	local quotes = {
 		"\"EVERY CLIENT ORBITS A SERVER...\"",
 		Player.Name .. ", how is your " .. os.date("%A") .. "?",
@@ -1363,11 +1372,9 @@ do -- homepage
 		task.delay(15, changequote)
 	end
 	changequote()
-	Util.SetTextColor(text, UITextColor.Value, 0)
-	Util.SetTextColor(text1, UITextColor.Value, 0)
-	Util.SetTextColor(text2, UITextColor.Value, 0)
 	UITextColor.Changed:Connect(function(val)
 		Util.SetTextColor(text, val, 0)
+		Util.SetTextColor(text0, val, 0)
 		Util.SetTextColor(text1, val, 0)
 		Util.SetTextColor(text2, val, 0)
 		Util.SetTextColor(text3, val, 0)
@@ -1488,23 +1495,31 @@ do -- homepage
 					v[6] = nzind
 				end
 			end
-			local textsel = t % 10
+			local textsel = t % 9
 			if IsUhhhhhhFullyLoaded then
-				textsel = t % 15
+				textsel = t % 12
 			end
-			textsel //= 5
+			textsel //= 3
 			if textsel == 0 then
-				text1.Visible = true
+				text0.Visible = true
+				text1.Visible = false
 				text2.Visible = false
 				text3.Visible = false
 			elseif textsel == 1 then
-				text1.Visible = false
+				text0.Visible = false
+				text1.Visible = true
 				text2.Visible = false
-				text3.Visible = true
-			else
+				text3.Visible = false
+			elseif textsel == 2 then
+				text0.Visible = false
 				text1.Visible = false
 				text2.Visible = true
 				text3.Visible = false
+			else
+				text0.Visible = false
+				text1.Visible = false
+				text2.Visible = false
+				text3.Visible = true
 			end
 		else
 			currentprocessor = math.random(1, #PositionProcessor)
@@ -7216,7 +7231,6 @@ do
 		"headcanon: \"Lightning Cannon is a top.\"",
 		"\"dont bpt ples\" \"brick portationtele?\"",
 		"WHO CARES IF A FEW TREES ARE DYING!?",
-		"okay so you know why i put my discord link to the bottom of the credits? so skids can use Uhhhhhh without ads! :D",
 		"while i was in mwtp, someone said \"leak the hatdrop script\"",
 		"i was in fencing, then someone said \"its the genesis killer\"",
 		"STEVE, THE DANCING IMMORTALITY LORD!",
