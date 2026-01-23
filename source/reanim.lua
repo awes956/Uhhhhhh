@@ -5014,11 +5014,11 @@ function HatReanimator.Start()
 			local hum = character:FindFirstChild("Humanoid")
 			local head = character:FindFirstChild("Head")
 			HatReanimator.Status.HatCollide = "We shall remain 1 part."
-			task.wait(0.3)
+			task.wait(0.41)
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			task.wait(0.3)
+			task.wait(0.19)
 			if head and head:IsDescendantOf(workspace) then
 				head.AncestryChanged:Wait()
 			end
