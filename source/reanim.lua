@@ -4890,34 +4890,21 @@ function HatReanimator.Start()
 			RootPart.CFrame = rootcf
 			RootPart.AssemblyLinearVelocity, RootPart.AssemblyAngularVelocity = Vector3.new(0, 26, 0), Vector3.zero
 			if Humanoid.RigType == Enum.HumanoidRigType.R15 then
-				for _,v in character:GetDescendants() do
-					if v:IsA("Motor6D") then
-						if v.Name == "Root" then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 0, 0))
-						elseif v.Name == "Neck" then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 10, 0))
-						elseif v.Name:find("Shoulder") then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 2.5, -4))
-						elseif v.Name:find("Hip") then
-							Util.SetMotor6DTransform(v, CFrame.new(math.random() * 0.05, 4.5, -2))
-						else
-							Util.SetMotor6DTransform(v, CFrame.identity)
-						end
-					end
-				end
+				-- TODO
 			else
+				-- put the limbs in freefall, make sure they dont touch
 				for _,v in character:GetDescendants() do
 					if v:IsA("Motor6D") then
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 3, 0))
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 3, -3))
 						elseif v.Name == "Right Shoulder" then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 3.5, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, 3.5, -3))
 						elseif v.Name == "Left Shoulder" then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, 0, -3))
 						elseif v.Name:find("Hip") then
-							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, -2, -3))
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 3 + math.random() * 0.05, -2, -3))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -4942,17 +4929,23 @@ function HatReanimator.Start()
 			end
 		end,
 		State2 = function(character, hats)
+			-- 3 of the most important instances (rootpart is destroyed after a frame anyway)
 			local torso = character:FindFirstChild("Torso")
+			local head = character:FindFirstChild("Head")
+			local rightarm = character:FindFirstChild("Right Arm") -- this will also reevaluate collisions upon removal (cuz tool)
 			if torso then
-				task.wait(0.1)
-				--task.wait(calculatepartdestroytime(torso.CFrame.Y - FallenPartsDestroyHeight, torso.AssemblyLinearVelocity.Y, workspace.Gravity) + 0.01)
+				task.wait(0.31)
+				--task.wait(calculatepartdestroytime(2, 30, workspace.Gravity) + 0.01)
 			end
 			HatReanimator.Status.HatCollide = "Torso removed, I speculate."
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.InWorkspace)
 			end
-			if torso and torso.Parent == character then
+			if torso and torso.Parent then
 				torso.AncestryChanged:Wait()
+			end
+			if head and head.Parent then
+				head.AncestryChanged:Wait()
 			end
 			task.wait(1.5)
 			return _counthats(hats)
