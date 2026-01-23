@@ -4995,6 +4995,20 @@ function HatReanimator.Start()
 			end
 		end,
 		State1 = function(character, Humanoid, hats)
+			HatReanimator.Status.HatCollide = "Hat states set."
+			local head = character:FindFirstChild("Head")
+			for _,v in hats do
+				local handle = v:FindFirstChild("Handle")
+				if handle then
+					local weld = handle:FindFirstChild("AccessoryWeld")
+					if weld then
+						if weld.Part1 ~= head then
+							continue
+						end
+					end
+				end
+				SetAccoutrementState(v, BackendAccoutrementState.None)
+			end
 		end,
 		State2 = function(character, hats)
 			local hum = character:FindFirstChild("Humanoid")
@@ -5004,12 +5018,11 @@ function HatReanimator.Start()
 			for _,v in hats do
 				SetAccoutrementState(v, BackendAccoutrementState.None)
 			end
-			task.wait(0.1)
-			for _,v in hats do
-				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
-			end
 			if head and head:IsDescendantOf(workspace) then
 				head.AncestryChanged:Wait()
+			end
+			for _,v in hats do
+				SetAccoutrementState(v, BackendAccoutrementState.Equipped)
 			end
 			task.wait(1.5)
 			return _counthats(hats)
