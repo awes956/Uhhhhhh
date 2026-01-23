@@ -1,3 +1,17 @@
+--[[
+ ...    :::::        ::        ::        ::        ::        ::        
+ ;;     ;;;;;;       ;;;       ;;;       ;;;       ;;;       ;;;       
+[['     [[[[[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. [[[[cc,,. 
+$$      $$$$$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ $$$"""$$$ 
+88    .d888888   "88o888   "88o888   "88o888   "88o888   "88o888   "88o
+ "YmmMMMM""MMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMMMMM    YMM
+       "DREAMS WILL NEVER COME TRUE UNTIL YOU ACTUALLY MAKE IT."       
+
+Code: STEVETHEREALONE
+GFX: STEVETHEREALONE, AALib and some random generators
+Music: Dubmood, 4mat, MASTER BOOT RECORD
+]]
+
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
@@ -904,7 +918,7 @@ local function SetUITheme(index)
 		-- ALONE LIGHT
 		{Color3.new(0, 0, 0), Color3.new(1, 1, 1), Color3.new(0, 0, 0)},
 		-- ROSR
-		{Color3.new(0.85, 0.55, 0), Color3.new(0.9, 0.65, 0), Color3.new(1, 1, 1)},
+		{Color3.new(0, 0, 0), Color3.new(1, 0.8, 0), Color3.new(1, 1, 1)},
 		-- FastTracker II Blue
 		{Color3.fromHex("333780"), Color3.fromHex("666EFF"), Color3.new(1, 1, 1)},
 		-- Cherry Blossom
@@ -2468,7 +2482,7 @@ task.spawn(function()
 			"Believe me friend, its fuckingly fast, you don't ev",
 		},
 		{
-			"Uhhhhhh BUY OUR PRODUCT FOR FREE, NOW!! Uhhhhhh",
+			"Uhhhhhh  https://discord.gg/NASNUKRBVM  Uhhhhhh",
 			"Uhhhhhh Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE",
 			"Uhhhhhh Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh",
 			"Uhhhhhh Uhhhhhh STEVETHEREALONE Uhhhhhh Uhhhhhh",
@@ -7194,7 +7208,7 @@ UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances o
 end)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">(C) 2026 STEVETHEREALONE</font>", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "all rights reserved i think", 14, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "all rights reserved", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "<font color=\"#4444FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
