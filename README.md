@@ -146,7 +146,7 @@ Uhhhhhh's filesystem is like this
 Executor's workspace/
 | UhhhhhhReanim/
 | | Assets/ - Contains UI Music
-| | Modules/ - Should contain luau scripts that return a table of functions
+| | Modules/ - YOUR modules
 | | Content/ - Contains module assets
 | | | Anims/ - .anim (usually in STEVE's KeyframeSequence file format)
 | | | Sounds/ - .mp3
@@ -253,6 +253,8 @@ keyframe structure: `<4 bytes float time> <4 bytes int n> <pose poses, times n>`
 
 main file structure: `<string animation_name> <4 bytes int n> <keyframe keyframes, times n>`
 
+This just explains how this format works. If you don't like it, check the `tools` folder in this repo!
+
 ## Uhhhhhh's env
 Uhhhhhh gives modules whatever it can. Here are all of it!
 ```lua
@@ -340,6 +342,14 @@ OnPlayerChatted.Event:Connect(function(player, message) end) -- event when a pla
 HiddenGui -- the reference to the ScreenGui Uhhhhhh uses
 FallenPartsDestroyHeight -- self explanatory
 ```
+
+## "i dont understand all this"
+That's why I have made (in v1.0.3) the stuff that gives Empyrean Reanimate (emper chill lowkirkenuinly) the ability to be used in require script convertions!
+`_G.Uhhhhhh` which contains `.Character` and `.Fling`, but using this might make you rejoin just to stop everything...
+
+So I also made `goodies/convertion.lua`! For all those smarty-pants out there, you may now make your own "moveset" with a couple of changes to the actual source!
+Link your connection disconnections, thread stoppers and instance deconstructions to a singular `OnStopEvent` `BindableEvent`, NOW!
+(not doing so will cause havoc in your threads ;P)
 
 # Uhhhhhh's Licenses
 My code is covered by the MIT license. I made most of it. BUT...

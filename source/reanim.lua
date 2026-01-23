@@ -1,7 +1,7 @@
 if _G.UhhhhhhLoaded then return end
 _G.UhhhhhhLoaded = true
 
-local UhhhhhhVersion = "1.0.2 BETA"
+local UhhhhhhVersion = "1.0.3 BETA"
 
 cloneref = cloneref or function(o) return o end
 getcustomasset = getcustomasset or getsynasset
@@ -2975,6 +2975,12 @@ SaveData.NetlessVelocity = SaveData.NetlessVelocity or 25.01
 SaveData.UsePatchmaLikeNetless = not not SaveData.UsePatchmaLikeNetless
 SaveData.UseAngularVelocity = not not SaveData.UseAngularVelocity
 
+-- empyrean-like thing
+local _G_Uhhhhhh = {}
+-- jjsloit didnt have _G, just making sure if 100% unc execs dont have this even
+pcall(function() _G.Uhhhhhh = _G_Uhhhhhh end)
+_G_Uhhhhhh.BindableEvent = Util.Instance("BindableEvent") -- not used 3:
+
 local Reanimate = {
 	Current = nil,
 	Character = nil,
@@ -3153,10 +3159,12 @@ Reanimate.CreateCharacter = function(InitCFrame)
 		end
 	end))
 	Reanimate.Character = RC
+	_G_Uhhhhhh.Character = RC
 end
 Reanimate.DestroyCharacter = function()
 	if Reanimate.Character then
 		Reanimate.Character = Reanimate.Character:Destroy()
+		_G_Uhhhhhh.Character = nil
 	end
 end
 
@@ -4903,9 +4911,13 @@ function HatReanimator.Start()
 						if v.Name == "RootJoint" then
 							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 6, 0))
 						elseif v.Name == "Neck" then
-							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 40, 0))
-						elseif v.Name:find("Shoulder") or v.Name:find("Hip") then
+							Util.SetMotor6DOffset(v, CFrame.new(math.random() * 0.05, 3, 0))
+						elseif v.Name == "Right Shoulder" then
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 1, -3))
+						elseif v.Name == "Left Shoulder" then
 							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, 0, -3))
+						elseif v.Name:find("Hip") then
+							Util.SetMotor6DOffset(v, CFrame.new((v.C0.X - v.C1.X) * 2 + math.random() * 0.05, -2, -3))
 						else
 							Util.SetMotor6DTransform(v, CFrame.identity)
 						end
@@ -5706,6 +5718,22 @@ local function ReanimateFling(target, duration)
 	end
 	return false
 end
+-- SetCharacter thing, very empyrean-like system
+_G_Uhhhhhh.Fling = function(part)
+	if part and part.Parent then
+		if part:IsA("BasePart") then
+			part = part.Parent
+			if part:IsA("Accessory") then
+				part = part.Parent
+			end
+		end
+		local hum = part:FindFirstChildOfClass("Humanoid")
+		if hum and hum.RootPart and not hum.RootPart:IsGrounded() then
+			return ReanimateFling(part)
+		end
+	end
+end
+
 do
 	SaveData.SelectedReanimator = SaveData.SelectedReanimator or 1
 	local ReanimateMethodSelect = UI.CreateDropdown(MainPage, "Reanimator", {"Limb Reanimator", "Hats Reanimator"}, SaveData.SelectedReanimator)
@@ -7081,6 +7109,25 @@ UI.CreateText(CreditsPage, "hamoun, baze, luacope, 2024, 2023 and 2022 me", 12, 
 UI.CreateText(CreditsPage, "scout, edge, shownape, index, blackhole/whitehole", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "zero from iwbtc for no reason, presidentanvil, mech/catlover", 12, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "return from fishstrap, erika, skeltoun", 12, Enum.TextXAlignment.Center)
+UI.CreateText(CreditsPage, "<font color=\"#4444FF\">Empyrean Reanimate (he lowk chill)</font>", 12, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		Util.Notify("Link copied!")
+		pcall(setclipboard, "https://discord.gg/UJ7YtqadPJ")
+		pcall(request, {
+			Url = "http://127.0.0.1:6463/rpc?v=1",
+			Method = "POST",
+			Headers = {
+				["Content-Type"] = 'application/json',
+				["Origin"] = "https://discord.com",
+			},
+			Body = HttpService:JSONEncode({
+				cmd = "INVITE_BROWSER",
+				nonce = HttpService:GenerateGUID(false),
+				args = {code = "UJ7YtqadPJ"},
+			}),
+		})
+	end
+end)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">* Very random quotes *</font>", 15, Enum.TextXAlignment.Center)
 do
@@ -7119,7 +7166,7 @@ UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "DISCLAIMER: Some random quotes made here are jokes (e.g.: 'this script mogs genesis') and should not be taken seriously. This also includes all the self-glazing quotes. It's your choice to agree with them or not, and if you do or don't, don't come harass/mock any individuals from it. In the end, a joke quote is a joke quote.", 15, Enum.TextXAlignment.Center)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "This \"software\" is FREE, meaning YOU SHOULD NOT REDISTRIBUTE WITH RENUMERATIVE INTENT!!", 15, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#0000FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+UI.CreateText(CreditsPage, "If you want to add content to Uhhhhhh, like Dances or Movesets, go to <font color=\"#4444FF\">this thing</font>.", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://github.com/STEVE-916-create/Uhhhhhh/")
@@ -7128,7 +7175,7 @@ end)
 UI.CreateSeparator(CreditsPage)
 UI.CreateText(CreditsPage, "<font weight=\"heavy\">(C) 2026 STEVETHEREALONE</font>", 14, Enum.TextXAlignment.Center)
 UI.CreateText(CreditsPage, "all rights reserved i think", 14, Enum.TextXAlignment.Center)
-UI.CreateText(CreditsPage, "<font color=\"#0000FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
+UI.CreateText(CreditsPage, "<font color=\"#4444FF\">[ Discord invite ]</font>", 15, Enum.TextXAlignment.Center).InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		Util.Notify("Link copied!")
 		pcall(setclipboard, "https://discord.gg/NASNUKRBVM")
