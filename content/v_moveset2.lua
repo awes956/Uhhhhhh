@@ -1940,6 +1940,18 @@ AddModule(function()
 			colorcorrect.Brightness = 8
 			colorcorrect.Contrast = 100
 			colorcorrect.Saturation = -1
+			local beam = Instance.new("Part")
+			beam.Massless = true
+			beam.Transparency = 0
+			beam.Anchored = true
+			beam.CanCollide = false
+			beam.CanTouch = false
+			beam.CanQuery = false
+			beam.Name = RandomString()
+			beam.Shape = Enum.PartType.Cylinder
+			beam.Color = Color3.new(1, 1, 1)
+			beam.Material = Enum.Material.Neon
+			beam.Parent = workspace
 			task.spawn(function()
 				for _=1, 4 do
 					CreateSound(beam, 138677306, 1)
@@ -1965,18 +1977,6 @@ AddModule(function()
 					CreateSound(415700134, 1)
 				end
 			end)
-			local beam = Instance.new("Part")
-			beam.Massless = true
-			beam.Transparency = 0
-			beam.Anchored = true
-			beam.CanCollide = false
-			beam.CanTouch = false
-			beam.CanQuery = false
-			beam.Name = RandomString()
-			beam.Shape = Enum.PartType.Cylinder
-			beam.Color = Color3.new(1, 1, 1)
-			beam.Material = Enum.Material.Neon
-			beam.Parent = workspace
 			s = os.clock()
 			local throt = 0
 			local dt = 0
@@ -2016,48 +2016,48 @@ AddModule(function()
 						end
 					end
 					Attack(target, 20)
+					task.spawn(function()
+						local death = Instance.new("Part")
+						death.Massless = true
+						death.Transparency = 0
+						death.Anchored = true
+						death.CanCollide = false
+						death.CanTouch = false
+						death.CanQuery = false
+						death.Name = RandomString()
+						death.CFrame = hole
+						death.Size = Vector3.one * 2.5
+						death.Shape = Enum.PartType.Ball
+						death.Material = Enum.Material.Neon
+						death.Parent = workspace
+						death.CFrame = hole.Rotation + target
+						death.Color = Color3.new(1, 1, 1)
+						task.wait(8)
+						CreateSound(death, 9069975578, 0.9)
+						for _=1, 60 do
+							Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+							task.wait()
+						end
+						CreateSound(death, 168513088, 1.1)
+						for _=1, 10 do
+							Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+						end
+						for _=1, 5 do
+							Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 30, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Boomerang = 20, BoomerangSize = 35})
+						end
+						task.wait(0.1)
+						death.Transparency = 1
+						if rootu:IsDescendantOf(workspace) then
+							Attack(toward, 20)
+							if (rootu.Position - toward).Magnitude < 256 then
+								SetGunauraState(toward, 20)
+							end
+						end
+						task.wait(3)
+						death:Destroy()
+					end)
 					throt = 0
 				end
-				task.spawn(function()
-					local death = Instance.new("Part")
-					death.Massless = true
-					death.Transparency = 0
-					death.Anchored = true
-					death.CanCollide = false
-					death.CanTouch = false
-					death.CanQuery = false
-					death.Name = RandomString()
-					death.CFrame = hole
-					death.Size = Vector3.one * 2.5
-					death.Shape = Enum.PartType.Ball
-					death.Material = Enum.Material.Neon
-					death.Parent = workspace
-					death.CFrame = hole.Rotation + target
-					death.Color = Color3.new(1, 1, 1)
-					task.wait(8)
-					CreateSound(death, 9069975578, 0.9)
-					for _=1, 60 do
-						Lightning({Start = death.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
-						task.wait()
-					end
-					CreateSound(death, 168513088, 1.1)
-					for _=1, 10 do
-						Lightning({Start = death.Position + Vector3.new(math.random(-100, 100), math.random(-100, 100), math.random(-100, 100)), Finish = death.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
-					end
-					for _=1, 5 do
-						Effect({Time = math.random(45, 65), EffectType = "Sphere", Size = Vector3.new(0.6, 6, 0.6) * math.random(-1.05, 1.25), SizeEnd = Vector3.new(1.6, 30, 1.6) * math.random(-1.05, 1.25), Transparency = 0, TransparencyEnd = 1, CFrame = death.CFrame * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), Boomerang = 20, BoomerangSize = 35})
-					end
-					task.wait(0.1)
-					death.Transparency = 1
-					if rootu:IsDescendantOf(workspace) then
-						Attack(toward, 20)
-						if (rootu.Position - toward).Magnitude < 256 then
-							SetGunauraState(toward, 20)
-						end
-					end
-					task.wait(3)
-					death:Destroy()
-				end)
 				dt = task.wait()
 				throt += dt
 			until os.clock() - s > 8 or not rootu:IsDescendantOf(workspace)
