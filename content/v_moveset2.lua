@@ -1991,14 +1991,14 @@ AddModule(function()
 					local lod = 5
 					if dist < lod * 10 then
 						for i=0, (dist // 10) + 1 do
-							Attack(hole.Position:Lerp(target, (5 + i * 10) / dist), 5)
+							Attack(hole.Position:Lerp(target, (5 + i * 10) / dist), 10)
 						end
 					else
 						for i=1, lod do
-							Attack(hole.Position:Lerp(target, (i - 0.5) / lod), 5)
+							Attack(hole.Position:Lerp(target, (i - 0.5) / lod), 10)
 						end
 					end
-					Attack(target, 10)
+					Attack(target, 20)
 					throt = 0
 				end
 				dt = task.wait()
