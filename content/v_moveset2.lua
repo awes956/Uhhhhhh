@@ -1941,7 +1941,13 @@ AddModule(function()
 			colorcorrect.Contrast = 100
 			colorcorrect.Saturation = -1
 			task.spawn(function()
-				task.wait(1 / 15)
+				task.wait(0.2)
+				colorcorrect.Brightness = 0
+				colorcorrect.Contrast = 20
+				colorcorrect.Saturation = 0
+				while colorcorrect.Contrast > 0 then
+					colorcorrect.Contrast -= task.wait() * 10
+				end
 				colorcorrect:Destroy()
 			end)
 			local beam = Instance.new("Part")
