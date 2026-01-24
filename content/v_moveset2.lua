@@ -42,7 +42,6 @@ AddModule(function()
 	m.FlySpeed = 2
 	m.HitboxScale = 1
 	m.HitboxDebug = true
-	m.UseGun = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Neck Snapping", m.NeckSnap).Changed:Connect(function(val)
 			m.NeckSnap = val
@@ -65,9 +64,6 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Hitbox Visual", m.HitboxDebug).Changed:Connect(function(val)
 			m.HitboxDebug = val
 		end)
-		Util_CreateSwitch(parent, "Sword = Gun", m.UseGun).Changed:Connect(function(val)
-			m.UseGun = val
-		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -77,7 +73,6 @@ AddModule(function()
 		m.FlySpeed = save.FlySpeed or m.FlySpeed
 		m.HitboxScale = save.HitboxScale or m.HitboxScale
 		m.HitboxDebug = not save.NoHitbox
-		m.UseGun = not not save.UseGun
 	end
 	m.SaveConfig = function()
 		return {
@@ -88,7 +83,6 @@ AddModule(function()
 			FlySpeed = m.FlySpeed,
 			HitboxScale = m.HitboxScale,
 			NoHitbox = not m.HitboxDebug,
-			UseGun = m.UseGun,
 		}
 	end
 
@@ -597,11 +591,6 @@ AddModule(function()
 		end
 		
 		-- sword
-		if m.UseGun then
-			sword.Group = "Gun"
-		else
-			sword.Group = "Sword"
-		end
 		sword.Offset = joints.sw
 		sword.Disable = not not isdancing
 		
@@ -1861,7 +1850,7 @@ AddModule(function()
 				local d = (os.clock() - s) / 2.8
 				core.Size = Vector3.one * 5 * d
 				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 10)))
-				if math.random() < 0.02 * d then
+				if math.random() < 0.2  * d then
 					Lightning({Start = sky, Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 					CreateSound(core, 4376217120, 0.5 + math.random())
 					SetBulletState(hole.Position, sky)
@@ -1902,7 +1891,6 @@ AddModule(function()
 				AimTowards(MouseHit())
 				return rt, nt, rst, lst, rht, lht, gunoff
 			end
-			s = os.clock()
 			repeat
 				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
 				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
@@ -1930,7 +1918,7 @@ AddModule(function()
 				core.Size = Vector3.one * 5
 				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
 				colorcorrect.Contrast = os.clock() - s - 5.4
-				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 5, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
 				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
 				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
 				task.wait()
