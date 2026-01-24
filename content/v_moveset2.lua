@@ -684,6 +684,7 @@ AddModule(function()
 	m.RainAmount = 5
 	m.IgnoreDancing = false
 	m.SkipSanity = false
+	m.OmegaBlaster = false
 	m.Config = function(parent: GuiBase2d)
 		Util_CreateSwitch(parent, "Bee Wings", m.Bee).Changed:Connect(function(val)
 			m.Bee = val
@@ -740,6 +741,10 @@ AddModule(function()
 		Util_CreateSwitch(parent, "Jump to INSaNiTY", m.SkipSanity).Changed:Connect(function(val)
 			m.SkipSanity = val
 		end)
+		Util_CreateText(parent, "X key attack another variant", 12, Enum.TextXAlignment.Center)
+		Util_CreateSwitch(parent, "Beam is locked in", m.OmegaBlaster).Changed:Connect(function(val)
+			m.OmegaBlaster = val
+		end)
 	end
 	m.LoadConfig = function(save: any)
 		m.Bee = not not save.Bee
@@ -757,6 +762,7 @@ AddModule(function()
 		m.RainAmount = save.RainAmount or m.RainAmount
 		m.IgnoreDancing = not not save.IgnoreDancing
 		m.SkipSanity = not not save.SkipSanity
+		m.OmegaBlaster = not not save.OmegaBlaster
 	end
 	m.SaveConfig = function()
 		return {
@@ -775,6 +781,7 @@ AddModule(function()
 			RainAmount = m.RainAmount,
 			IgnoreDancing = m.IgnoreDancing,
 			SkipSanity = m.SkipSanity,
+			OmegaBlaster = m.OmegaBlaster,
 		}
 	end
 
@@ -1652,7 +1659,7 @@ AddModule(function()
 			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
 				rt *= CFrame.Angles(0, 0, math.rad(-60))
 				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
-				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-60)) * RIGHTSHOULDERC0
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
 				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
 				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
 				AimTowards(MouseHit())
@@ -1794,6 +1801,211 @@ AddModule(function()
 			attacking = false
 		end)
 	end
+	local function OmegaBlaster()
+		if not m.IgnoreDancing then
+			if isdancing then return end
+			if currentmode == 1 then
+				if sanitysongsync < 8 then return end
+			end
+			if currentmode == 2 then return end
+		end
+		if attacking and not m.NoCooldown then return end
+		if not root or not hum or not torso then return end
+		local rootu = root
+		attacking = true
+		hum.WalkSpeed = 0
+		task.spawn(function()
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(-60))
+				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(180), math.rad(0), math.rad(0)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(-10), math.rad(-10), math.rad(-5)) * LEFTSHOULDERC0
+				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			SingularityBeam_ischarging = true
+			notify("THAT IS IT. It's TIME use 20% of MY POWER...", true)
+			local core = Instance.new("Part")
+			core.Massless = true
+			core.Transparency = 0
+			core.Anchored = true
+			core.CanCollide = false
+			core.CanTouch = false
+			core.CanQuery = false
+			core.Name = RandomString()
+			core.Size = Vector3.one * 0.5
+			core.Shape = Enum.PartType.Ball
+			core.Color = Color3.new(1, 1, 1)
+			core.Material = Enum.Material.Neon
+			core.Parent = workspace
+			for _=1, 3 do
+				CreateSound(core, 342793847, 0.4791358024 + 0.1 * math.random())
+			end
+			CreateSound(76356469921578)
+			local s = os.clock()
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(1, 4, 0) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				local d = (os.clock() - s) / 2.8
+				core.Size = Vector3.one * 5 * d
+				local sky = root.Position + (CFrame.new() * Vector3.new(0, 100, math.random(0, 10)))
+				if math.random() < 0.02 * d then
+					Lightning({Start = sky, Finish = hole.Position, Offset = 3.5, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					CreateSound(core, 4376217120, 0.5 + math.random())
+					SetBulletState(hole.Position, sky)
+				end
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				task.wait()
+			until os.clock() - s > 2.8 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(30))
+				nt = NECKC0 * CFrame.Angles(math.rad(10), 0, math.rad(-60))
+				rst = CFrame.new(1.5, 0.5, 0) * CFrame.Angles(math.rad(160), math.rad(-20), math.rad(60)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.5, 0.5, 0) * CFrame.Angles(math.rad(40), math.rad(5), math.rad(5)) * LEFTSHOULDERC0
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(1, 2, -2) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				task.wait()
+			until os.clock() - s > 3.95 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			notify("LIGHTNING CANNON'S...", true)
+			animationOverride = function(timingsine, rt, nt, rst, lst, rht, lht, gunoff)
+				rt *= CFrame.Angles(0, 0, math.rad(-60))
+				nt = NECKC0 * CFrame.Angles(0, 0, math.rad(60))
+				rst = CFrame.new(1.25, 0.5, -0.25) * CFrame.Angles(math.rad(90), 0, math.rad(-90)) * RIGHTSHOULDERC0
+				lst = CFrame.new(-1.25, 0.5, -0.25) * CFrame.Angles(math.rad(95), 0, math.rad(10)) * LEFTSHOULDERC0
+				gunoff = CFrame.new(0, -0.5, 0) * CFrame.Angles(math.rad(180), 0, 0)
+				AimTowards(MouseHit())
+				return rt, nt, rst, lst, rht, lht, gunoff
+			end
+			s = os.clock()
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				task.wait()
+			until os.clock() - s > 5.4 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				return
+			end
+			notify("OMEGA BLAST!", true)
+			CreateSound(core, 9069975578, 0.4)
+			local colorcorrect = Instance.new("ColorCorrectionEffect")
+			colorcorrect.Enabled = true
+			colorcorrect.Brightness = 0
+			colorcorrect.Contrast = 0
+			colorcorrect.Saturation = 0
+			colorcorrect.Parent = workspace.CurrentCamera
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				SetGunauraState(hole.Position + Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 3)
+				colorcorrect.Contrast = os.clock() - s - 5.4
+				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 5, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+				Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+				task.wait()
+			until os.clock() - s > 8.1 or not rootu:IsDescendantOf(workspace)
+			if not rootu:IsDescendantOf(workspace) then
+				core:Destroy()
+				colorcorrect:Destroy()
+				return
+			end
+			colorcorrect.Brightness = -1
+			colorcorrect.Contrast = 99
+			colorcorrect.Saturation = 0
+			task.spawn(function()
+				task.wait()
+				colorcorrect:Destroy()
+			end)
+			for _=1, 4 do
+				CreateSound(beam, 138677306, 1)
+				CreateSound(415700134, 1)
+			end
+			local beam = Instance.new("Part")
+			beam.Massless = true
+			beam.Transparency = 0
+			beam.Anchored = true
+			beam.CanCollide = false
+			beam.CanTouch = false
+			beam.CanQuery = false
+			beam.Name = RandomString()
+			beam.Shape = Enum.PartType.Cylinder
+			beam.Color = Color3.new(1, 1, 1)
+			beam.Material = Enum.Material.Neon
+			beam.Parent = workspace
+			s = os.clock()
+			local throt = 0
+			local dt = 0
+			repeat
+				local hole = root.CFrame * CFrame.new(Vector3.new(0, 0.25, -3) * scale)
+				hole = HatReanimator.GetAttachmentCFrame(gun.Group .. "Attachment") or hole
+				root.CFrame *= CFrame.new(0, 0, dt * 3 * scale)
+				core.CFrame = hole
+				core.Size = Vector3.one * 5
+				local target = MouseHit()
+				local raycast = PhysicsRaycast(hole.Position, target - hole.Position)
+				if raycast then
+					target = raycast.Position
+				end
+				SetGunauraState(hole.Position)
+				SetBulletState(hole.Position, target)
+				local dist = (target - hole.Position).Magnitude
+				beam.Size = Vector3.new(dist, 5, 5)
+				beam.CFrame = CFrame.lookAt(hole.Position:Lerp(target, 0.5), target) * CFrame.Angles(0, math.rad(90), 0)
+				Lightning({Start = hole.Position + Vector3.new(math.random(-40, 40), math.random(-40, 40), math.random(-40, 40)), Finish = hole.Position, Offset = 3.5, Time = 5, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+				if throt > 0.02 then
+					Lightning({Start = hole.Position, Finish = target, Offset = 7, Time = 25, SizeStart = 0, SizeEnd = 1, BoomerangSize = 55})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Box", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(3, 3, 3), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 50})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = hole * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Boomerang = 0, BoomerangSize = 15})
+					Effect({Time = 10, EffectType = "Slash", Size = Vector3.new(0, 0, 0), SizeEnd = Vector3.new(0.1, 0, 0.1), Transparency = 0, TransparencyEnd = 1, CFrame = CFrame.new(target) * CFrame.Angles(math.rad(math.random(0, 360)), math.rad(math.random(0, 360)), math.rad(math.random(0, 360))), RotationX = math.random(-1, 1), RotationY = math.random(-1, 1), RotationZ = math.random(-1, 1), Color = Color3.new(1, 1, 1), Boomerang = 0, BoomerangSize = 15})
+					local lod = 5
+					if dist < lod * 10 then
+						for i=0, (dist // 10) + 1 do
+							Attack(hole.Position:Lerp(target, (5 + i * 10) / dist), 5)
+						end
+					else
+						for i=1, lod do
+							Attack(hole.Position:Lerp(target, (i - 0.5) / lod), 5)
+						end
+					end
+					Attack(target, 10)
+					throt = 0
+				end
+				dt = task.wait()
+				throt += dt
+			until os.clock() - s > m.BeamDuration or not rootu:IsDescendantOf(workspace)
+			core:Destroy()
+			beam:Destroy()
+			if not rootu:IsDescendantOf(workspace) then
+				return
+			end
+			animationOverride = nil
+			hum.WalkSpeed = 50 * scale
+			attacking = false
+		end)
+	end
 	m.Init = function(figure: Model)
 		start = os.clock()
 		flight = false
@@ -1896,7 +2108,11 @@ AddModule(function()
 		ContextActionService:SetPosition("Uhhhhhh_LCDash", UDim2.new(1, -180, 1, -130))
 		ContextActionService:BindAction("Uhhhhhh_LCBigbeam", function(_, state, _)
 			if state == Enum.UserInputState.Begin then
-				SingularityBeam()
+				if m.OmegaBlaster then
+					OmegaBlaster()
+				else
+					SingularityBeam()
+				end
 			end
 		end, true, Enum.KeyCode.X)
 		ContextActionService:SetTitle("Uhhhhhh_LCBigbeam", "X")
